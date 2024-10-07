@@ -11,7 +11,7 @@ import {
     View
 } from 'react-native';
 
-interface IconButtonProps extends TouchableOpacityProps {
+interface ImageButtonProps extends TouchableOpacityProps {
     size?: number;
     iconStyle?: ImageStyle;
     enabled?: boolean;
@@ -19,7 +19,7 @@ interface IconButtonProps extends TouchableOpacityProps {
     text: string;
 }
 
-const IconTextButton: React.FC<IconButtonProps> = ({
+const IconTextButton: React.FC<ImageButtonProps> = ({
     onPress,
     size = 24,
     enabled = true,
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         marginBottom: -10
     },
     text: {
-        color: "white",
+        color: 'white',
         fontSize: TEXT_FONT_SIZE,
     },
 });

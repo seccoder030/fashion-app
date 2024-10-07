@@ -1,7 +1,7 @@
 import ActionBar from '@/components/ActionBar';
 import BottomTabBar from '@/components/BottomTabBar';
 import HomeTopTabBar from '@/components/HomeTopTabBar';
-import { BACKGROUND_GRADIENT_COLOR, IMAGE_BG, STATUSBAR_HEIGHT } from '@/constants/Config';
+import { BACKGROUND_GRADIENT_COLOR, HOMETOP_TAPBAR_HEIGHT, IMAGE_BG } from '@/constants/Config';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Image, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
@@ -18,10 +18,10 @@ export default function HomeScreen() {
             >
                 <HomeTopTabBar />
                 <ActionBar />
-                <View style={styles.content}>
+                <View style={styles.image}>
                     <Image
-                        source={IMAGE_BG}
                         style={styles.image}
+                        source={IMAGE_BG}
                     />
                 </View>
             </LinearGradient>
@@ -34,18 +34,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    content: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     image: {
         width: '100%',
         height: '100%',
-        resizeMode: 'cover',
     },
     gradient: {
         flex: 1,
-        paddingTop: STATUSBAR_HEIGHT,
+        paddingTop: HOMETOP_TAPBAR_HEIGHT,
     },
 });

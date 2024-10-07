@@ -1,24 +1,24 @@
-import { ICON_ADD, ICON_COMMENT, ICON_HEART, ICON_SHARE, ICON_USER } from '@/constants/Config';
+import { ICON_ADD, ICON_COMMENT, ICON_HEART, ICON_SHARE, ICON_USER1 } from '@/constants/Config';
 import { BlurView } from 'expo-blur';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import IconButton from './IconButton';
-import IconTextButton from './IconTextButton';
+import ImageButton from './ImageButton';
+import IconTextButton from './ImageTextButton';
 
 const ActionBar = () => {
   return (
     <View style={styles.container}>
-      <BlurView intensity={30} experimentalBlurMethod='dimezisBlurView' style={styles.blur}>
-      </BlurView>
+        <BlurView intensity={30} experimentalBlurMethod='dimezisBlurView' style={styles.blur}>
+        </BlurView>
       <View style={styles.content}>
         <Image
-          source={ICON_USER}
+          source={ICON_USER1}
           style={[
             { width: 35, height: 35 },
             styles.userImage
           ]}
         />
-        <IconButton onPress={() => alert("Add")} size={20} iconSource={ICON_ADD} iconStyle={styles.item} />
+        <ImageButton onPress={() => alert("Add")} size={20} iconSource={ICON_ADD} iconStyle={styles.item} />
         <IconTextButton onPress={() => alert("Heart")} size={20} iconSource={ICON_HEART} iconStyle={styles.item} text='328.7K' />
         <IconTextButton onPress={() => alert("Comments")} size={20} iconSource={ICON_COMMENT} iconStyle={styles.item} text='578' />
         <IconTextButton onPress={() => alert("Share")} size={20} iconSource={ICON_SHARE} iconStyle={styles.item} text='Share' />
@@ -44,16 +44,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.5)',
     backgroundColor: 'background: rgba(0, 0, 0, 0.7)',
-  },
-  gradient: {
-    flex: 1,
+    zIndex: -1
   },
   userImage: {
     marginTop: 10,
     marginBottom: -20
   },
   content: {
-    flex: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 10,
@@ -63,7 +60,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 10,
     marginHorizontal: 5,
-    marginVertical: 10,
+    marginVertical: 12,
     zIndex: 5
   }
 });

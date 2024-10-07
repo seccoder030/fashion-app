@@ -1,9 +1,9 @@
-import { TEXT_ACTIVE_COLOR, TEXT_COLOR, TEXT_FONT_SIZE, TRANSPARENT_BACKGROUND_COLOR, LINE_COLOR, LINE_ACTIVE_COLOR } from '@/constants/Config';
+import { LINE_ACTIVE_COLOR, LINE_COLOR, SEARCHTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT, TEXT_ACTIVE_COLOR, TEXT_COLOR, TEXT_FONT_SIZE, TRANSPARENT_BACKGROUND_COLOR } from '@/constants/Config';
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-const SearchBar = () => {
+const SearchTopTabBar = () => {
   const [activeTab, setActiveTab] = useState('  全部  ');
 
   const tabs = [
@@ -21,51 +21,53 @@ const SearchBar = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchbar}>
-        <Feather name="search" size={24} color='rgba(0, 0, 0, 0.7)' style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="検  索"
-          placeholderTextColor="#888"
-        />
-      </View>
-      <View style={styles.tabbar}>
-        {tabs.map((tab) => (
-          tab.key === activeTab?
-          <View
-            key={tab.key}
-            style={[styles.tab, activeTab === tab.key && styles.activeTab]}
-          >
-            <Feather
-              name={tab.icon as any}
-              size={20}
-              color={activeTab === tab.key ? TEXT_ACTIVE_COLOR : TEXT_COLOR}
-            />
-            <Text style={[
-              styles.tabText,
-              activeTab === tab.key && styles.activeTabText
-            ]}>
-              {tab.key}
-            </Text>
-          </View>:
-          <TouchableOpacity
-            key={tab.key}
-            style={[styles.tab, activeTab === tab.key && styles.activeTab]}
-            onPress={() => handleTab(tab.key)}
-          >
-            <Feather
-              name={tab.icon as any}
-              size={20}
-              color={activeTab === tab.key ? TEXT_ACTIVE_COLOR : TEXT_COLOR}
-            />
-            <Text style={[
-              styles.tabText,
-              activeTab === tab.key && styles.activeTabText
-            ]}>
-              {tab.key}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.tabContainer}>
+        <View style={styles.searchBar}>
+          <Feather name="search" size={24} color='rgba(0, 0, 0, 0.7)' style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="検  索"
+            placeholderTextColor="#888"
+          />
+        </View>
+        <View style={styles.tabBar}>
+          {tabs.map((tab) => (
+            tab.key === activeTab ?
+              <View
+                key={tab.key}
+                style={[styles.tab, activeTab === tab.key && styles.activeTab]}
+              >
+                <Feather
+                  name={tab.icon as any}
+                  size={20}
+                  color={activeTab === tab.key ? TEXT_ACTIVE_COLOR : TEXT_COLOR}
+                />
+                <Text style={[
+                  styles.tabText,
+                  activeTab === tab.key && styles.activeTabText
+                ]}>
+                  {tab.key}
+                </Text>
+              </View> :
+              <TouchableOpacity
+                key={tab.key}
+                style={[styles.tab, activeTab === tab.key && styles.activeTab]}
+                onPress={() => handleTab(tab.key)}
+              >
+                <Feather
+                  name={tab.icon as any}
+                  size={20}
+                  color={activeTab === tab.key ? TEXT_ACTIVE_COLOR : TEXT_COLOR}
+                />
+                <Text style={[
+                  styles.tabText,
+                  activeTab === tab.key && styles.activeTabText
+                ]}>
+                  {tab.key}
+                </Text>
+              </TouchableOpacity>
+          ))}
+        </View>
       </View>
     </View>
   );
@@ -73,16 +75,24 @@ const SearchBar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    marginHorizontal: 20,
-    marginBottom: -670,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: STATUSBAR_HEIGHT,
+    height: SEARCHTOP_TAPBAR_HEIGHT,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    backgroundColor: TRANSPARENT_BACKGROUND_COLOR,
+    zIndex: 5
   },
-  searchbar: {
+  tabContainer: {},
+  searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: 25,
     backgroundColor: 'white',
     borderRadius: 30,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     marginHorizontal: 50,
     marginVertical: 10
   },
@@ -94,10 +104,9 @@ const styles = StyleSheet.create({
     fontSize: TEXT_FONT_SIZE,
     color: '#333',
   },
-  tabbar: {
+  tabBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center',
     backgroundColor: TRANSPARENT_BACKGROUND_COLOR,
     borderBottomWidth: 1,
     borderBottomColor: LINE_COLOR,
@@ -120,4 +129,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SearchBar;
+export default SearchTopTabBar;

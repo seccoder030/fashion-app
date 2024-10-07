@@ -1,7 +1,8 @@
-import { ICON_SEARCH, TEXT_ACTIVE_COLOR, TEXT_COLOR, TEXT_FONT_SIZE, TRANSPARENT_BACKGROUND_COLOR } from '@/constants/Config';
+import { HOMETOP_TAPBAR_HEIGHT, ICON_SEARCH, STATUSBAR_HEIGHT, TEXT_ACTIVE_COLOR, TEXT_COLOR, TEXT_FONT_SIZE, TRANSPARENT_BACKGROUND_COLOR } from '@/constants/Config';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
-import IconButton from './IconButton';
+import ImageButton from './ImageButton';
+import TextButton from './TextButton';
 
 interface HomeTopTabBarProps extends TouchableOpacityProps {
 }
@@ -26,6 +27,11 @@ const HomeTopTabBar: React.FC<HomeTopTabBarProps> = ({
     <View style={styles.container}>
       <View style={styles.tabContainer}>
         {tabs.map((tab) => (
+          <TextButton onPress={handleSearch} text={tab} backgroundColor={'rgba(0, 0, 0, 0)'} style={styles.tabButton} key={tab} />
+        ))}
+      </View>
+      {/* <View style={styles.tabContainer}>
+        {tabs.map((tab) => (
           <TouchableOpacity
             key={tab}
             onPress={() => handleTab(tab)}
@@ -39,27 +45,30 @@ const HomeTopTabBar: React.FC<HomeTopTabBarProps> = ({
             </Text>
           </TouchableOpacity>
         ))}
-      </View>
-      <IconButton onPress={handleSearch} size={20} iconSource={ICON_SEARCH} style={styles.searchButton} />
+      </View> */}
+      <ImageButton onPress={handleSearch} size={20} iconSource={ICON_SEARCH} style={styles.searchButton} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: STATUSBAR_HEIGHT,
+    height: HOMETOP_TAPBAR_HEIGHT,
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 15,
     backgroundColor: TRANSPARENT_BACKGROUND_COLOR,
+    zIndex: 5
   },
   tabContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    paddingTop: 5
   },
   tabButton: {
-    marginHorizontal: 10,
-    paddingHorizontal: 10
+    marginHorizontal: 25,
   },
   tabText: {
     color: TEXT_COLOR,
@@ -71,9 +80,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   searchButton: {
+    height: 0,
     position: 'absolute',
-    right: 15,
-    padding: 5,
+    right: 20,
+    top: 18,
   },
 });
 

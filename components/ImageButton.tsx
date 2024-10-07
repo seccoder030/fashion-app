@@ -9,14 +9,14 @@ import {
     ImageSourcePropType
 } from 'react-native';
 
-interface IconButtonProps extends TouchableOpacityProps {
+interface ImageButtonProps extends TouchableOpacityProps {
     size?: number;
     iconStyle?: ImageStyle;
     enabled?: boolean;
     iconSource: ImageSourcePropType;
 }
 
-const IconButton: React.FC<IconButtonProps> = ({
+const ImageButton: React.FC<ImageButtonProps> = ({
     onPress,
     size = 24,
     enabled = true,
@@ -59,4 +59,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default IconButton;
+export default ImageButton;
