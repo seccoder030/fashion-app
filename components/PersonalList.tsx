@@ -2,7 +2,7 @@ import { BOTTOM_TAPBAR_HEIGHT, ICON_COMMENT, ICON_HEARTFILL, IMAGE_BG, IMAGE_BG1
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, Image, ImageSourcePropType, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import ImageButton from './ImageButton';
+import IconButton from './IconButton';
 
 interface Item {
     id: string;
@@ -31,7 +31,7 @@ const PersonalList  = () => {
     ];
 
     function handleItem() {
-        router.push('/(main)/screens/SearchDetailScreen');
+        // router.replace('/(main)/SearchDetailScreen');
     }
 
     return (

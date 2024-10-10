@@ -1,12 +1,12 @@
 import BottomTabBar from '@/components/BottomTabBar';
-import MessageList from '@/components/MessageList';
-import MessageListTopTabBar from '@/components/MessageListTopTabBar';
-import { BACKGROUND_GRADIENT_COLOR, MESSAGELISTTOP_TAPBAR_HEIGHT } from '@/constants/Config';
+import ImageList from '@/components/ImageList';
+import SearchTopTabBar from '@/components/SearchTopTabBar';
+import { BACKGROUND_GRADIENT_COLOR, SEARCHTOP_TAPBAR_HEIGHT } from '@/constants/Config';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 
-export default function MessageListScreen() {
+export default function SearchScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" />
@@ -16,10 +16,10 @@ export default function MessageListScreen() {
                 end={{ x: 1, y: 1 }}
                 style={styles.gradient}
             >
-                <MessageListTopTabBar />
-                <MessageList />
+                <SearchTopTabBar />
+                <ImageList />
+                <BottomTabBar thisId={1} />
             </LinearGradient>
-            <BottomTabBar thisId={1} />
         </SafeAreaView>
     );
 };
@@ -28,13 +28,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    content: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     gradient: {
         flex: 1,
-        paddingTop: MESSAGELISTTOP_TAPBAR_HEIGHT,
+        paddingTop: SEARCHTOP_TAPBAR_HEIGHT,
     },
 });

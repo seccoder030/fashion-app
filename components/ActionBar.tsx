@@ -2,8 +2,8 @@ import { ICON_ADD, ICON_COMMENT, ICON_HEART, ICON_SHARE, ICON_USER1 } from '@/co
 import { BlurView } from 'expo-blur';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import ImageButton from './ImageButton';
-import IconTextButton from './ImageTextButton';
+import IconButton from './IconButton';
+import IconTextButton from './IconTextButton';
 
 const ActionBar = () => {
   return (
@@ -18,7 +18,7 @@ const ActionBar = () => {
             styles.userImage
           ]}
         />
-        <ImageButton onPress={() => alert("Add")} size={20} iconSource={ICON_ADD} iconStyle={styles.item} />
+        <IconButton onPress={() => alert("Add")} size={20} iconSource={ICON_ADD} iconStyle={styles.item} />
         <IconTextButton onPress={() => alert("Heart")} size={20} iconSource={ICON_HEART} iconStyle={styles.item} text='328.7K' />
         <IconTextButton onPress={() => alert("Comments")} size={20} iconSource={ICON_COMMENT} iconStyle={styles.item} text='578' />
         <IconTextButton onPress={() => alert("Share")} size={20} iconSource={ICON_SHARE} iconStyle={styles.item} text='Share' />

@@ -1,4 +1,4 @@
-import { LINE_ACTIVE_COLOR, LINE_COLOR, SEARCHTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT, TEXT_ACTIVE_COLOR, TEXT_COLOR, TEXT_FONT_SIZE, TRANSPARENT_BACKGROUND_COLOR } from '@/constants/Config';
+import { SEARCHTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -40,7 +40,7 @@ const SearchTopTabBar = () => {
                 <Feather
                   name={tab.icon as any}
                   size={20}
-                  color={activeTab === tab.key ? TEXT_ACTIVE_COLOR : TEXT_COLOR}
+                  color={activeTab === tab.key ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)'}
                 />
                 <Text style={[
                   styles.tabText,
@@ -57,7 +57,7 @@ const SearchTopTabBar = () => {
                 <Feather
                   name={tab.icon as any}
                   size={20}
-                  color={activeTab === tab.key ? TEXT_ACTIVE_COLOR : TEXT_COLOR}
+                  color={activeTab === tab.key ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)'}
                 />
                 <Text style={[
                   styles.tabText,
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     height: SEARCHTOP_TAPBAR_HEIGHT,
     paddingVertical: 15,
     paddingHorizontal: 20,
-    backgroundColor: TRANSPARENT_BACKGROUND_COLOR,
+    backgroundColor: 'rgba(255, 255, 255, 0)',
     zIndex: 5
   },
   tabContainer: {},
@@ -101,15 +101,15 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: TEXT_FONT_SIZE,
+    fontSize: 13,
     color: '#333',
   },
   tabBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: TRANSPARENT_BACKGROUND_COLOR,
+    backgroundColor: 'rgba(255, 255, 255, 0)',
     borderBottomWidth: 1,
-    borderBottomColor: LINE_COLOR,
+    borderBottomColor: 'rgba(88, 119, 234, 1)',
   },
   tab: {
     alignItems: 'center',
@@ -117,15 +117,15 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: LINE_ACTIVE_COLOR,
+    borderBottomColor: 'rgba(41, 191, 255, 1)',
   },
   tabText: {
-    fontSize: TEXT_FONT_SIZE,
+    fontSize: 13,
     marginTop: 2,
-    color: TEXT_COLOR,
+    color: 'rgba(255, 255, 255, 0.5)',
   },
   activeTabText: {
-    color: TEXT_ACTIVE_COLOR,
+    color: 'rgba(255, 255, 255, 1)',
   },
 });
 

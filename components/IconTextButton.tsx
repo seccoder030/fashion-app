@@ -1,4 +1,3 @@
-import { TEXT_FONT_SIZE } from '@/constants/Config';
 import React from 'react';
 import {
     Image,
@@ -11,7 +10,7 @@ import {
     View
 } from 'react-native';
 
-interface ImageButtonProps extends TouchableOpacityProps {
+interface IconButtonProps extends TouchableOpacityProps {
     size?: number;
     iconStyle?: ImageStyle;
     enabled?: boolean;
@@ -19,7 +18,7 @@ interface ImageButtonProps extends TouchableOpacityProps {
     text: string;
 }
 
-const IconTextButton: React.FC<ImageButtonProps> = ({
+const IconTextButton: React.FC<IconButtonProps> = ({
     onPress,
     size = 24,
     enabled = true,
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
     },
     text: {
         color: 'white',
-        fontSize: TEXT_FONT_SIZE,
+        fontSize: 13,
     },
 });
 

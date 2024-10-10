@@ -1,9 +1,17 @@
-import { ICON_BACK, ICON_MORE, ICON_USER2, LINE_COLOR, SEARCHDETAILTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT, TRANSPARENT_BACKGROUND_COLOR } from '@/constants/Config';
+import { ICON_BACK, ICON_MORE, ICON_USER2, SEARCHDETAILTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import ImageButton from './ImageButton';
+import IconButton from './IconButton';
+import { router } from 'expo-router';
 
 const SearchDetailToptabBar = () => {
+  function handleBack() {
+    router.back();
+  }
+
+  function handleMore() {
+  }
+
   function handleTab() {
   }
 
@@ -11,13 +19,13 @@ const SearchDetailToptabBar = () => {
     <View style={styles.container}>
       <View style={styles.tabBar}>
         <View style={styles.leftView}>
-          <ImageButton size={25} iconSource={ICON_BACK} />
+          <IconButton onPress={handleBack} size={25} iconSource={ICON_BACK} />
           <View style={styles.user}>
-            <ImageButton size={42} iconSource={ICON_USER2} enabled={false} style={styles.userIcon} />
+            <IconButton onPress={handleTab} size={42} iconSource={ICON_USER2} enabled={false} style={styles.userIcon} />
             <Text style={styles.userName}>昵   称</Text>
           </View>
         </View>
-        <ImageButton size={20} iconSource={ICON_MORE} />
+        <IconButton onPress={handleMore} size={20} iconSource={ICON_MORE} />
       </View>
     </View>
   );
@@ -32,17 +40,17 @@ const styles = StyleSheet.create({
     height: SEARCHDETAILTOP_TAPBAR_HEIGHT,
     paddingVertical: 15,
     paddingHorizontal: 20,
-    backgroundColor: TRANSPARENT_BACKGROUND_COLOR,
+    backgroundColor: 'rgba(255, 255, 255, 0)',
     zIndex: 5
   },
   tabBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: TRANSPARENT_BACKGROUND_COLOR,
+    backgroundColor: 'rgba(255, 255, 255, 0)',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: LINE_COLOR,
+    borderBottomColor: 'rgba(88, 119, 234, 1)',
   },
   leftView: {
     flexDirection: 'row',

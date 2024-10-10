@@ -24,8 +24,8 @@ export default function HomeScreen() {
                         source={IMAGE_BG}
                     />
                 </View>
+                <BottomTabBar thisId={0} />
             </LinearGradient>
-            <BottomTabBar thisId={0} />
         </SafeAreaView>
     );
 };

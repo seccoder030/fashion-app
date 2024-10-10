@@ -1,24 +1,28 @@
 import { BOTTOM_TAPBAR_HEIGHT, ICON_HOME, ICON_MESSEAGE, ICON_POST, ICON_PROFILE, ICON_SEARCH } from '@/constants/Config';
 import { BlurView } from 'expo-blur';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacityProps, View } from 'react-native';
-import ImageButton from './ImageButton';
+import IconButton from './IconButton';
 
 interface BottomTabBarProps extends TouchableOpacityProps {
   thisId?: number;
+  // changeId: CallableFunction;
 }
 
 const BottomTabBar: React.FC<BottomTabBarProps> = ({
-  thisId = 0
+  thisId = 0,
+  // changeId
 }) => {
-  const router = useRouter();
   const [activePageID, setActivePageID] = useState(thisId);
   function goto(pageID: number) {
-    if(activePageID == pageID) return;
+    if (activePageID == pageID) return;
     setActivePageID(pageID);
-    if(pageID == 0) router.push('/(main)/screens/HomeScreen');
-    else if(pageID == 1) router.push('/(main)/screens/SearchScreen');
+    // changeId(pageID);
+    if (pageID == 0) router.replace('/HomeScreen');
+    else if (pageID == 1) router.replace('/SearchScreen');
+    else if (pageID == 2) router.replace('/MessageListScreen');
+    else if (pageID == 3) router.replace('/ProfileScreen');
   }
 
   return (
@@ -26,11 +30,11 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({
       <BlurView intensity={30} experimentalBlurMethod='dimezisBlurView' style={styles.blur}>
       </BlurView>
       <View style={styles.content}>
-        <ImageButton onPress={() => goto(0)} size={30} iconSource={ICON_HOME} enabled={thisId == 0? false: true} />
-        <ImageButton onPress={() => goto(1)} size={30} iconSource={ICON_SEARCH} enabled={thisId == 1? false: true} />
-        <ImageButton onPress={() => alert("Post")} size={40} iconSource={ICON_POST} />
-        <ImageButton onPress={() => alert("Message")} size={30} iconSource={ICON_MESSEAGE} enabled={thisId == 2? false: true} />
-        <ImageButton onPress={() => alert("Profile")} size={30} iconSource={ICON_PROFILE} enabled={thisId == 3? false: true} />
+        <IconButton onPress={() => goto(0)} size={30} iconSource={ICON_HOME} enabled={thisId == 0 ? false : true} />
+        <IconButton onPress={() => goto(1)} size={30} iconSource={ICON_SEARCH} enabled={thisId == 1 ? false : true} />
+        <IconButton onPress={() => router.push('/PostScreen')} size={40} iconSource={ICON_POST} />
+        <IconButton onPress={() => goto(2)} size={30} iconSource={ICON_MESSEAGE} enabled={thisId == 2 ? false : true} />
+        <IconButton onPress={() => goto(3)} size={30} iconSource={ICON_PROFILE} enabled={thisId == 3 ? false : true} />
       </View>
     </View>
   );
@@ -69,7 +73,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 20,
     marginRight: 20,
-    transform: [{ translateY:  (40  - BOTTOM_TAPBAR_HEIGHT) / 2 }],
+    transform: [{ translateY: (40 - BOTTOM_TAPBAR_HEIGHT) / 2 }],
   },
 });
 

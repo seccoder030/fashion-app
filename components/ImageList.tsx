@@ -2,7 +2,7 @@ import { BOTTOM_TAPBAR_HEIGHT, ICON_COMMENT, ICON_HEARTFILL, IMAGE_BG, IMAGE_BG1
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, Image, ImageSourcePropType, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import ImageButton from './ImageButton';
+import IconButton from './IconButton';
 
 interface Item {
     id: string;
@@ -26,12 +26,12 @@ const ImageList = () => {
         { id: '7', imageUrl: IMAGE_BG8, caption: '在此输入您的标题。', likes: 242, comments: 4231 },
         { id: '8', imageUrl: IMAGE_BG9, caption: '在此输入您的标题。', likes: 313, comments: 3131 },
         { id: '9', imageUrl: IMAGE_BG10, caption: '在此输入您的标题。', likes: 878, comments: 1208 },
-        // { id: '10', imageUrl: IMAGE_BG, caption: '在此输入您的标题。', likes: 351, comments: 1335 },
+        { id: '10', imageUrl: IMAGE_BG, caption: '在此输入您的标题。', likes: 351, comments: 1335 },
         // Add more items as needed
     ];
 
     function handleItem() {
-        router.push('/(main)/screens/SearchDetailScreen');
+        router.push('/(main)/SearchDetailScreen');
     }
 
     return (
@@ -44,11 +44,11 @@ const ImageList = () => {
                             <Text style={styles.text}>{item.caption}</Text>
                             <View style={styles.info}>
                                 <View style={styles.infoItem}>
-                                    <ImageButton size={15} iconSource={ICON_COMMENT} enabled={false} />
+                                    <IconButton size={15} iconSource={ICON_COMMENT} enabled={false} />
                                     <Text style={styles.infoText}>{item.comments}</Text>
                                 </View>
                                 <View style={styles.infoItem}>
-                                    <ImageButton size={15} iconSource={ICON_HEARTFILL} enabled={false} />
+                                    <IconButton size={15} iconSource={ICON_HEARTFILL} enabled={false} />
                                     <Text style={styles.infoText}>{item.likes}</Text>
                                 </View>
                             </View>

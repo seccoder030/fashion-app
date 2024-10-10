@@ -1,7 +1,6 @@
-import { HOMETOP_TAPBAR_HEIGHT, ICON_SEARCH, STATUSBAR_HEIGHT, TEXT_ACTIVE_COLOR, TEXT_COLOR, TEXT_FONT_SIZE, TRANSPARENT_BACKGROUND_COLOR } from '@/constants/Config';
+import { HOMETOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
-import ImageButton from './ImageButton';
+import { StyleSheet, TouchableOpacityProps, View } from 'react-native';
 import TextButton from './TextButton';
 
 interface HomeTopTabBarProps extends TouchableOpacityProps {
@@ -46,7 +45,6 @@ const HomeTopTabBar: React.FC<HomeTopTabBarProps> = ({
           </TouchableOpacity>
         ))}
       </View> */}
-      <ImageButton onPress={handleSearch} size={20} iconSource={ICON_SEARCH} style={styles.searchButton} />
     </View>
   );
 };
@@ -60,7 +58,7 @@ const styles = StyleSheet.create({
     height: HOMETOP_TAPBAR_HEIGHT,
     alignItems: 'center',
     paddingVertical: 15,
-    backgroundColor: TRANSPARENT_BACKGROUND_COLOR,
+    backgroundColor: 'rgba(255, 255, 255, 0)',
     zIndex: 5
   },
   tabContainer: {
@@ -71,19 +69,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 25,
   },
   tabText: {
-    color: TEXT_COLOR,
-    fontSize: TEXT_FONT_SIZE,
+    color: 'rgba(255, 255, 255, 0.5)',
+    fontSize: 13,
   },
   activeTabText: {
-    color: TEXT_ACTIVE_COLOR,
+    color: 'rgba(255, 255, 255, 1)',
     fontWeight: 'bold',
     fontSize: 12,
-  },
-  searchButton: {
-    height: 0,
-    position: 'absolute',
-    right: 20,
-    top: 18,
   },
 });
 

@@ -1,12 +1,12 @@
 import BottomTabBar from '@/components/BottomTabBar';
-import Message from '@/components/Message';
-import MessageTopTabBar from '@/components/MessageTopTabBar';
+import MessageList from '@/components/MessageList';
+import MessageListTopTabBar from '@/components/MessageListTopTabBar';
 import { BACKGROUND_GRADIENT_COLOR, MESSAGELISTTOP_TAPBAR_HEIGHT } from '@/constants/Config';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 
-export default function MessageScreen() {
+export default function MessageListScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" />
@@ -16,10 +16,10 @@ export default function MessageScreen() {
                 end={{ x: 1, y: 1 }}
                 style={styles.gradient}
             >
-                <MessageTopTabBar />
-                <Message />
+                <MessageListTopTabBar />
+                <MessageList />
+                <BottomTabBar thisId={2} />
             </LinearGradient>
-            <BottomTabBar thisId={1} />
         </SafeAreaView>
     );
 };

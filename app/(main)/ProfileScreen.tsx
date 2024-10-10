@@ -1,12 +1,13 @@
 import BottomTabBar from '@/components/BottomTabBar';
-import ImageButton from '@/components/ImageButton';
-import PersonalList  from '@/components/PersonalList';
-import { BACKGROUND_GRADIENT_COLOR, ICON_EDIT, ICON_LISTLINE, ICON_HEARTLINE, IMAGE_PROFILEBG, IMAGE_PROFILEUSER, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
+import IconButton from '@/components/IconButton';
+import PersonalList from '@/components/PersonalList';
+import { BACKGROUND_GRADIENT_COLOR, ICON_EDIT, ICON_HEARTLINE, ICON_LISTLINE, IMAGE_PROFILEBG, IMAGE_PROFILEUSER, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import { Image, SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
 
-export default function PersonalScreen() {
+export default function ProfileScreen() {
     const [activeTab, setActiveTab] = useState(true);
 
     function handleTab(id: boolean) {
@@ -46,7 +47,7 @@ export default function PersonalScreen() {
                     </View>
                 </View>
                 <View style={styles.editButtonContainer}>
-                    <ImageButton size={15} iconSource={ICON_EDIT} style={styles.editButton} />
+                    <IconButton onPress={() => router.replace('/EditProfileScreen')} size={15} iconSource={ICON_EDIT} style={styles.editButton} />
                 </View>
                 <View style={styles.infoDetail}>
                     <Text style={styles.infoText}>昵  称</Text>
@@ -55,12 +56,12 @@ export default function PersonalScreen() {
                     <Text style={styles.infoDetailText}>在这里写一个关于你自己的简短介绍。</Text>
                 </View>
                 <View style={styles.tabContainer}>
-                    <ImageButton onPress={() => handleTab(true)} size={20} iconSource={ICON_LISTLINE} style={[styles.tabButton, activeTab && styles.activeTab]} />
-                    <ImageButton onPress={() => handleTab(false)} size={20} iconSource={ICON_HEARTLINE} style={[styles.tabButton, !activeTab && styles.activeTab]} />
+                    <IconButton onPress={() => handleTab(true)} size={20} iconSource={ICON_LISTLINE} style={[styles.tabButton, activeTab && styles.activeTab]} />
+                    <IconButton onPress={() => handleTab(false)} size={20} iconSource={ICON_HEARTLINE} style={[styles.tabButton, !activeTab && styles.activeTab]} />
                 </View>
-                <PersonalList  />
+                <PersonalList />
+                <BottomTabBar thisId={3} />
             </LinearGradient>
-            <BottomTabBar thisId={1} />
         </SafeAreaView>
     );
 };
@@ -68,11 +69,6 @@ export default function PersonalScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    content: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     gradient: {
         flex: 1,

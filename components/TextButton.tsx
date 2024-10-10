@@ -1,4 +1,3 @@
-import { TEXT_FONT_SIZE } from '@/constants/Config';
 import React from 'react';
 import {
     TouchableOpacity,
@@ -12,18 +11,22 @@ import {
 interface TextButtonProps extends TouchableOpacityProps {
     text: string;
     backgroundColor: ColorValue;
+    textColor?: ColorValue;
     borderRadius?: number;
     paddingHorizontal?: number;
     paddingVertical?: number;
+    fontSize?: number;
 }
 
 const TextButton: React.FC<TextButtonProps> = ({
     onPress,
     text,
     backgroundColor,
+    textColor = 'rgba(255, 255, 255, 1)',
     borderRadius = 0,
     paddingHorizontal = 0,
     paddingVertical = 0,
+    fontSize = 13,
     ...props
 }) => {
     const styles = StyleSheet.create({
@@ -36,8 +39,8 @@ const TextButton: React.FC<TextButtonProps> = ({
             paddingVertical: paddingVertical
         },
         buttontext: {
-            color: 'white',
-            fontSize: TEXT_FONT_SIZE,
+            color: textColor,
+            fontSize: fontSize,
         }
     });
 

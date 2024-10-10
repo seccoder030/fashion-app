@@ -9,19 +9,10 @@ export const TEST_SCREEN_HEIGHT = 3120;
 export const WIDTH_SCALL = SCREEN_WIDTH / TEST_SCREEN_WIDTH;
 export const HEIGHT_SCALL = SCREEN_HEIGHT / TEST_SCREEN_HEIGHT;
 
-export const TRANSPARENT_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0)';
-export const WHITE_BACKGROUND_COLOR = 'rgba(255, 255, 255, 1)';
 export const BACKGROUND_GRADIENT_COLOR = ['rgba(98, 126, 197, 1)', 'rgba(64, 39, 117, 1)', 'rgba(81, 0, 83, 1)'];
 
-export const TEXT_FONT_SIZE = 13;
-export const TEXT_COLOR = 'rgba(255, 255, 255, 0.5)';
-export const TEXT_ACTIVE_COLOR = 'rgba(255, 255, 255, 1)';
-
-export const LINE_COLOR = 'rgba(88, 119, 234, 1)';
-export const LINE_ACTIVE_COLOR = 'rgba(41, 191, 255, 1)';
-
 export const BOTTOM_TAPBAR_HEIGHT = 65;
-export const HOMETOP_TAPBAR_HEIGHT = STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + TEXT_FONT_SIZE + 37 : TEXT_FONT_SIZE + 37;
+export const HOMETOP_TAPBAR_HEIGHT = STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + 13 + 37 : 13 + 37;
 export const SEARCHTOP_TAPBAR_HEIGHT = STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + 115 : 115;
 export const SEARCHDETAILTOP_TAPBAR_HEIGHT = STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + 85 : 85;
 export const MESSAGELISTTOP_TAPBAR_HEIGHT = STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + 85 : 85;
@@ -50,6 +41,14 @@ export const ICON_LISTLINE = require('@/assets/images/icons/listline.png');
 export const ICON_HEARTLINE = require('@/assets/images/icons/heartline.png');
 export const ICON_CAMERAFILL = require('@/assets/images/icons/camerafill.png');
 export const ICON_CAMERA = require('@/assets/images/icons/camera.png');
+export const ICON_WECHAT = require('@/assets/images/icons/wechat.png');
+export const ICON_TIKTOK = require('@/assets/images/icons/tiktok.png');
+export const ICON_USER = require('@/assets/images/icons/user.png');
+export const ICON_USERLOCK = require('@/assets/images/icons/userlock.png');
+export const ICON_EMAIL = require('@/assets/images/icons/email.png');
+export const ICON_EYE = require('@/assets/images/icons/eye.png');
+export const ICON_EYEOFF = require('@/assets/images/icons/eyeoff.png');
+export const ICON_COMMENTPOST = require('@/assets/images/icons/commentpost.png');
 export const ICON_USER1 = require('@/assets/images/icons/user1.png');
 export const ICON_USER2 = require('@/assets/images/icons/user2.png');
 

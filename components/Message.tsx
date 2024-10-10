@@ -1,11 +1,13 @@
 import { BOTTOM_TAPBAR_HEIGHT, ICON_AD, ICON_EMOJI, ICON_SEND, ICON_USER1, IMAGE_BG7, SCREEN_WIDTH } from '@/constants/Config';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import ImageButton from './ImageButton';
+import IconButton from './IconButton';
+import EmojiPicker from 'rn-emoji-keyboard';
 
 const Message = () => {
-    const router = useRouter();
+    const [isOpen, setIsOpen] = React.useState<boolean>(false);
+    const [text, setText] = React.useState<string>('');
 
     const item = { id: '1', imageUrl: IMAGE_BG7, caption: '在此输入您的标题。', likes: 578, messages: 1208, star: 1031 };
     const messages = [
@@ -13,7 +15,15 @@ const Message = () => {
     ]
 
     function handleItem() {
-        // router.push('/(main)/screens/HomeScreen');
+    }
+
+    function handleEmoji() {
+        if(isOpen) setIsOpen(false);
+        else setIsOpen(true);
+    }
+
+    function handlePick(emoji: any) {
+        setText(text + emoji.emoji);
     }
 
     return (
@@ -24,14 +34,14 @@ const Message = () => {
                         <Text style={styles.titleText}>今   天   8:00 AM</Text>
                     </View>
                     <View style={styles.receive}>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                         <View style={styles.receiveContent}>
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
                         </View>
                     </View>
                     <View style={styles.receive}>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                         <View style={styles.receiveContent}>
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
@@ -42,10 +52,10 @@ const Message = () => {
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
                         </View>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                     </View>
                     <View style={styles.receive}>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                         <View style={styles.receiveContent}>
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
@@ -56,10 +66,10 @@ const Message = () => {
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
                         </View>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                     </View>
                     <View style={styles.receive}>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                         <View style={styles.receiveContent}>
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
@@ -70,10 +80,10 @@ const Message = () => {
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
                         </View>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                     </View>
                     <View style={styles.receive}>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                         <View style={styles.receiveContent}>
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
@@ -84,10 +94,10 @@ const Message = () => {
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
                         </View>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                     </View>
                     <View style={styles.receive}>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                         <View style={styles.receiveContent}>
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
@@ -98,10 +108,10 @@ const Message = () => {
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
                         </View>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                     </View>
                     <View style={styles.receive}>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                         <View style={styles.receiveContent}>
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
@@ -112,10 +122,10 @@ const Message = () => {
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
                         </View>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                     </View>
                     <View style={styles.receive}>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                         <View style={styles.receiveContent}>
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
@@ -126,22 +136,25 @@ const Message = () => {
                             <Text style={styles.text}>你好。</Text>
                             <Text style={styles.text}>你怎么样?</Text>
                         </View>
-                        <ImageButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                     </View>
                 </View>
             </ScrollView>
             <View style={styles.inputBarContainer}>
                 <View style={styles.inputBar}>
                     <TextInput
+                        value={text}
+                        onChangeText={(value) => setText(value)}
                         style={styles.input}
                         placeholder="请输入您的意见。"
                         placeholderTextColor="#888"
                     />
-                    <ImageButton size={15} iconSource={ICON_AD} style={styles.inputBarIcon} />
-                    <ImageButton size={15} iconSource={ICON_EMOJI} style={styles.inputBarIcon} />
+                    <IconButton size={15} iconSource={ICON_AD} style={styles.inputBarIcon} />
+                    <IconButton onPress={handleEmoji} size={15} iconSource={ICON_EMOJI} style={styles.inputBarIcon} />
                 </View>
-                <ImageButton size={20} iconSource={ICON_SEND} />
+                <IconButton size={20} iconSource={ICON_SEND} />
             </View>
+            <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} />
             <View style={styles.space}></View>
         </View>
     );

@@ -1,11 +1,13 @@
-import { BOTTOM_TAPBAR_HEIGHT, ICON_AD, ICON_COMMENT, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, ICON_USER1, IMAGE_BG7, SCREEN_WIDTH } from '@/constants/Config';
-import { useRouter } from 'expo-router';
+import { ICON_COMMENTPOST, BOTTOM_TAPBAR_HEIGHT, ICON_AD, ICON_COMMENT, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, ICON_USER1, IMAGE_BG7, SCREEN_WIDTH } from '@/constants/Config';
+import { router } from 'expo-router';
 import React from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import ImageButton from './ImageButton';
+import IconButton from './IconButton';
+import EmojiPicker from 'rn-emoji-keyboard';
 
 const SearchDetail = () => {
-    const router = useRouter();
+    const [isOpen, setIsOpen] = React.useState<boolean>(false);
+    const [text, setText] = React.useState<string>('');
 
     const item = { id: '1', imageUrl: IMAGE_BG7, caption: '在此输入您的标题。', likes: 578, comments: 1208, star: 1031 };
     const comments = [
@@ -13,7 +15,15 @@ const SearchDetail = () => {
     ]
 
     function handleItem() {
-        // router.push('/(main)/screens/HomeScreen');
+    }
+
+    function handleEmoji() {
+        if (isOpen) setIsOpen(false);
+        else setIsOpen(true);
+    }
+
+    function handlePick(emoji: any) {
+        setText(text + emoji.emoji);
     }
 
     return (
@@ -26,15 +36,15 @@ const SearchDetail = () => {
                             <View style={styles.cardFooter}>
                                 <View style={styles.info}>
                                     <View style={styles.infoItem}>
-                                        <ImageButton size={15} iconSource={ICON_COMMENT} enabled={false} />
+                                        <IconButton size={15} iconSource={ICON_COMMENT} enabled={false} />
                                         <Text style={styles.infoText}>{item.comments}</Text>
                                     </View>
                                     <View style={styles.infoItem}>
-                                        <ImageButton size={15} iconSource={ICON_HEARTFILL} enabled={false} />
+                                        <IconButton size={15} iconSource={ICON_HEARTFILL} enabled={false} />
                                         <Text style={styles.infoText}>{item.likes}</Text>
                                     </View>
                                     <View style={styles.infoItem}>
-                                        <ImageButton size={15} iconSource={ICON_STAR} enabled={false} />
+                                        <IconButton size={15} iconSource={ICON_STAR} enabled={false} />
                                         <Text style={styles.infoText}>{item.star}</Text>
                                     </View>
                                 </View>
@@ -46,16 +56,19 @@ const SearchDetail = () => {
                         <Text style={styles.text}>在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。</Text>
                         <View style={styles.inputBar}>
                             <TextInput
+                                value={text}
+                                onChangeText={(value) => setText(value)}
                                 style={styles.input}
                                 placeholder="请输入您的意见。"
                                 placeholderTextColor="#888"
                             />
-                            <ImageButton size={15} iconSource={ICON_AD} style={styles.inputBarIcon} />
-                            <ImageButton size={15} iconSource={ICON_EMOJI} style={styles.inputBarIcon} />
+                            <IconButton size={15} iconSource={ICON_AD} style={styles.inputBarIcon} />
+                            <IconButton onPress={handleEmoji} size={15} iconSource={ICON_EMOJI} style={styles.inputBarIcon} />
+                            <IconButton size={15} iconSource={ICON_COMMENTPOST} style={styles.inputBarIcon} />
                         </View>
                     </View>
                     <View style={[styles.comment, styles.commentLine]}>
-                        <ImageButton size={42} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={42} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                         <View style={styles.commentContent}>
                             <View style={styles.commentHead}>
                                 <View style={styles.commentInfo}>
@@ -64,15 +77,15 @@ const SearchDetail = () => {
                                 </View>
                                 <View style={styles.commentFeedback}>
                                     <View style={styles.commentFeedbackItem}>
-                                        <ImageButton size={12} iconSource={ICON_COMMENT} enabled={false} />
+                                        <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
                                         <Text style={styles.commentFeedbackText}>{item.comments}</Text>
                                     </View>
                                     <View style={styles.commentFeedbackItem}>
-                                        <ImageButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
+                                        <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
                                         <Text style={styles.commentFeedbackText}>{item.likes}</Text>
                                     </View>
                                     <View style={styles.commentFeedbackItem}>
-                                        <ImageButton size={12} iconSource={ICON_STAR} enabled={false} />
+                                        <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
                                         <Text style={styles.commentFeedbackText}>{item.star}</Text>
                                     </View>
                                 </View>
@@ -81,13 +94,13 @@ const SearchDetail = () => {
                             <View style={styles.detail}>
                                 <TouchableOpacity style={styles.detailButton}>
                                     <Text style={styles.detailText}>查看回复(95)</Text>
-                                    <ImageButton size={10} iconSource={ICON_DOWN} enabled={false} />
+                                    <IconButton size={10} iconSource={ICON_DOWN} enabled={false} />
                                 </TouchableOpacity>
                             </View>
                         </View>
                     </View>
                     <View style={[styles.comment, styles.commentLine]}>
-                        <ImageButton size={42} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={42} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                         <View style={styles.commentContent}>
                             <View style={styles.commentHead}>
                                 <View style={styles.commentInfo}>
@@ -96,15 +109,15 @@ const SearchDetail = () => {
                                 </View>
                                 <View style={styles.commentFeedback}>
                                     <View style={styles.commentFeedbackItem}>
-                                        <ImageButton size={12} iconSource={ICON_COMMENT} enabled={false} />
+                                        <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
                                         <Text style={styles.commentFeedbackText}>{item.comments}</Text>
                                     </View>
                                     <View style={styles.commentFeedbackItem}>
-                                        <ImageButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
+                                        <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
                                         <Text style={styles.commentFeedbackText}>{item.likes}</Text>
                                     </View>
                                     <View style={styles.commentFeedbackItem}>
-                                        <ImageButton size={12} iconSource={ICON_STAR} enabled={false} />
+                                        <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
                                         <Text style={styles.commentFeedbackText}>{item.star}</Text>
                                     </View>
                                 </View>
@@ -113,13 +126,13 @@ const SearchDetail = () => {
                             <View style={styles.detail}>
                                 <TouchableOpacity style={styles.detailButton}>
                                     <Text style={styles.detailText}>查看回复(95)</Text>
-                                    <ImageButton size={10} iconSource={ICON_DOWN} enabled={false} />
+                                    <IconButton size={10} iconSource={ICON_DOWN} enabled={false} />
                                 </TouchableOpacity>
                             </View>
                         </View>
                     </View>
                     <View style={[styles.comment]}>
-                        <ImageButton size={42} iconSource={ICON_USER1} enabled={false} style={styles.top} />
+                        <IconButton size={42} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                         <View style={styles.commentContent}>
                             <View style={styles.commentHead}>
                                 <View style={styles.commentInfo}>
@@ -128,15 +141,15 @@ const SearchDetail = () => {
                                 </View>
                                 <View style={styles.commentFeedback}>
                                     <View style={styles.commentFeedbackItem}>
-                                        <ImageButton size={12} iconSource={ICON_COMMENT} enabled={false} />
+                                        <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
                                         <Text style={styles.commentFeedbackText}>{item.comments}</Text>
                                     </View>
                                     <View style={styles.commentFeedbackItem}>
-                                        <ImageButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
+                                        <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
                                         <Text style={styles.commentFeedbackText}>{item.likes}</Text>
                                     </View>
                                     <View style={styles.commentFeedbackItem}>
-                                        <ImageButton size={12} iconSource={ICON_STAR} enabled={false} />
+                                        <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
                                         <Text style={styles.commentFeedbackText}>{item.star}</Text>
                                     </View>
                                 </View>
@@ -145,12 +158,13 @@ const SearchDetail = () => {
                             <View style={styles.detail}>
                                 <TouchableOpacity style={styles.detailButton}>
                                     <Text style={styles.detailText}>查看回复(95)</Text>
-                                    <ImageButton size={10} iconSource={ICON_DOWN} enabled={false} />
+                                    <IconButton size={10} iconSource={ICON_DOWN} enabled={false} />
                                 </TouchableOpacity>
                             </View>
                         </View>
                     </View>
                 </View>
+                <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} />
                 <View style={styles.space}></View>
             </ScrollView>
         </View>

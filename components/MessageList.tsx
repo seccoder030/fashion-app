@@ -2,7 +2,7 @@ import { BOTTOM_TAPBAR_HEIGHT, ICON_USER1, IMAGE_BG7, SCREEN_WIDTH } from '@/con
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import ImageButton from './ImageButton';
+import IconButton from './IconButton';
 
 const MessageList = () => {
     const router = useRouter();
@@ -13,204 +13,28 @@ const MessageList = () => {
     ]
 
     function handleItem() {
-        // router.push('/(main)/screens/HomeScreen');
+        router.push('/MessageScreen');
     }
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                 <View style={styles.border}>
-                        <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
+                    <TouchableOpacity onPress={handleItem} style={styles.message}>
+                        <IconButton size={42} iconSource={ICON_USER1} enabled={false} />
+                        <View style={styles.messageContent}>
+                            <View style={styles.messageItem}>
+                                <Text style={styles.messageTitle}>昵  称</Text>
+                                <View style={styles.borderUnread}>
+                                    <Text style={styles.messageUnread}>3</Text>
                                 </View>
                             </View>
-                        </TouchableOpacity>
-                    <View style={styles.messageLine}></View>
-                    <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
-                                </View>
+                            <View style={styles.messageItem}>
+                                <Text style={styles.messageText}>消息的内容显示在这里。</Text>
+                                <Text style={styles.messageText}>2024. 10. 06</Text>
                             </View>
-                        </TouchableOpacity>
-                    <View style={styles.messageLine}></View>
-                    <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    <View style={styles.messageLine}></View>
-                    <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    <View style={styles.messageLine}></View>
-                    <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    <View style={styles.messageLine}></View>
-                    <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    <View style={styles.messageLine}></View>
-                    <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    <View style={styles.messageLine}></View>
-                    <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    <View style={styles.messageLine}></View>
-                    <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    <View style={styles.messageLine}></View>
-                    <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    <View style={styles.messageLine}></View>
-                    <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    <View style={styles.messageLine}></View>
-                    <TouchableOpacity style={styles.message}>
-                            <ImageButton size={42} iconSource={ICON_USER1} enabled={false} />
-                            <View style={styles.messageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>昵  称</Text>
-                                    <View style={styles.borderUnread}>
-                                        <Text style={styles.messageUnread}>3</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                    <Text style={styles.messageText}>2024. 10. 06</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
+                        </View>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.space}></View>
             </ScrollView>
