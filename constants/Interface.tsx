@@ -2,18 +2,18 @@ interface IPost {
     id: string;
     comments: number;
     content: string;
-    created_at: string;
+    uri: string;
+    user: IUser;
     user_id: number;
     type: boolean;
     title: string;
-    likes: number;
-    uri: string;
-    user: IUser;
-    favorited_users: string;
-    favorites: number;
-    published_at: string;
-    updated_at: string;
-    views: number
+    likes?: number;
+    favorited_users?: string;
+    favorites?: number;
+    views?: number
+    published_at?: string;
+    updated_at?: string;
+    created_at?: string;
 }
 
 interface ICategory {
@@ -23,19 +23,19 @@ interface ICategory {
 
 interface IUser {
     id: string;
-    username: string;
-    avatar: string;
-    birthday: string;
-    email: string;
-    email_verified_at: string;
-    last_seen_at: string;
-    location: string;
     name: string;
-    phone: string
-    created_at: string;
-    updated_at: string;
-    uuid: string;
-    categories: string[];
+    username: string;
+    avatar?: string;
+    birthday?: string;
+    email?: string;
+    email_verified_at?: string;
+    location: string;
+    uuid?: string;
+    categories?: string[];
+    phone?: string
+    last_seen_at?: string;
+    created_at?: string;
+    updated_at?: string;
 }
 
 interface IWithMedia {

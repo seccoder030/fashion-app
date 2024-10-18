@@ -1,8 +1,9 @@
-import { BOTTOM_TAPBAR_HEIGHT, ICON_AD, ICON_COMMENT, ICON_COMMENTPOST, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, IMAGE_BG7, SCREEN_WIDTH } from '@/constants/Config';
+import { BOTTOM_TAPBAR_HEIGHT, ICON_AD, ICON_COMMENT, ICON_COMMENTPOST, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, ICON_UP, IMAGE_BG7, SCREEN_WIDTH } from '@/constants/Config';
 import React, { useRef, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import EmojiPicker from 'rn-emoji-keyboard';
 import IconButton from './IconButton';
+import TextButton from './TextButton';
 
 const Detail = () => {
     const ch = {
@@ -65,139 +66,162 @@ const Detail = () => {
         setText(text + emoji.emoji);
     }
 
+    const toggleViewDetail = (index: number) => {
+        setViewDetail(prev => {
+            const newViewDetail = [...prev];
+            newViewDetail[index] = !newViewDetail[index];
+            return newViewDetail;
+        });
+    };
+
+    const handleReply = (index: number, id?: string) => {
+    };
+
+    const handleReplySubmit = () => {
+    };
+
     return (
         <View style={styles.container}>
-            <ScrollView ref={scrollViewRef} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-                <View style={styles.border}>
-                    <View style={styles.cardLayout}>
-                        <Pressable onPress={handleItem} key={item.id} style={styles.card}>
-                            <Image source={item.imageUrl} style={styles.cardImage} />
-                            <View style={styles.cardFooter}>
-                                <View style={styles.info}>
-                                    <View style={styles.infoItem}>
-                                        <IconButton size={15} iconSource={ICON_COMMENT} enabled={false} />
-                                        <Text style={styles.infoText}>{item.comments}</Text>
-                                    </View>
-                                    <View style={styles.infoItem}>
-                                        <IconButton size={15} iconSource={ICON_HEARTFILL} enabled={false} />
-                                        <Text style={styles.infoText}>{item.likes}</Text>
-                                    </View>
-                                    <View style={styles.infoItem}>
-                                        <IconButton size={15} iconSource={ICON_STAR} enabled={false} />
-                                        <Text style={styles.infoText}>{item.star}</Text>
+            <View>
+                <ScrollView ref={scrollViewRef} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+                    <View style={styles.border}>
+                        <View style={styles.cardLayout}>
+                            <Pressable onPress={handleItem} key={item.id} style={styles.card}>
+                                <Image source={item.imageUrl} style={styles.cardImage} />
+                                <View style={styles.cardFooter}>
+                                    <View style={styles.info}>
+                                        <View style={styles.infoItem}>
+                                            <IconButton size={15} iconSource={ICON_COMMENT} enabled={false} />
+                                            <Text style={styles.infoText}>{item.comments}</Text>
+                                        </View>
+                                        <View style={styles.infoItem}>
+                                            <IconButton size={15} iconSource={ICON_HEARTFILL} enabled={false} />
+                                            <Text style={styles.infoText}>{item.likes}</Text>
+                                        </View>
+                                        <View style={styles.infoItem}>
+                                            <IconButton size={15} iconSource={ICON_STAR} enabled={false} />
+                                            <Text style={styles.infoText}>{item.star}</Text>
+                                        </View>
                                     </View>
                                 </View>
-                            </View>
-                        </Pressable >
-                    </View>
-                    <View style={styles.contentLayout}>
-                        <Text style={styles.title}>在此输入您的标题。</Text>
-                        <Text style={styles.text}>在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。</Text>
-                        <View style={styles.inputBar}>
-                            <TextInput
-                                value={text}
-                                onChangeText={(value) => setText(value)}
-                                style={styles.input}
-                                placeholder="请输入您的意见。"
-                                placeholderTextColor="#888"
-                                multiline={true}
-                            />
-                            <View style={{ justifyContent: 'flex-end', paddingBottom: 5 }}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <IconButton onPress={handleAd} size={15} iconSource={ICON_AD} style={styles.inputBarIcon} />
-                                    <IconButton onPress={handleEmoji} size={15} iconSource={ICON_EMOJI} style={styles.inputBarIcon} />
+                            </Pressable >
+                        </View>
+                        <View style={styles.contentLayout}>
+                            <Text style={styles.title}>在此输入您的标题。</Text>
+                            <Text style={styles.text}>在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。</Text>
+                            <View style={styles.inputBar}>
+                                <TextInput
+                                    value={text}
+                                    onChangeText={(value) => setText(value)}
+                                    style={styles.input}
+                                    placeholder="请输入您的意见。"
+                                    placeholderTextColor="#888"
+                                    multiline={true}
+                                />
+                                <View style={{ justifyContent: 'flex-end', paddingBottom: 5 }}>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <IconButton onPress={handleAd} size={15} iconSource={ICON_AD} style={styles.inputBarIcon} />
+                                        <IconButton onPress={handleEmoji} size={15} iconSource={ICON_EMOJI} style={styles.inputBarIcon} />
+                                    </View>
                                 </View>
-                            </View>
-                            <View style={{ justifyContent: 'flex-end', paddingBottom: 5 }}>
-                                <IconButton onPress={handleCommentPost} size={15} iconSource={ICON_COMMENTPOST} style={styles.inputBarIcon} />
+                                <View style={{ justifyContent: 'flex-end', paddingBottom: 5 }}>
+                                    <IconButton onPress={handleCommentPost} size={15} iconSource={ICON_COMMENTPOST} style={styles.inputBarIcon} />
+                                </View>
                             </View>
                         </View>
-                    </View>
-                    {comments.map((item, index) => (
-                        <View key={index} style={index == comments.length - 1 ? styles.comment : [styles.comment, styles.commentLine]}>
-                            <Image
-                                source={{ uri: item.uri }}
-                                style={[
-                                    { width: 42, height: 42 },
-                                    styles.userImage
-                                ]}
-                            />
-                            <View style={styles.commentContent}>
-                                <View style={styles.commentHead}>
-                                    <View style={styles.commentInfo}>
-                                        <Text style={styles.commentTitle}>{item.name}</Text>
-                                        <Text style={styles.commentDate}>{item.date}</Text>
-                                    </View>
-                                    <View style={styles.commentFeedback}>
-                                        <View style={styles.commentFeedbackItem}>
-                                            <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                            <Text style={styles.commentFeedbackText}>{item.comments}</Text>
+                        {comments.map((item, index) => (
+                            <View key={index} style={index == comments.length - 1 ? styles.comment : [styles.comment, styles.commentLine]}>
+                                <Image
+                                    source={{ uri: item.uri }}
+                                    style={[
+                                        { width: 42, height: 42 },
+                                        styles.userImage
+                                    ]}
+                                />
+                                <View style={styles.commentContent}>
+                                    <View style={styles.commentHead}>
+                                        <View style={styles.commentInfo}>
+                                            <Text style={styles.commentTitle}>{item.name}</Text>
+                                            <Text style={styles.commentDate}>{item.date}</Text>
                                         </View>
-                                        <View style={styles.commentFeedbackItem}>
-                                            <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                            <Text style={styles.commentFeedbackText}>{item.likes}</Text>
-                                        </View>
-                                        <View style={styles.commentFeedbackItem}>
-                                            <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                            <Text style={styles.commentFeedbackText}>{item.star}</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                                <Text style={styles.commentText}>{item.post}</Text>
-                                {viewDetail[index] &&
-                                    item.reply.map((item, index) => (
-                                        <View key={index} style={[styles.reply]}>
-                                            <Image
-                                                source={{ uri: item.uri }}
-                                                style={[
-                                                    { width: 32, height: 32 },
-                                                    styles.userImage
-                                                ]}
-                                            />
-                                            <View style={styles.replyContent}>
-                                                <View style={styles.replyHead}>
-                                                    <View style={styles.replyInfo}>
-                                                        <Text style={styles.replyTitle}>{item.name}</Text>
-                                                    </View>
-                                                    <View style={styles.replyFeedback}>
-                                                        <View style={styles.replyFeedbackItem}>
-                                                            <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                                            <Text style={styles.replyFeedbackText}>{item.comments}</Text>
-                                                        </View>
-                                                        <View style={styles.replyFeedbackItem}>
-                                                            <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                            <Text style={styles.replyFeedbackText}>{item.likes}</Text>
-                                                        </View>
-                                                        <View style={styles.replyFeedbackItem}>
-                                                            <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                                            <Text style={styles.replyFeedbackText}>{item.star}</Text>
-                                                        </View>
-                                                    </View>
-                                                </View>
-                                                <Text style={styles.replyText}>{item.post}</Text>
+                                        <View style={styles.commentFeedback}>
+                                            <View style={styles.commentFeedbackItem}>
+                                                <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
+                                                <Text style={styles.commentFeedbackText}>{item.comments}</Text>
+                                            </View>
+                                            <View style={styles.commentFeedbackItem}>
+                                                <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
+                                                <Text style={styles.commentFeedbackText}>{item.likes}</Text>
+                                            </View>
+                                            <View style={styles.commentFeedbackItem}>
+                                                <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
+                                                <Text style={styles.commentFeedbackText}>{item.star}</Text>
                                             </View>
                                         </View>
-                                    ))
-                                }
-                                <View style={styles.detail}>
-                                    {viewDetail[index] ?
-                                        <TouchableOpacity onPress={() => { setViewDetail([...viewDetail.slice(0, index), false, ...viewDetail.slice(index + 1, viewDetail.length)]); console.log(index); console.log(viewDetail); }} style={styles.detailButton}>
-                                            <Text style={styles.detailText}>查看回复({item.reply.length})</Text>
-                                            <IconButton size={10} iconSource={ICON_DOWN} enabled={false} />
-                                        </TouchableOpacity> :
-                                        <TouchableOpacity onPress={() => { setViewDetail([...viewDetail.slice(0, index), false, ...viewDetail.slice(index + 1, viewDetail.length)]); console.log(index); console.log(viewDetail); }} style={styles.detailButton}>
-                                            <Text style={styles.detailText}>查看回复({item.reply.length})</Text>
-                                            <IconButton size={10} iconSource={ICON_DOWN} enabled={false} />
-                                        </TouchableOpacity>
+                                    </View>
+                                    <Text style={styles.commentText}>{item.post}</Text>
+                                    <View style={{ alignItems: 'flex-end', marginTop: 5, marginHorizontal: 10 }}>
+                                        <TextButton onPress={() => handleReply(index)} text='回   复' backgroundColor={'rgba(255, 255, 255, 0)'} textColor={'rgba(171, 171, 171, 1)'} fontSize={10} />
+                                    </View>
+                                    {viewDetail[index] &&
+                                        item.reply.map((item, replyindex) => (
+                                            <View key={replyindex} style={[styles.reply]}>
+                                                <Image
+                                                    source={{ uri: item.uri }}
+                                                    style={[
+                                                        { width: 32, height: 32 },
+                                                        styles.userImage
+                                                    ]}
+                                                />
+                                                <View style={styles.replyContent}>
+                                                    <View style={styles.replyHead}>
+                                                        <View style={styles.replyInfo}>
+                                                            <Text style={styles.replyTitle}>{item.name}</Text>
+                                                        </View>
+                                                        <View style={styles.replyFeedback}>
+                                                            <View style={styles.replyFeedbackItem}>
+                                                                <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
+                                                                <Text style={styles.replyFeedbackText}>{item.comments}</Text>
+                                                            </View>
+                                                            <View style={styles.replyFeedbackItem}>
+                                                                <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
+                                                                <Text style={styles.replyFeedbackText}>{item.likes}</Text>
+                                                            </View>
+                                                            <View style={styles.replyFeedbackItem}>
+                                                                <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
+                                                                <Text style={styles.replyFeedbackText}>{item.star}</Text>
+                                                            </View>
+                                                        </View>
+                                                    </View>
+                                                    <Text style={styles.replyText}>{item.post}</Text>
+                                                    <View style={{ alignItems: 'flex-end', marginTop: 5, marginHorizontal: 10 }}>
+                                                        <TextButton onPress={() => handleReply(index, item.id)} text='回   复' backgroundColor={'rgba(255, 255, 255, 0)'} textColor={'rgba(171, 171, 171, 1)'} fontSize={10} />
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        ))
                                     }
+                                    <View style={styles.detail}>
+                                        <TouchableOpacity onPress={() => toggleViewDetail(index)} style={styles.detailButton}>
+                                            {viewDetail[index] ?
+                                                <>
+                                                    <Text style={styles.detailText}>查看回复({item.reply.length})</Text>
+                                                    <IconButton size={10} iconSource={ICON_UP} enabled={false} />
+                                                </> :
+                                                <>
+                                                    <Text style={styles.detailText}>查看回复({item.reply.length})</Text>
+                                                    <IconButton size={10} iconSource={ICON_DOWN} enabled={false} />
+                                                </>
+                                            }
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    ))}
-                </View>
-                <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} translation={ch} />
-                <View style={{ margin: BOTTOM_TAPBAR_HEIGHT / 2 }}></View>
-            </ScrollView >
+                        ))}
+                    </View>
+                    <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} translation={ch} />
+                </ScrollView >
+            </View>
         </View >
     );
 };
@@ -212,6 +236,7 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         justifyContent: 'space-between',
+        paddingBottom: BOTTOM_TAPBAR_HEIGHT,
         zIndex: 50,
     },
     border: {
@@ -393,6 +418,39 @@ const styles = StyleSheet.create({
     replyText: {
         color: 'rgba(255, 255, 255, 1)',
         fontSize: 9,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: 'rgba(1, 1, 1, 0.9)',
+        borderRadius: 10,
+        padding: 20,
+        width: '80%',
+        alignItems: 'center',
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'white',
+        marginBottom: 15,
+    },
+    modalInput: {
+        width: '100%',
+        height: 100,
+        backgroundColor: 'white',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 15,
+        color: 'black',
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
     },
 });
 

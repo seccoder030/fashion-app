@@ -36,16 +36,6 @@ export default function CategoryScreen() {
         fetchData();
     }, []);
 
-    const handleNext = async () => {
-        if (categories && token) {
-            var data = Array();
-            checkedCategories.forEach(item => {
-                data.push(item);
-            });
-            updateUserCategories(data);
-        }
-    };
-
     if (categories === null) {
         return (
             <SafeAreaView style={styles.container}>
@@ -77,6 +67,16 @@ export default function CategoryScreen() {
             </SafeAreaView>
         );
     }
+
+    const handleNext = async () => {
+        if (categories && token) {
+            var data = Array();
+            checkedCategories.forEach(item => {
+                data.push(item);
+            });
+            updateUserCategories(data);
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>

@@ -37,18 +37,17 @@ const ImageList = () => {
         fetchData();
     }, []);
 
-    function handleItem() {
-        router.push('/DetailScreen');
-    }
-
-    if (medias && medias.length == 0) {
-        return <Blank />
-    }
-
-    if (medias === null) {
+    if (!medias) {
         return <Loading backgroundColor={'transparent'} />
     }
 
+    if (medias.length == 0) {
+        return <Blank />
+    }
+
+    function handleItem() {
+        router.push('/DetailScreen');
+    }
 
     return (
         <View style={styles.container}>

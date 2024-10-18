@@ -48,13 +48,14 @@ const MediaPage: React.FC<MediaPageProps> = ({
         fetchData();
     }, [token]);
 
-    if (medias && medias.length == 0) {
+    if (!medias) {
+        return <View style={{ backgroundColor: 'black' }} />;
+    }
+
+    if (medias.length === 0) {
         return <Blank />
     }
 
-    if (medias === null) {
-        return <View style={{ backgroundColor: 'black' }} />;
-    }
 
     const handlePageSelected = (e: any) => {
         const newPage = e.nativeEvent.position;

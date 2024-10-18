@@ -41,6 +41,16 @@ const EditCategory: React.FC<EditCategoryProps> = ({
         fetchData();
     }, []);
 
+    if (!categories) {
+        if (!visible) return null;
+        return <Loading backgroundColor={'transparent'} />
+    }
+
+    if (categories.length === 0) {
+        if (!visible) return null;
+        return <Blank />
+    }
+
     const handleSave = async () => {
         if (categories && token) {
             var data = Array();
@@ -50,16 +60,6 @@ const EditCategory: React.FC<EditCategoryProps> = ({
             updateUserCategories(data);
         }
     };
-
-    if (categories === null) {
-        if (!visible) return null;
-        return <Loading backgroundColor={'transparent'} />
-    }
-
-    if (categories.length === 0) {
-        if (!visible) return null;
-        return <Blank />
-    }
 
     return (
         <View style={[styles.contentCategories, { display: visible ? 'flex' : 'none' }]}>

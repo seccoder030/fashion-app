@@ -86,6 +86,8 @@ export function AuthProvider(props: React.PropsWithChildren) {
             setUser(res.user);
             return res.user;
         } catch (error) {
+            setToken(null);
+            setUser(null);
             console.error('Error updating user:', error);
             ToastAndroid.show('获取用户信息失败', ToastAndroid.SHORT);
             throw error;
@@ -122,23 +124,18 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
     useEffect(() => {
         const initializeAuth = async () => {
-            try {
-                console.log(segments);
-                const inAuthGroup = segments[0] === '(auth)';
-                if (!token && !inAuthGroup) {
-                    router.replace("/sign-in");
-                } else if (token && inAuthGroup) {
-                    const updatedUser = await updateUser();
-                    setIsLoading(false);
-                    if (updatedUser) routeUser(updatedUser);
-                }
-                if (!isTokenLoading && !token) {
-                    setIsLoading(false);
-                }
-            } catch (error) {
-                console.error('Error in initializeAuth:', error);
-                ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
+            const inAuthGroup = segments[0] === '(auth)';
+            console.log(token)
+
+            if (!token && !inAuthGroup) {
                 router.replace("/sign-in");
+            } else if (token && inAuthGroup) {
+                const updatedUser = await updateUser();
+                setIsLoading(false);
+                if (updatedUser) routeUser(updatedUser);
+            }
+            if (!isTokenLoading && !token) {
+                setIsLoading(false);
             }
         };
 
@@ -148,7 +145,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
     const signIn = async ({ email, password }: ISignInProps) => {
         try {
             const res = await axios.post<ISignInResponse>(`${process.env.EXPO_PUBLIC_API_URL}/login`, { email, password });
-            await setToken(res.data.token);
+            setToken(res.data.token);
             setUser(res.data.user);
             ToastAndroid.show('登录成功！', ToastAndroid.SHORT);
             routeUser(res.data.user);
