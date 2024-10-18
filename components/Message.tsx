@@ -1,142 +1,154 @@
-import { BOTTOM_TAPBAR_HEIGHT, ICON_AD, ICON_EMOJI, ICON_SEND, ICON_USER1, IMAGE_BG7, SCREEN_WIDTH } from '@/constants/Config';
-import { router } from 'expo-router';
-import React from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import IconButton from './IconButton';
+import { BOTTOM_TAPBAR_HEIGHT, ICON_AD, ICON_EMOJI, ICON_SEND, SCREEN_WIDTH } from '@/constants/Config';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from 'react-native';
 import EmojiPicker from 'rn-emoji-keyboard';
+import IconButton from './IconButton';
+import MessageBox from './MessageBox';
+import { useAuth } from '@/context/Authentication';
 
 const Message = () => {
-    const [isOpen, setIsOpen] = React.useState<boolean>(false);
-    const [text, setText] = React.useState<string>('');
+    const ch = {
+        recently_used: '最近使用',
+        smileys_emotion: '笑脸与情感',
+        people_body: '人物与身体',
+        animals_nature: '动物与自然',
+        food_drink: '食物与饮料',
+        travel_places: '旅行与地点',
+        activities: '活动',
+        objects: '物体',
+        symbols: '符号',
+        flags: '旗帜',
+        search: '搜索',
+    }
 
-    const item = { id: '1', imageUrl: IMAGE_BG7, caption: '在此输入您的标题。', likes: 578, messages: 1208, star: 1031 };
-    const messages = [
-        { id: '1', name: '姓  名', birthday: '2024. 10. 30', messages: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' }
+    const avatar = 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png';
+
+    const messagesProps: IMessage[] = [
+        { id: '1', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。\n请输入您的意见。\n请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', medias: [{ type: "image", uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png' }] },
+        { id: '2', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。\n请输入您的意见。\n请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', medias: [{ type: "image", uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png' }] },
+        { id: '3', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。' },
+        { id: '4', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。', replyMessage: { id: '3', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。' } },
+        { id: '5', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。', replyMessage: { id: '3', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。', medias: [{ type: "image", uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png' }] } },
+        { id: '6', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
+        { id: '7', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
+        { id: '8', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
+        { id: '9', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
+        { id: '10', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
+        { id: '11', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。' },
     ]
 
-    function handleItem() {
+    const { token, user } = useAuth();
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [text, setText] = useState<string>('');
+    const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
+    const [isSelectionMode, setIsSelectionMode] = useState<boolean>(false);
+    const [messages, setMessages] = useState<IMessage[]>(messagesProps);
+    const [date, setDate] = useState(new Date());
+
+    function handleSend() {
+        // Implement send logic here
+        if (user) {
+            const message: IMessage = {
+                id: messages[messages.length - 1].id.toString(),
+                userid: user.id,
+                date: new Date().toISOString(),
+                receive: false,
+                text: text
+            }
+            console.log(message.date)
+            setMessages([...messages, message]);
+        }
+    }
+
+    function handleAd() {
+        setText(text + '@');
     }
 
     function handleEmoji() {
-        if(isOpen) setIsOpen(false);
-        else setIsOpen(true);
+        setIsOpen(!isOpen);
     }
 
     function handlePick(emoji: any) {
         setText(text + emoji.emoji);
     }
 
+    function handlePress(id: string) {
+        if (isSelectionMode) {
+            toggleMessageSelection(id);
+        } else {
+            // Show pop-up menu for single message
+            showPopupMenu([id]);
+        }
+    }
+
+    function handleLongPress(id: string) {
+        console.log(id)
+        if (!isSelectionMode) {
+            setIsSelectionMode(true);
+            setSelectedMessages([id]);
+        } else {
+            toggleMessageSelection(id);
+        }
+    }
+
+    function toggleMessageSelection(id: string) {
+        setSelectedMessages(prevSelected => {
+            const newSelected = prevSelected.includes(id)
+                ? prevSelected.filter(messageId => messageId !== id)
+                : [...prevSelected, id];
+
+            if (newSelected.length === 0) {
+                setIsSelectionMode(false);
+            }
+
+            return newSelected;
+        });
+    }
+
+    function showPopupMenu(messageIds: string[]) {
+        Alert.alert(
+            "消息选项",
+            "请选择操作",
+            [
+                { text: "复制", onPress: () => handleCopy(messageIds) },
+                { text: "回复", onPress: () => handleReply(messageIds) },
+                { text: "删除", onPress: () => handleDelete(messageIds) },
+                { text: "取消", style: "cancel" }
+            ]
+        );
+    }
+
+    function handleCopy(messageIds: string[]) {
+        // Implement copy logic
+        console.log("Copying messages:", messageIds);
+    }
+
+    function handleReply(messageIds: string[]) {
+        // Implement reply logic
+        console.log("Replying to messages:", messageIds);
+    }
+
+    function handleDelete(messageIds: string[]) {
+        // Implement delete logic
+        console.log("Deleting messages:", messageIds);
+    }
+
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                 <View style={styles.messageContainer}>
+                    {messages.map((item, index) => (
+                        <MessageBox
+                            key={index}
+                            avatar={avatar}
+                            message={item}
+                            handlePress={() => handlePress(item.id)}
+                            handleLongPress={() => handleLongPress(item.id)}
+                            selected={selectedMessages.includes(item.id)}
+                        />
+                    ))}
                     <View style={styles.titleContainer}>
                         <Text style={styles.titleText}>今   天   8:00 AM</Text>
-                    </View>
-                    <View style={styles.receive}>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                        <View style={styles.receiveContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                    </View>
-                    <View style={styles.receive}>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                        <View style={styles.receiveContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                    </View>
-                    <View style={styles.send}>
-                        <View style={styles.sendContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                    </View>
-                    <View style={styles.receive}>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                        <View style={styles.receiveContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                    </View>
-                    <View style={styles.send}>
-                        <View style={styles.sendContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                    </View>
-                    <View style={styles.receive}>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                        <View style={styles.receiveContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                    </View>
-                    <View style={styles.send}>
-                        <View style={styles.sendContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                    </View>
-                    <View style={styles.receive}>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                        <View style={styles.receiveContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                    </View>
-                    <View style={styles.send}>
-                        <View style={styles.sendContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                    </View>
-                    <View style={styles.receive}>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                        <View style={styles.receiveContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                    </View>
-                    <View style={styles.send}>
-                        <View style={styles.sendContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                    </View>
-                    <View style={styles.receive}>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                        <View style={styles.receiveContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                    </View>
-                    <View style={styles.send}>
-                        <View style={styles.sendContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                    </View>
-                    <View style={styles.receive}>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
-                        <View style={styles.receiveContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                    </View>
-                    <View style={styles.send}>
-                        <View style={styles.sendContent}>
-                            <Text style={styles.text}>你好。</Text>
-                            <Text style={styles.text}>你怎么样?</Text>
-                        </View>
-                        <IconButton size={20} iconSource={ICON_USER1} enabled={false} style={styles.top} />
                     </View>
                 </View>
             </ScrollView>
@@ -148,19 +160,38 @@ const Message = () => {
                         style={styles.input}
                         placeholder="请输入您的意见。"
                         placeholderTextColor="#888"
+                        multiline={true}
                     />
-                    <IconButton size={15} iconSource={ICON_AD} style={styles.inputBarIcon} />
-                    <IconButton onPress={handleEmoji} size={15} iconSource={ICON_EMOJI} style={styles.inputBarIcon} />
+                    <View style={{ justifyContent: 'flex-end', paddingBottom: 5 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <IconButton onPress={handleAd} size={15} iconSource={ICON_AD} style={styles.inputBarIcon} />
+                            <IconButton onPress={handleEmoji} size={15} iconSource={ICON_EMOJI} style={styles.inputBarIcon} />
+                        </View>
+                    </View>
                 </View>
-                <IconButton size={20} iconSource={ICON_SEND} />
+                <View style={{ justifyContent: 'flex-end', paddingBottom: 7 }}>
+                    <IconButton onPress={handleSend} size={20} iconSource={ICON_SEND} />
+                </View>
             </View>
-            <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} />
-            <View style={styles.space}></View>
+            <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} translation={ch} />
+            <View style={{ margin: BOTTOM_TAPBAR_HEIGHT / 2 }}></View>
+            {isSelectionMode && (
+                <View style={styles.selectionBar}>
+                    <TouchableOpacity onPress={() => showPopupMenu(selectedMessages)}>
+                        <Text style={styles.selectionBarText}>选项</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.selectionBarText}>{selectedMessages.length} 已选择</Text>
+                    <TouchableOpacity onPress={() => {
+                        setSelectedMessages([]);
+                        setIsSelectionMode(false);
+                    }}>
+                        <Text style={styles.selectionBarText}>取消</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </View>
     );
 };
-
-
 
 const styles = StyleSheet.create({
     container: {
@@ -175,47 +206,12 @@ const styles = StyleSheet.create({
     messageContainer: {
         paddingVertical: 10
     },
-    space: {
-        margin: BOTTOM_TAPBAR_HEIGHT / 2
-    },
-    receive: {
-        flexDirection: 'row',
-        marginHorizontal: 10,
-        paddingVertical: 10
-    },
-    top: {
-        top: 0
-    },
-    receiveContent: {
-        justifyContent: 'center',
-        marginLeft: 10,
-        padding: 10,
-        backgroundColor: 'rgba(252, 252, 252, 1)',
-        borderRadius: 5
-    },
-    text: {
-        color: 'rgba(38, 38, 38, 1)',
-        fontSize: 10,
-    },
     titleContainer: {
         alignItems: 'center'
     },
     titleText: {
         color: 'rgba(255, 255, 255, 0.5)',
         fontSize: 12,
-    },
-    send: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        marginHorizontal: 10,
-        paddingVertical: 10
-    },
-    sendContent: {
-        justifyContent: 'center',
-        marginRight: 10,
-        padding: 10,
-        backgroundColor: 'rgba(193, 237, 255, 1)',
-        borderRadius: 5
     },
     inputBarContainer: {
         flexDirection: 'row',
@@ -225,9 +221,6 @@ const styles = StyleSheet.create({
     },
     inputBar: {
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: 25,
         width: SCREEN_WIDTH - 80,
         backgroundColor: 'rgba(236, 236, 236, 1)',
         borderRadius: 5,
@@ -238,9 +231,25 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 13,
         color: '#333',
+        maxHeight: 100
     },
     inputBarIcon: {
-        marginLeft: 5
+        marginLeft: 5,
+    },
+    selectionBar: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        padding: 10,
+        position: 'absolute',
+        bottom: BOTTOM_TAPBAR_HEIGHT,
+        left: 0,
+        right: 0,
+    },
+    selectionBarText: {
+        color: 'white',
+        fontSize: 16,
     }
 });
 

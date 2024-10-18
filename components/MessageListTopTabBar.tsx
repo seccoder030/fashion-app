@@ -1,19 +1,33 @@
-import { ICON_BACK, ICON_SEARCH, SEARCHDETAILTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ICON_CLOSE, ICON_SEARCH, SEARCHDETAILTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
+import { Feather } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import IconButton from './IconButton';
 
+
 const MessageListToptabBar = () => {
-  function handleTab() {
-  }
+  const [search, setSearch] = useState<boolean>(false);
 
   return (
     <View style={styles.container}>
-      <View style={styles.tabBar}>
-        <View style={styles.space}></View>
-        <Text style={styles.text}>留   言</Text>
-        <IconButton size={20} iconSource={ICON_SEARCH} />
-      </View>
+      {search ?
+        <View style={styles.tabBar}>
+          <View style={styles.searchBar}>
+            <Feather name="search" size={24} color='rgba(0, 0, 0, 0.7)' style={styles.icon} />
+            <TextInput
+              style={styles.input}
+              placeholder="検  索"
+              placeholderTextColor="#888"
+            />
+            <IconButton onPress={() => setSearch(false)} size={20} iconSource={ICON_CLOSE} iconStyle={{ opacity: 0.7 }} />
+          </View>
+        </View> :
+        <View style={styles.tabBar}>
+          <View style={{ width: 20 }}></View>
+          <Text style={styles.text}>留   言</Text>
+          <IconButton onPress={() => setSearch(true)} size={20} iconSource={ICON_SEARCH} />
+        </View>
+      }
     </View>
   );
 };
@@ -43,14 +57,27 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
   },
-  space: {
-    width: 20
-  },
   searchButton: {
     height: 0,
     position: 'absolute',
     right: 20,
     top: 18,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 30,
+    paddingHorizontal: 10,
+    marginHorizontal: 50,
+  },
+  icon: {
+    marginRight: 8,
+  },
+  input: {
+    flex: 1,
+    fontSize: 13,
+    color: '#333',
   },
 });
 

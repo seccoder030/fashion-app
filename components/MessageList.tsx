@@ -1,15 +1,25 @@
-import { BOTTOM_TAPBAR_HEIGHT, ICON_USER1, IMAGE_BG7, SCREEN_WIDTH } from '@/constants/Config';
+import { BOTTOM_TAPBAR_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import IconButton from './IconButton';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const MessageList = () => {
     const router = useRouter();
 
-    const item = { id: '1', imageUrl: IMAGE_BG7, caption: '在此输入您的标题。', likes: 578, messages: 1208, star: 1031 };
-    const messages = [
-        { id: '1', name: '姓  名', birthday: '2024. 10. 30', messages: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' }
+    const userlist = [
+        { id: '1', name: '姓  名', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 3, message: '请输入您的意见请输入您的意见请输入您的请...' },
+        { id: '2', name: '姓  名2', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 2, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 0, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 0, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 0, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 0, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 0, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 0, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 0, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 0, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 0, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 0, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', unread: 0, message: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
     ]
 
     function handleItem() {
@@ -19,24 +29,34 @@ const MessageList = () => {
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-                <View style={styles.border}>
-                    <TouchableOpacity onPress={handleItem} style={styles.message}>
-                        <IconButton size={42} iconSource={ICON_USER1} enabled={false} />
-                        <View style={styles.messageContent}>
-                            <View style={styles.messageItem}>
-                                <Text style={styles.messageTitle}>昵  称</Text>
-                                <View style={styles.borderUnread}>
-                                    <Text style={styles.messageUnread}>3</Text>
+                {userlist.map((item, index) => (
+                    <View key={index} style={styles.border}>
+                        <TouchableOpacity onPress={handleItem} style={styles.message}>
+                            <Image
+                                source={{ uri: item.uri }}
+                                style={[
+                                    { width: 42, height: 42 },
+                                    styles.userImage
+                                ]}
+                            />
+                            <View style={styles.messageContent}>
+                                <View style={styles.messageItem}>
+                                    <Text style={styles.messageTitle}>{item.name}</Text>
+                                    {item.unread > 0 &&
+                                        <View style={styles.borderUnread}>
+                                            <Text style={styles.messageUnread}>{item.unread}</Text>
+                                        </View>
+                                    }
+                                </View>
+                                <View style={styles.messageItem}>
+                                    <Text style={styles.messageText}>{item.message.length > 20 ? item.message.slice(0, 20) + '...' : item.message}</Text>
+                                    <Text style={styles.messageDate}>{item.date}</Text>
                                 </View>
                             </View>
-                            <View style={styles.messageItem}>
-                                <Text style={styles.messageText}>消息的内容显示在这里。</Text>
-                                <Text style={styles.messageText}>2024. 10. 06</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.space}></View>
+                        </TouchableOpacity>
+                    </View>
+                ))}
+                <View style={{ margin: BOTTOM_TAPBAR_HEIGHT / 2 + 10 }} />
             </ScrollView>
         </View>
     );
@@ -48,7 +68,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginHorizontal: 20,
-        // marginVertical: 10,
     },
     contentContainer: {
         justifyContent: 'space-between',
@@ -60,8 +79,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(1, 1, 1, 0.15)',
         padding: 10
     },
-    space: {
-        margin: BOTTOM_TAPBAR_HEIGHT / 2 + 10
+    userImage: {
+        borderRadius: 42,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.7)',
     },
     message: {
         marginHorizontal: 10,
@@ -83,6 +104,10 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     messageText: {
+        color: 'rgba(181, 181, 181, 1)',
+        fontSize: 10,
+    },
+    messageDate: {
         color: 'rgba(181, 181, 181, 1)',
         fontSize: 10,
     },

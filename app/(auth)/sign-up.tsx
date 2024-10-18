@@ -1,11 +1,28 @@
 import IconButton from '@/components/IconButton';
 import TextButton from '@/components/TextButton';
-import { BACKGROUND_GRADIENT_COLOR, ICON_EMAIL, ICON_EYE, ICON_TIKTOK, ICON_USER, ICON_USERLOCK, ICON_WECHAT, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
+import { BACKGROUND_GRADIENT_COLOR, ICON_EMAIL, ICON_EYE, ICON_EYEOFF, ICON_TIKTOK, ICON_USER, ICON_USERLOCK, ICON_WECHAT, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
+import { useAuth } from "@/context/Authentication";
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
-import { SafeAreaView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function SignUp() {
+    const { signUp } = useAuth();
+    const [email, setEmail] = useState<string>('');
+    const [name, setName] = useState<string>('');
+    const [username, setUserName] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+
+    async function handleSignUp() {
+        await signUp({ email, name, username, password });
+    }
+
+    function handleWithWechat() { }
+
+    function handleWithTiktok() { }
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" />
@@ -21,11 +38,11 @@ export default function SignUp() {
                             <Text style={styles.title}>登       录</Text>
                         </View>
                         <View style={styles.authButtonContainer}>
-                            <TouchableOpacity style={styles.authButton}>
+                            <TouchableOpacity onPress={handleWithWechat} style={styles.authButton}>
                                 <IconButton size={30} iconSource={ICON_WECHAT} enabled={false} />
                                 <Text style={styles.authButtonText}>继 续 使 用 微 信</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.authButton}>
+                            <TouchableOpacity onPress={handleWithTiktok} style={styles.authButton}>
                                 <IconButton size={30} iconSource={ICON_TIKTOK} enabled={false} />
                                 <Text style={styles.authButtonText}>继 续 使 用 抖 音</Text>
                             </TouchableOpacity>
@@ -37,6 +54,8 @@ export default function SignUp() {
                             <View style={styles.infoTextContainer}>
                                 <IconButton size={30} iconSource={ICON_EMAIL} enabled={false} iconStyle={styles.icon} />
                                 <TextInput
+                                    value={email}
+                                    onChangeText={(value) => setEmail(value)}
                                     style={styles.infoText}
                                     placeholder="email@email.com"
                                     placeholderTextColor="rgba(255, 255, 255, 0.5)"
@@ -50,6 +69,8 @@ export default function SignUp() {
                             <View style={styles.infoTextContainer}>
                                 <IconButton size={30} iconSource={ICON_USER} enabled={false} iconStyle={styles.icon} />
                                 <TextInput
+                                    value={name}
+                                    onChangeText={(value) => setName(value)}
                                     style={styles.infoText}
                                     placeholder="姓        名"
                                     placeholderTextColor="rgba(255, 255, 255, 0.5)"
@@ -63,6 +84,8 @@ export default function SignUp() {
                             <View style={styles.infoTextContainer}>
                                 <IconButton size={30} iconSource={ICON_USER} enabled={false} iconStyle={styles.icon} />
                                 <TextInput
+                                    value={username}
+                                    onChangeText={(value) => setUserName(value)}
                                     style={styles.infoText}
                                     placeholder="用户名称"
                                     placeholderTextColor="rgba(255, 255, 255, 0.5)"
@@ -70,27 +93,48 @@ export default function SignUp() {
                             </View>
                         </View>
                     </View>
-                    <View style={styles.info}>
-                        <View style={styles.infoItem}>
-                            <Text style={styles.infoTitle}>密        码:</Text>
-                            <View style={styles.infoTextContainer}>
-                                <IconButton size={30} iconSource={ICON_USERLOCK} enabled={false} iconStyle={styles.icon} />
-                                <TextInput
-                                    style={styles.passwordText}
-                                    placeholder="....................."
-                                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                    secureTextEntry
-                                />
-                                <IconButton size={30} iconSource={ICON_EYE} iconStyle={styles.icon} />
+                    {
+                        passwordVisible ?
+                            <View style={styles.info}>
+                                <View style={styles.infoItem}>
+                                    <Text style={styles.infoTitle}>密        码:</Text>
+                                    <View style={styles.infoTextContainer}>
+                                        <IconButton size={30} iconSource={ICON_USERLOCK} enabled={false} iconStyle={styles.icon} />
+                                        <TextInput
+                                            value={password}
+                                            onChangeText={(value) => setPassword(value)}
+                                            style={styles.passwordText}
+                                            placeholder="....................."
+                                            placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                        />
+                                        <IconButton onPress={() => setPasswordVisible(false)} size={30} iconSource={ICON_EYEOFF} iconStyle={styles.icon} />
+                                    </View>
+                                </View>
+                            </View> :
+                            <View style={styles.info}>
+                                <View style={styles.infoItem}>
+                                    <Text style={styles.infoTitle}>密        码:</Text>
+                                    <View style={styles.infoTextContainer}>
+                                        <IconButton size={30} iconSource={ICON_USERLOCK} enabled={false} iconStyle={styles.icon} />
+                                        <TextInput
+                                            value={password}
+                                            onChangeText={(value) => setPassword(value)}
+                                            style={styles.passwordText}
+                                            placeholder="....................."
+                                            placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                            secureTextEntry
+                                        />
+                                        <IconButton onPress={() => setPasswordVisible(true)} size={30} iconSource={ICON_EYE} iconStyle={styles.icon} />
+                                    </View>
+                                </View>
                             </View>
-                        </View>
-                    </View>
+                    }
                     <View style={styles.other}>
-                        <Text style={styles.otherText}>您还没有账户吗？</Text>
-                        <TextButton text='立即注册' backgroundColor={'rgba(255, 255, 255, 0)'} textColor={'rgba(0, 255, 255, 1)'} fontSize={15} />
+                        <Text style={styles.otherText}>已有账户？</Text>
+                        <TextButton onPress={() => router.replace('/sign-in')} text='登录' backgroundColor={'rgba(255, 255, 255, 0)'} textColor={'rgba(0, 255, 255, 1)'} fontSize={15} />
                     </View>
                     <View style={styles.registerButton}>
-                        <TextButton text='报       名' backgroundColor={'rgba(255, 0, 153, 1)'} borderRadius={10} paddingHorizontal={35} paddingVertical={5} fontSize={25} />
+                        <TextButton onPress={handleSignUp} text='报       名' backgroundColor={'rgba(255, 0, 153, 1)'} borderRadius={10} paddingHorizontal={35} paddingVertical={5} fontSize={25} />
                     </View>
                 </View>
             </LinearGradient>

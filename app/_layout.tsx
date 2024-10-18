@@ -1,41 +1,64 @@
+import { AuthProvider, useAuth } from "@/context/Authentication";
+import BackHandlerProvider from '@/context/BackHandlerProvider';
 import { useFonts } from 'expo-font';
-import { Stack, router } from 'expo-router';
+import * as Notifications from 'expo-notifications';
+import { router, Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { MenuProvider } from 'react-native-popup-menu';
 import 'react-native-reanimated';
-
-export {
-  ErrorBoundary,
-} from "expo-router";
-
-export const unstable_settings = {
-  initialRouteName: "sign-in",
-};
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+async function registerForPushNotificationsAsync() {
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+  if (existingStatus !== 'granted') {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+  if (finalStatus !== 'granted') {
+    alert('Failed to get push token for push notification!');
+    return;
+  }
+  const token = (await Notifications.getExpoPushTokenAsync()).data;
+  console.log(token);
+  // Send this token to your server
+}
+
 export default function RootLayout() {
+  const { isLoading } = useAuth();
+
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require('@/assets/fonts/SpaceMono-Regular.ttf'),
   });
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded && !isLoading) {
       SplashScreen.hideAsync();
-      router.replace('/HomeScreen')
     }
-  }, [loaded]);
+  }, [loaded, isLoading]);
 
-  if (!loaded) {
+  if (!loaded && isLoading) {
     return null;
   }
 
   return (
-      <Stack>
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(main)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+    <AuthProvider>
+      <BackHandlerProvider>
+        <MenuProvider>
+          <Slot />
+        </MenuProvider>
+      </BackHandlerProvider>
+    </AuthProvider>
   );
 }

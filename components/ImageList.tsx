@@ -1,8 +1,14 @@
-import { BOTTOM_TAPBAR_HEIGHT, ICON_COMMENT, ICON_HEARTFILL, IMAGE_BG, IMAGE_BG10, IMAGE_BG2, IMAGE_BG3, IMAGE_BG4, IMAGE_BG5, IMAGE_BG6, IMAGE_BG7, IMAGE_BG8, IMAGE_BG9 } from '@/constants/Config';
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { FlatList, Image, ImageSourcePropType, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BOTTOM_TAPBAR_HEIGHT, ICON_COMMENT, ICON_HEARTFILL, SCREEN_HEIGHT, SCREEN_WIDTH, SEARCHTOP_TAPBAR_HEIGHT } from '@/constants/Config';
+import axios from 'axios';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ImageSourcePropType, Pressable, ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import IconButton from './IconButton';
+import Loading from './Loading';
+import Media from './Media';
+import Blank from './Blank';
+import Request from '@/utils/request';
+import { useAuth } from '@/context/Authentication';
 
 interface Item {
     id: string;
@@ -12,51 +18,61 @@ interface Item {
     comments: number;
 }
 
-
 const ImageList = () => {
-    const router = useRouter();
+    const { token } = useAuth();
+    const [medias, setMedias] = useState<IPost[] | null>(null);
 
-    const feedItems: Item[] = [
-        { id: '1', imageUrl: IMAGE_BG2, caption: '在此输入您的标题。', likes: 878, comments: 1208 },
-        { id: '2', imageUrl: IMAGE_BG3, caption: '在此输入您的标题。', likes: 351, comments: 1335 },
-        { id: '3', imageUrl: IMAGE_BG4, caption: '在此输入您的标题。', likes: 242, comments: 4231 },
-        { id: '4', imageUrl: IMAGE_BG5, caption: '在此输入您的标题。', likes: 313, comments: 3131 },
-        { id: '5', imageUrl: IMAGE_BG6, caption: '在此输入您的标题。', likes: 878, comments: 1208 },
-        { id: '6', imageUrl: IMAGE_BG7, caption: '在此输入您的标题。', likes: 351, comments: 1335 },
-        { id: '7', imageUrl: IMAGE_BG8, caption: '在此输入您的标题。', likes: 242, comments: 4231 },
-        { id: '8', imageUrl: IMAGE_BG9, caption: '在此输入您的标题。', likes: 313, comments: 3131 },
-        { id: '9', imageUrl: IMAGE_BG10, caption: '在此输入您的标题。', likes: 878, comments: 1208 },
-        { id: '10', imageUrl: IMAGE_BG, caption: '在此输入您的标题。', likes: 351, comments: 1335 },
-        // Add more items as needed
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (token) {
+                    Request.setAuthorizationToken(token);
+                    const res = await Request.Get('/post/get');
+                    setMedias(res.posts);
+                }
+            } catch (error) {
+                ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
+            }
+        }
+        fetchData();
+    }, []);
 
     function handleItem() {
-        router.push('/(main)/SearchDetailScreen');
+        router.push('/DetailScreen');
     }
+
+    if (medias && medias.length == 0) {
+        return <Blank />
+    }
+
+    if (medias === null) {
+        return <Loading backgroundColor={'transparent'} />
+    }
+
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-                {feedItems.map((item) => (
-                    <Pressable onPress={handleItem} key={item.id} style={styles.card}>
-                        <Image source={item.imageUrl} style={styles.cardImage} />
+                {medias.map((item, index) => (
+                    <Pressable onPress={handleItem} key={index} style={styles.card}>
+                        <View style={styles.cardImage}>
+                            <Media type={item.type} source={{ uri: item.uri }} backgroundColor={'transparent'} play={true} resizeMode={1} />
+                        </View>
                         <View style={styles.cardFooter}>
-                            <Text style={styles.text}>{item.caption}</Text>
+                            <Text style={styles.text}>{item.title.length > 20 ? item.title.slice(0, 20) + '...' : item.title}</Text>
                             <View style={styles.info}>
                                 <View style={styles.infoItem}>
                                     <IconButton size={15} iconSource={ICON_COMMENT} enabled={false} />
-                                    <Text style={styles.infoText}>{item.comments}</Text>
+                                    <Text style={styles.infoText}>{item.comments ? (item.comments > 1000 ? `${Math.floor(item.comments / 100) / 10}K` : `${item.comments}`) : '0'}</Text>
                                 </View>
                                 <View style={styles.infoItem}>
                                     <IconButton size={15} iconSource={ICON_HEARTFILL} enabled={false} />
-                                    <Text style={styles.infoText}>{item.likes}</Text>
+                                    <Text style={styles.infoText}>{item.likes ? (item.likes > 1000 ? `${Math.floor(item.likes / 100) / 10}K` : `${item.likes}`) : '0'}</Text>
                                 </View>
                             </View>
                         </View>
                     </Pressable >
                 ))}
-                <View style={styles.space}></View>
-                <View style={styles.space}></View>
             </ScrollView>
         </View>
     );
@@ -66,17 +82,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginHorizontal: 10,
+        height: SCREEN_HEIGHT - SEARCHTOP_TAPBAR_HEIGHT
     },
     contentContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        padding: 10,
-        zIndex: 50
-    },
-    space: {
-        width: '100%',
-        height: BOTTOM_TAPBAR_HEIGHT,
+        paddingHorizontal: 10,
+        paddingBottom: 500,
+        // marginBottom: BOTTOM_TAPBAR_HEIGHT,
+        // zIndex: 50
     },
     card: {
         width: '48%',

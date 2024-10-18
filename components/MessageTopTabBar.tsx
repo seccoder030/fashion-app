@@ -1,18 +1,23 @@
-import { ICON_BACK, ICON_MORE, ICON_USER2, SEARCHDETAILTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import IconButton from './IconButton';
+import { ICON_BACK, ICON_DELETE, ICON_MORE, ICON_SELECTALL, ICON_SELECTALLOFF, SEARCHDETAILTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
 import { router } from 'expo-router';
+import React from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import IconButton from './IconButton';
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from 'react-native-popup-menu';
 
 const SearchDetailToptabBar = () => {
+  const uri = 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png';
+
   function handleBack() {
     router.back();
   }
 
   function handleMore() {
-  }
-
-  function handleTab() {
   }
 
   return (
@@ -21,11 +26,42 @@ const SearchDetailToptabBar = () => {
         <View style={styles.leftView}>
           <IconButton onPress={handleBack} size={25} iconSource={ICON_BACK} />
           <View style={styles.user}>
-            <IconButton onPress={handleTab} size={42} iconSource={ICON_USER2} enabled={false} style={styles.userIcon} />
+            <Image
+              source={{ uri: uri }}
+              style={[
+                { width: 42, height: 42 },
+                styles.userImage
+              ]}
+            />
             <Text style={styles.userName}>昵   称</Text>
+            <Text style={styles.text}>(正在打字...)</Text>
           </View>
         </View>
-        <IconButton onPress={handleMore} size={20} iconSource={ICON_MORE} />
+        <Menu>
+          <MenuTrigger>
+            <Image source={ICON_MORE} style={{ width: 20, height: 20 }} />
+          </MenuTrigger>
+          <MenuOptions optionsContainerStyle={{ borderRadius: 5 }}>
+            <MenuOption onSelect={() => alert(`select all`)} >
+              <View style={{ flexDirection: 'row', height: 30, alignItems: 'center' }}>
+                <Image source={ICON_SELECTALL} style={{ width: 20, height: 20, marginRight: 10, opacity: 0.9 }} />
+                <Text>Select All</Text>
+              </View>
+            </MenuOption>
+            <MenuOption onSelect={() => alert(`deselect all`)} disabled={true} >
+              <View style={{ flexDirection: 'row', height: 30, alignItems: 'center', opacity: 0.3 }}>
+                <Image source={ICON_SELECTALLOFF} style={{ width: 20, height: 20, marginRight: 10, opacity: 0.9 }} />
+                <Text>Deselect All</Text>
+              </View>
+            </MenuOption>
+            <MenuOption onSelect={() => alert(`delete`)} disabled={true} >
+              <View style={{ flexDirection: 'row', height: 30, alignItems: 'center', opacity: 0.3 }}>
+                <Image source={ICON_DELETE} style={{ width: 20, height: 20, marginRight: 10, opacity: 0.9 }} />
+                <Text>Deselect All</Text>
+              </View>
+            </MenuOption>
+          </MenuOptions>
+        </Menu>
       </View>
     </View>
   );
@@ -59,12 +95,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  userIcon: {
-    marginLeft: 10
+  userImage: {
+    marginLeft: 10,
+    borderRadius: 42,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.7)',
   },
   userName: {
     color: 'white',
     fontSize: 13,
+    marginLeft: 10
+  },
+  text: {
+    color: 'white',
+    fontSize: 10,
     marginLeft: 10
   }
 });

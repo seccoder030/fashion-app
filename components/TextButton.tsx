@@ -1,16 +1,15 @@
 import React from 'react';
 import {
-    TouchableOpacity,
-    Text,
-    StyleSheet,
-    TouchableOpacityProps,
-    View,
     ColorValue,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableOpacityProps
 } from 'react-native';
 
 interface TextButtonProps extends TouchableOpacityProps {
     text: string;
-    backgroundColor: ColorValue;
+    backgroundColor?: ColorValue;
     textColor?: ColorValue;
     borderRadius?: number;
     paddingHorizontal?: number;
@@ -21,7 +20,7 @@ interface TextButtonProps extends TouchableOpacityProps {
 const TextButton: React.FC<TextButtonProps> = ({
     onPress,
     text,
-    backgroundColor,
+    backgroundColor = 'rgba(255, 255, 255, 0)',
     textColor = 'rgba(255, 255, 255, 1)',
     borderRadius = 0,
     paddingHorizontal = 0,
