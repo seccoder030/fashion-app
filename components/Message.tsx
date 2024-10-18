@@ -1,10 +1,11 @@
 import { BOTTOM_TAPBAR_HEIGHT, ICON_AD, ICON_EMOJI, ICON_SEND, SCREEN_WIDTH } from '@/constants/Config';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from 'react-native';
 import EmojiPicker from 'rn-emoji-keyboard';
 import IconButton from './IconButton';
 import MessageBox from './MessageBox';
 import { useAuth } from '@/context/Authentication';
+import { PinchGestureHandler, State } from 'react-native-gesture-handler';
 
 const Message = () => {
     const ch = {
@@ -24,17 +25,17 @@ const Message = () => {
     const avatar = 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png';
 
     const messagesProps: IMessage[] = [
-        { id: '1', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。\n请输入您的意见。\n请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', medias: [{ type: "image", uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png' }] },
-        { id: '2', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。\n请输入您的意见。\n请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', medias: [{ type: "image", uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png' }] },
-        { id: '3', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。' },
+        { id: '1', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。\n请输入您的意见。\n请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', medias: [{ type: "image", uri: 'http://192.168.143.79:8000/uploads/6630f4ec425715657a558476_Image (3).webp' }] },
+        { id: '2', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。\n请输入您的意见。\n请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', medias: [{ type: "video", uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' }] },
+        { id: '3', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。', medias: [{ type: "video", uri: 'http://192.168.143.79:8000/uploads/1 (1).mp4' }] },
         { id: '4', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。', replyMessage: { id: '3', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。' } },
         { id: '5', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。', replyMessage: { id: '3', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。', medias: [{ type: "image", uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png' }] } },
-        { id: '6', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
+        { id: '6', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
         { id: '7', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
         { id: '8', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
-        { id: '9', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
-        { id: '10', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
-        { id: '11', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。' },
+        { id: '9', userid: '姓  名', date: '2024-10-14T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
+        { id: '10', userid: '姓  名', date: '2024-10-14T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
+        { id: '11', userid: '姓  名', date: '2024-10-18T13:15:30.000Z', receive: true, text: '请输入您的意见。' },
     ]
 
     const { token, user } = useAuth();
@@ -42,21 +43,63 @@ const Message = () => {
     const [text, setText] = useState<string>('');
     const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
     const [isSelectionMode, setIsSelectionMode] = useState<boolean>(false);
-    const [messages, setMessages] = useState<IMessage[]>(messagesProps);
-    const [date, setDate] = useState(new Date());
+    const [messages, setMessages] = useState<IMessage[]>([]);
+    const [fontSize, setFontSize] = useState(10);
+    const scrollViewRef = useRef<ScrollView>(null);
+    const [scale, setScale] = useState(1);
+    const baseScale = useRef(1);
+
+    const onPinchGestureEvent = (event: any) => {
+        const newScale = baseScale.current * event.nativeEvent.scale;
+        setScale(newScale);
+        const newFontSize = Math.min(Math.max(10 * newScale, 10), 20);
+        setFontSize(newFontSize);
+    };
+
+    const onPinchHandlerStateChange = (event: any) => {
+        if (event.nativeEvent.oldState === State.ACTIVE) {
+            baseScale.current *= event.nativeEvent.scale;
+            setScale(baseScale.current);
+        }
+    };
+
+    useEffect(() => {
+        preProcess(messagesProps)
+    }, [])
+
+    const preProcess = (items: IMessage[]) => {
+        if (items.length > 0) {
+            var arr = Array();
+            var date = new Date(items[0].date);
+            arr.push({ id: null, date: items[0].date });
+            arr.push(items[0]);
+            for (let i = 1; i < items.length; i++) {
+
+                if (date.toDateString() === new Date(items[i].date).toDateString()) {
+                    arr.push(items[i]);
+                } else {
+                    arr.push({ id: null, date: items[i].date });
+                    date = new Date(items[i].date);
+                    arr.push(items[i]);
+                }
+            }
+            setMessages(arr);
+        }
+    }
 
     function handleSend() {
         // Implement send logic here
         if (user) {
             const message: IMessage = {
-                id: messages[messages.length - 1].id.toString(),
+                id: messages.length === 0 ? '0' : messages[messages.length - 1].id,
                 userid: user.id,
                 date: new Date().toISOString(),
                 receive: false,
                 text: text
             }
-            console.log(message.date)
             setMessages([...messages, message]);
+            scrollViewRef.current?.scrollToEnd();
+            setText('');
         }
     }
 
@@ -81,8 +124,14 @@ const Message = () => {
         }
     }
 
+    function handleReplyPress(id: string) {
+        if (isSelectionMode) {
+            toggleMessageSelection(id);
+        } else {
+        }
+    }
+
     function handleLongPress(id: string) {
-        console.log(id)
         if (!isSelectionMode) {
             setIsSelectionMode(true);
             setSelectedMessages([id]);
@@ -135,29 +184,37 @@ const Message = () => {
 
     return (
         <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-                <View style={styles.messageContainer}>
-                    {messages.map((item, index) => (
-                        <MessageBox
-                            key={index}
-                            avatar={avatar}
-                            message={item}
-                            handlePress={() => handlePress(item.id)}
-                            handleLongPress={() => handleLongPress(item.id)}
-                            selected={selectedMessages.includes(item.id)}
-                        />
-                    ))}
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.titleText}>今   天   8:00 AM</Text>
+            <PinchGestureHandler
+                onGestureEvent={onPinchGestureEvent}
+                onHandlerStateChange={onPinchHandlerStateChange}
+            >
+                <ScrollView ref={scrollViewRef} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+                    <View style={styles.messageContainer}>
+                        {messages.map((item, index) => (
+                            item.id ?
+                                <MessageBox
+                                    key={index}
+                                    avatar={avatar}
+                                    message={item}
+                                    fontSize={fontSize}
+                                    handlePress={() => item.id && handlePress(item.id)}
+                                    handleLongPress={() => item.id && handleLongPress(item.id)}
+                                    handleReplyPress={() => item.id && handleReplyPress(item.id)}
+                                    selected={selectedMessages.includes(item.id)}
+                                /> :
+                                <View key={index} style={styles.titleContainer}>
+                                    <Text style={[styles.titleText, { fontSize: fontSize + 2 }]}>{new Date(item.date).toDateString() === new Date().toDateString() ? '今   天' : new Date(item.date).toDateString()}</Text>
+                                </View>
+                        ))}
                     </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+            </PinchGestureHandler>
             <View style={styles.inputBarContainer}>
                 <View style={styles.inputBar}>
                     <TextInput
                         value={text}
                         onChangeText={(value) => setText(value)}
-                        style={styles.input}
+                        style={[styles.input, { fontSize: fontSize }]}
                         placeholder="请输入您的意见。"
                         placeholderTextColor="#888"
                         multiline={true}
@@ -211,7 +268,6 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: 'rgba(255, 255, 255, 0.5)',
-        fontSize: 12,
     },
     inputBarContainer: {
         flexDirection: 'row',
@@ -229,7 +285,6 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        fontSize: 13,
         color: '#333',
         maxHeight: 100
     },

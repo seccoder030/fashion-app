@@ -60,7 +60,6 @@ export default function CameraScreen() {
         });
         console.log('Media saved to:', customUri);
         setMediaUri(customUri);
-        console.log(uri);
     }
 
     async function takePicture() {

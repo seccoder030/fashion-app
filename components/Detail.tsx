@@ -1,5 +1,5 @@
 import { BOTTOM_TAPBAR_HEIGHT, ICON_AD, ICON_COMMENT, ICON_COMMENTPOST, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, IMAGE_BG7, SCREEN_WIDTH } from '@/constants/Config';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import EmojiPicker from 'rn-emoji-keyboard';
 import IconButton from './IconButton';
@@ -44,6 +44,7 @@ const Detail = () => {
     const [viewDetail, setViewDetail] = useState<boolean[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [text, setText] = useState<string>('');
+    const scrollViewRef = useRef<ScrollView>(null);
 
     function handleItem() {
     }
@@ -66,7 +67,7 @@ const Detail = () => {
 
     return (
         <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+            <ScrollView ref={scrollViewRef} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                 <View style={styles.border}>
                     <View style={styles.cardLayout}>
                         <Pressable onPress={handleItem} key={item.id} style={styles.card}>

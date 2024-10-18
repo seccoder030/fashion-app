@@ -44,11 +44,11 @@ interface IWithMedia {
 }
 
 interface IMessage {
-    id: string;
-    userid: string;
+    id: string | null;
+    userid?: string;
     date: string;
-    receive: boolean;
-    text: string;
+    receive?: boolean;
+    text?: string;
     replyMessage?: IMessage;
     medias?: IWithMedia[];
 }

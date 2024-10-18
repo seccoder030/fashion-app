@@ -23,10 +23,10 @@ const MediaPage: React.FC<MediaPageProps> = ({
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                if (token) {
+            if (token) {
+                Request.setAuthorizationToken(token);
+                try {
                     if (tab === tabs[0]) {
-                        Request.setAuthorizationToken(token);
                         const res = await Request.Get('/post/get');
                         setMedias(res.posts);
                     }
@@ -40,18 +40,13 @@ const MediaPage: React.FC<MediaPageProps> = ({
                         const res = await Request.Get('/post/get');
                         setMedias(res.posts);
                     }
+                } catch (error) {
+                    ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
                 }
-            } catch (error) {
-                ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
             }
         }
         fetchData();
-    }, []);
-
-    const handlePageSelected = (e: any) => {
-        const newPage = e.nativeEvent.position;
-        setCurrentPage(newPage);
-    };
+    }, [token]);
 
     if (medias && medias.length == 0) {
         return <Blank />
@@ -60,6 +55,11 @@ const MediaPage: React.FC<MediaPageProps> = ({
     if (medias === null) {
         return <View style={{ backgroundColor: 'black' }} />;
     }
+
+    const handlePageSelected = (e: any) => {
+        const newPage = e.nativeEvent.position;
+        setCurrentPage(newPage);
+    };
 
     return (
         <PagerView onPageSelected={handlePageSelected} style={styles.view} initialPage={currentPage} orientation='vertical'>

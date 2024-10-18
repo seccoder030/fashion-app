@@ -1,5 +1,6 @@
+import { SCREEN_WIDTH } from '@/constants/Config';
 import { ResizeMode, Video } from 'expo-av';
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Image,
     Pressable,
@@ -11,18 +12,37 @@ import {
 interface MessageBoxProps {
     avatar: string;
     message: IMessage;
-    handlePress?: (e: any) => void | null;
-    handleLongPress?: (e: any) => void | null;
+    fontSize?: number;
+    handlePress?: ((e: any) => void) | null;
+    handleLongPress?: ((e: any) => void) | null;
+    handleReplyPress?: ((e: any) => void) | null;
     selected?: boolean;
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
     avatar,
     message,
+    fontSize = 10,
     handlePress = null,
     handleLongPress = null,
+    handleReplyPress = null,
     selected = false,
 }) => {
+    const [aspectRatio, setAspectRatio] = useState(16 / 9);
+
+    const handleImageLoad = (event: any) => {
+        const { width, height } = event.nativeEvent.source;
+        if (width && height) {
+            setAspectRatio(width / height);
+        }
+    };
+
+    const handleVideoLoad = (status: any) => {
+        if (status.naturalSize) {
+            const { width, height } = status.naturalSize;
+            setAspectRatio(width / height);
+        }
+    };
 
     return (
         <>
@@ -37,138 +57,159 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                             ]}
                         />
                         <View style={{ width: '70%', flexDirection: 'row', justifyContent: 'flex-start' }}>
-                            <Pressable onLongPress={handleLongPress} onPress={handlePress} style={[styles.content, { backgroundColor: selected ? 'rgba(252, 252, 252, 0.5)' : 'rgba(252, 252, 252, 1)' }]}>
-                                {message.replyMessage && <View style={[styles.content, { backgroundColor: selected ? 'rgba(193, 237, 255, 0.5)' : 'rgba(193, 237, 255, 1)', borderColor: selected ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 1)', borderLeftWidth: 5, marginBottom: 10 }]}>
-                                    <Text style={styles.text}>{message.replyMessage.text}</Text>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                        <Text style={styles.date}>{new Date(message.replyMessage.date).toDateString()}</Text>
-                                    </View>
-                                    {message.replyMessage.medias && message.replyMessage.medias.map((item) => (
+                            <View style={[styles.content, { backgroundColor: selected ? 'rgba(252, 252, 252, 0.5)' : 'rgba(252, 252, 252, 1)' }]}>
+                                {message.replyMessage && <View style={[styles.content, { backgroundColor: selected ? 'rgba(193, 237, 255, 0.5)' : 'rgba(193, 237, 255, 1)', borderColor: selected ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 1)', borderLeftWidth: 5, marginBottom: 10, marginHorizontal: 0 }]}>
+                                    <Pressable onPress={handleReplyPress} onLongPress={handleLongPress}>
+                                        {message.replyMessage.medias && message.replyMessage.medias.map((item, index) => (
+                                            item.type === "video" ?
+                                                <Video
+                                                    key={index}
+                                                    source={{ uri: item.uri }}
+                                                    useNativeControls={false}
+                                                    shouldPlay
+                                                    isLooping={true}
+                                                    isMuted={true}
+                                                    resizeMode={ResizeMode.CONTAIN}
+                                                    style={{ width: (SCREEN_WIDTH - 100) * 0.7 - 25, aspectRatio: aspectRatio, marginBottom: 10, opacity: selected ? 0.5 : 1 }}
+                                                    onError={(error) => {
+                                                        console.error('Video loading error:', error);
+                                                    }}
+                                                    onReadyForDisplay={(event) => handleVideoLoad(event)}
+                                                /> :
+                                                (item.type == "image" ?
+                                                    <Image
+                                                        key={index}
+                                                        source={{ uri: item.uri }}
+                                                        style={{ width: (SCREEN_WIDTH - 100) * 0.7 - 25, aspectRatio: aspectRatio, resizeMode: 'contain', marginBottom: 10, opacity: selected ? 0.5 : 1 }}
+                                                        onError={(error) => {
+                                                            console.error('Video loading error:', error);
+                                                        }}
+                                                        onLoad={(event) => handleImageLoad(event)}
+                                                    /> :
+                                                    <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 15 }}>文件无法播放</Text>
+                                                )
+                                        ))}
+                                        <Text style={[styles.text, { fontSize: fontSize }]}>{message.replyMessage.text}</Text>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                            <Text style={styles.date}>{new Date(message.replyMessage.date).toDateString()}</Text>
+                                        </View>
+                                    </Pressable>
+                                </View>}
+                                <Pressable onPress={handlePress} onLongPress={handleLongPress}>
+                                    {message.medias && message.medias.map((item, index) => (
                                         item.type === "video" ?
                                             <Video
+                                                key={index}
                                                 source={{ uri: item.uri }}
                                                 useNativeControls={false}
                                                 shouldPlay
                                                 isLooping={true}
                                                 isMuted={true}
                                                 resizeMode={ResizeMode.CONTAIN}
-                                                style={{ width: '100%', height: 150, marginBottom: 10, opacity: selected ? 0.5 : 1 }}
+                                                style={{ width: (SCREEN_WIDTH - 100) * 0.7, aspectRatio: aspectRatio, marginBottom: 10, opacity: selected ? 0.5 : 1 }}
                                                 onError={(error) => {
                                                     console.error('Video loading error:', error);
                                                 }}
-
+                                                onReadyForDisplay={(event) => handleVideoLoad(event)}
                                             /> :
                                             (item.type == "image" ?
                                                 <Image
+                                                    key={index}
                                                     source={{ uri: item.uri }}
-                                                    style={{ width: '100%', height: 150, resizeMode: 'contain', marginBottom: 10, opacity: selected ? 0.5 : 1 }}
+                                                    style={{ width: (SCREEN_WIDTH - 100) * 0.7, aspectRatio: aspectRatio, resizeMode: 'contain', marginBottom: 10, opacity: selected ? 0.5 : 1 }}
                                                     onError={(error) => {
                                                         console.error('Video loading error:', error);
                                                     }}
+                                                    onLoad={(event) => handleImageLoad(event)}
                                                 /> :
                                                 <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 15 }}>文件无法播放</Text>
                                             )
                                     ))}
-                                </View>}
-                                {message.medias && message.medias.map((item) => (
-                                    item.type === "video" ?
-                                        <Video
-                                            source={{ uri: item.uri }}
-                                            useNativeControls={false}
-                                            shouldPlay
-                                            isLooping={true}
-                                            isMuted={true}
-                                            resizeMode={ResizeMode.CONTAIN}
-                                            style={{ width: '100%', height: 150, marginBottom: 10, opacity: selected ? 0.5 : 1 }}
-                                            onError={(error) => {
-                                                console.error('Video loading error:', error);
-                                            }}
-
-                                        /> :
-                                        (item.type == "image" ?
-                                            <Image
-                                                source={{ uri: item.uri }}
-                                                style={{ width: '100%', height: 150, resizeMode: 'contain', marginBottom: 10, opacity: selected ? 0.5 : 1 }}
-                                                onError={(error) => {
-                                                    console.error('Video loading error:', error);
-                                                }}
-                                            /> :
-                                            <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 15 }}>文件无法播放</Text>
-                                        )
-                                ))}
-                                <Text style={styles.text}>{message.text}</Text>
-                                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                    <Text style={styles.date}>{new Date(message.date).toDateString()}</Text>
-                                </View>
-                            </Pressable>
-                        </View>
+                                    <Text style={[styles.text, { fontSize: fontSize }]}>{message.text}</Text>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                        <Text style={styles.date}>{new Date(message.date).toDateString()}</Text>
+                                    </View>
+                                </Pressable>
+                            </View>
+                        </View >
                     </View >
                     :
                     <View style={styles.send}>
                         <View style={{ width: '70%', flexDirection: 'row', justifyContent: 'flex-end' }}>
-                            <Pressable onLongPress={handleLongPress} onPress={handlePress} style={[styles.content, { backgroundColor: selected ? 'rgba(193, 237, 255, 0.5)' : 'rgba(193, 237, 255, 1)' }]}>
-                                {message.replyMessage && <View style={[styles.content, { backgroundColor: selected ? 'rgba(252, 252, 252, 0.5)' : 'rgba(252, 252, 252, 1)', borderColor: selected ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 1)', borderLeftWidth: 5, marginBottom: 10 }]}>
-                                    <Text style={styles.text}>{message.replyMessage.text}</Text>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                        <Text style={styles.date}>{new Date(message.replyMessage.date).toDateString()}</Text>
-                                    </View>
-                                    {message.replyMessage.medias && message.replyMessage.medias.map((item) => (
+                            <View style={[styles.content, { backgroundColor: selected ? 'rgba(193, 237, 255, 0.5)' : 'rgba(193, 237, 255, 1)' }]}>
+                                {message.replyMessage && <View style={[styles.content, { backgroundColor: selected ? 'rgba(252, 252, 252, 0.5)' : 'rgba(252, 252, 252, 1)', borderColor: selected ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 1)', borderLeftWidth: 5, marginBottom: 10, marginHorizontal: 0 }]}>
+                                    <Pressable onPress={handleReplyPress} onLongPress={handleLongPress}>
+                                        {message.replyMessage.medias && message.replyMessage.medias.map((item, index) => (
+                                            item.type === "video" ?
+                                                <Video
+                                                    key={index}
+                                                    source={{ uri: item.uri }}
+                                                    useNativeControls={false}
+                                                    shouldPlay
+                                                    isLooping={true}
+                                                    isMuted={true}
+                                                    resizeMode={ResizeMode.CONTAIN}
+                                                    style={{ width: (SCREEN_WIDTH - 100) * 0.7 - 25, aspectRatio: aspectRatio, marginBottom: 10, opacity: selected ? 0.5 : 1 }}
+                                                    onError={(error) => {
+                                                        console.error('Video loading error:', error);
+                                                    }}
+                                                    onReadyForDisplay={(event) => handleVideoLoad(event)}
+                                                /> :
+                                                (item.type == "image" ?
+                                                    <Image
+                                                        key={index}
+                                                        source={{ uri: item.uri }}
+                                                        style={{ width: (SCREEN_WIDTH - 100) * 0.7 - 25, aspectRatio: aspectRatio, resizeMode: 'contain', marginBottom: 10, opacity: selected ? 0.5 : 1 }}
+                                                        onError={(error) => {
+                                                            console.error('Video loading error:', error);
+                                                        }}
+                                                        onLoad={(event) => handleImageLoad(event)}
+                                                    /> :
+                                                    <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 15 }}>文件无法播放</Text>
+                                                )
+                                        ))}
+                                        <Text style={[styles.text, { fontSize: fontSize }]}>{[message.replyMessage.text]}</Text>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                            <Text style={styles.date}>{new Date(message.replyMessage.date).toDateString()}</Text>
+                                        </View>
+                                    </Pressable>
+                                </View>}
+                                <Pressable onPress={handlePress} onLongPress={handleLongPress}>
+                                    {message.medias && message.medias.map((item, index) => (
                                         item.type === "video" ?
                                             <Video
+                                                key={index}
                                                 source={{ uri: item.uri }}
                                                 useNativeControls={false}
                                                 shouldPlay
                                                 isLooping={true}
                                                 isMuted={true}
                                                 resizeMode={ResizeMode.CONTAIN}
-                                                style={{ width: '100%', height: 150, marginBottom: 10, opacity: selected ? 0.5 : 1 }}
+                                                style={{ width: (SCREEN_WIDTH - 100) * 0.7, aspectRatio: aspectRatio, marginBottom: 10, opacity: selected ? 0.5 : 1 }}
                                                 onError={(error) => {
                                                     console.error('Video loading error:', error);
                                                 }}
+                                                onReadyForDisplay={(event) => handleVideoLoad(event)}
                                             /> :
                                             (item.type == "image" ?
                                                 <Image
+                                                    key={index}
                                                     source={{ uri: item.uri }}
-                                                    style={{ width: '100%', height: 150, resizeMode: 'contain', marginBottom: 10, opacity: selected ? 0.5 : 1 }}
+                                                    style={{ width: (SCREEN_WIDTH - 100) * 0.7, aspectRatio: aspectRatio, resizeMode: 'contain', marginBottom: 10, opacity: selected ? 0.5 : 1 }}
                                                     onError={(error) => {
                                                         console.error('Video loading error:', error);
                                                     }}
+                                                    onLoad={(event) => handleImageLoad(event)}
                                                 /> :
                                                 <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 15 }}>文件无法播放</Text>
                                             )
                                     ))}
-                                </View>}
-                                {message.medias && message.medias.map((item) => (
-                                    item.type === "video" ?
-                                        <Video
-                                            source={{ uri: item.uri }}
-                                            useNativeControls={false}
-                                            shouldPlay
-                                            isLooping={true}
-                                            isMuted={true}
-                                            resizeMode={ResizeMode.CONTAIN}
-                                            style={{ width: '100%', height: 150, marginBottom: 10, opacity: selected ? 0.5 : 1 }}
-                                            onError={(error) => {
-                                                console.error('Video loading error:', error);
-                                            }}
-
-                                        /> :
-                                        (item.type == "image" ?
-                                            <Image
-                                                source={{ uri: item.uri }}
-                                                style={{ width: '100%', height: 150, resizeMode: 'contain', marginBottom: 10, opacity: selected ? 0.5 : 1 }}
-                                                onError={(error) => {
-                                                    console.error('Video loading error:', error);
-                                                }}
-                                            /> :
-                                            <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 15 }}>文件无法播放</Text>
-                                        )
-                                ))}
-                                <Text style={styles.text}>{message.text}</Text>
-                                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                    <Text style={styles.date}>{new Date(message.date).toDateString()}</Text>
-                                </View>
-                            </Pressable>
+                                    <Text style={[styles.text, { fontSize: fontSize }]}>{message.text}</Text>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                        <Text style={styles.date}>{new Date(message.date).toDateString()}</Text>
+                                    </View>
+                                </Pressable>
+                            </View>
                         </View>
                         <Image
                             source={{ uri: avatar }}
@@ -204,7 +245,6 @@ const styles = StyleSheet.create({
     },
     text: {
         color: 'rgba(38, 38, 38, 1)',
-        fontSize: 10,
     },
     date: {
         paddingTop: 5,

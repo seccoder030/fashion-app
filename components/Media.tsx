@@ -4,7 +4,8 @@ import {
     ColorValue,
     Image,
     ImageSourcePropType,
-    ToastAndroid
+    ToastAndroid,
+    View
 } from 'react-native';
 import CustomVideoPlayer from './CustomVideoPlayer';
 import Loading from './Loading';

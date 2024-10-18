@@ -101,23 +101,28 @@ const PostScreen = () => {
                     // Append other data
                     formData.append('title', title);
                     formData.append('content', content);
-                    formData.append('user_id', String(user.id));
 
-                    // Make the POST request
-                    const res = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/post/create`, formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                        },
-                        onUploadProgress(progressEvent) {
-                            if (progressEvent.total && progressEvent.total > 0) {
-                                const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                                setUploadProgress(progress);
-                            }
-                        },
-                    });
+                    if (token) {
+                        try {
+                            Request.setAuthorizationToken(token);
+                            const res = await Request.Post(`${process.env.EXPO_PUBLIC_API_URL}/post/create`, formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data',
+                                },
+                                onUploadProgress(progressEvent) {
+                                    if (progressEvent.total && progressEvent.total > 0) {
+                                        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                                        setUploadProgress(progress);
+                                    }
+                                },
+                            });
 
-                    if (res.data.status == 'success') ToastAndroid.show('注册成功！', ToastAndroid.SHORT);
-                    router.back();
+                            if (res.status == 'success') ToastAndroid.show('注册成功！', ToastAndroid.SHORT);
+                            router.back();
+                        } catch (error) {
+                            console.error('Error fetching categories:', error);
+                        }
+                    }
                 }
             }
         } catch (error) {
