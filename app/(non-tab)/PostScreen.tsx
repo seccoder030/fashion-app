@@ -78,11 +78,6 @@ const PostScreen = () => {
     async function handlePost() {
         try {
             if (categories && token && user) {
-                var data = Array();
-                checkedCategories.forEach(item => {
-                    data.push(item);
-                });
-
                 // Create a FormData object
                 const formData = new FormData();
 
@@ -101,27 +96,31 @@ const PostScreen = () => {
                     // Append other data
                     formData.append('title', title);
                     formData.append('content', content);
+                    var data = Array();
+                    checkedCategories.forEach(item => {
+                        data.push(item);
+                    });
+                    formData.append('category_id', data.toString());
+                    console.log(data.toString())
 
-                    if (token) {
-                        try {
-                            Request.setAuthorizationToken(token);
-                            const res = await Request.Post(`${process.env.EXPO_PUBLIC_API_URL}/post/create`, formData, {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data',
-                                },
-                                onUploadProgress(progressEvent) {
-                                    if (progressEvent.total && progressEvent.total > 0) {
-                                        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                                        setUploadProgress(progress);
-                                    }
-                                },
-                            });
+                    try {
+                        Request.setAuthorizationToken(token);
+                        const res = await Request.Post(`${process.env.EXPO_PUBLIC_API_URL}/post/create`, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                            },
+                            onUploadProgress(progressEvent) {
+                                if (progressEvent.total && progressEvent.total > 0) {
+                                    const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                                    setUploadProgress(progress);
+                                }
+                            },
+                        });
 
-                            if (res.status == 'success') ToastAndroid.show('注册成功！', ToastAndroid.SHORT);
-                            router.back();
-                        } catch (error) {
-                            console.error('Error fetching categories:', error);
-                        }
+                        if (res.status == 'success') ToastAndroid.show('注册成功！', ToastAndroid.SHORT);
+                        router.back();
+                    } catch (error) {
+                        console.error('Error fetching categories:', error);
                     }
                 }
             }

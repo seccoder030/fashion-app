@@ -1,10 +1,6 @@
-import Blank from '@/components/Blank';
 import CategoryTag from '@/components/CategoryTag';
-import Loading from '@/components/Loading';
 import { SCREEN_HEIGHT } from '@/constants/Config';
-import { useAuth } from '@/context/Authentication';
-import axios from 'axios';
-import React, { useEffect, useState, SetStateAction, Dispatch } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 type CheckedCategoriesState = Set<string>;

@@ -4,7 +4,7 @@ interface IPost {
     content: string;
     uri: string;
     user: IUser;
-    user_id: number;
+    user_id: string;
     type: boolean;
     title: string;
     likes?: number;
@@ -51,4 +51,16 @@ interface IMessage {
     text?: string;
     replyMessage?: IMessage;
     medias?: IWithMedia[];
+}
+
+interface IComment {
+    id: string;
+    name: string;
+    uri: string;
+    date: string;
+    comments: number;
+    likes: number;
+    star: number;
+    post: string;
+    replyTo?: string;
 }

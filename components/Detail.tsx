@@ -1,59 +1,28 @@
-import { BOTTOM_TAPBAR_HEIGHT, DETAILTOP_TAPBAR_HEIGHT, ICON_AD, ICON_CANCEL, ICON_COMMENT, ICON_COMMENTPOST, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, ICON_UP, IMAGE_BG7, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
-import React, { useRef, useState } from 'react';
+import { BOTTOM_TAPBAR_HEIGHT, CHINESE_EMOJI_LANG, DETAILTOP_TAPBAR_HEIGHT, ICON_AD, ICON_CANCEL, ICON_COMMENT, ICON_COMMENTPOST, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, ICON_UP, IMAGE_BG7, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import EmojiPicker from 'rn-emoji-keyboard';
 import IconButton from './IconButton';
 import TextButton from './TextButton';
-
-const ch = {
-    recently_used: '最近使用',
-    smileys_emotion: '笑脸与情感',
-    people_body: '人物与身体',
-    animals_nature: '动物与自然',
-    food_drink: '食物与饮料',
-    travel_places: '旅行与地点',
-    activities: '活动',
-    objects: '物体',
-    symbols: '符号',
-    flags: '旗帜',
-    search: '搜索',
-}
-
-interface IComment {
-    id: string;
-    name: string;
-    uri: string;
-    date: string;
-    comments: number;
-    likes: number;
-    star: number;
-    post: string;
-    reply?: IComment[];
-}
+import Blank from './Blank';
 
 const Detail = () => {
-
-
     const item = { id: '1', imageUrl: IMAGE_BG7, caption: '在此输入您的标题。', likes: 578, comments: 1208, star: 1031 };
-    const comments: IComment[] = [
-        {
-            id: '1', name: '姓  名111', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', reply: [
-                { id: '1', name: '姓  名1', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-                { id: '2', name: '姓  名2', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-                { id: '3', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-                { id: '4', name: '姓  名4', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-                { id: '5', name: '姓  名5', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-            ]
-        },
-        {
-            id: '2', name: '姓  名222', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', reply: [
-                { id: '1', name: '姓  名21', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-                { id: '2', name: '姓  名22', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-                { id: '3', name: '姓  名23', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-                { id: '4', name: '姓  名24', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-                { id: '5', name: '姓  名25', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-            ]
-        },
+    const [comments, setComments] = useState<IComment[] | null>(null);
+
+    const jsondata = [
+        { id: '1', name: '姓  名111', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '2', name: '姓  名1', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '1' },
+        { id: '3', name: '姓  名2', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '1' },
+        { id: '4', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '1' },
+        { id: '5', name: '姓  名4', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '2' },
+        { id: '6', name: '姓  名5', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '3' },
+        { id: '7', name: '姓  名222', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '2' },
+        { id: '8', name: '姓  名21', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '9', name: '姓  名22', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '8' },
+        { id: '10', name: '姓  名23', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '8' },
+        { id: '11', name: '姓  名24', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+        { id: '12', name: '姓  名25', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '9' },
     ];
 
     const [viewDetail, setViewDetail] = useState<boolean[]>([]);
@@ -61,6 +30,18 @@ const Detail = () => {
     const [text, setText] = useState<string>('');
     const scrollViewRef = useRef<ScrollView>(null);
     const [isReply, setIsReply] = useState<{ index: number, replyindex: number | undefined } | undefined>(undefined);
+
+    useEffect(() => {
+        setComments(jsondata);
+    }, []);
+
+    if (!comments) {
+        return <Blank />
+    }
+
+    const commentById = (id: string) => comments.find(item => item.id === id);
+
+    const getReplies = (commentId: string) => comments.filter(comment => comment.replyToTo === commentId);
 
     function handleItem() {
     }
@@ -147,7 +128,7 @@ const Detail = () => {
                                 </View>
                             </View>
                             {comments.map((item, index) => (
-                                <View key={index} style={index == comments.length - 1 ? styles.comment : [styles.comment, styles.commentLine]}>
+                                <View key={index} style={index == 0 ? styles.comment : [styles.comment, styles.commentLine]}>
                                     <Image
                                         source={{ uri: item.uri }}
                                         style={[
@@ -181,8 +162,8 @@ const Detail = () => {
                                             <TextButton onPress={() => handleReply(index)} text='回   复' backgroundColor={'rgba(255, 255, 255, 0)'} textColor={'rgba(171, 171, 171, 1)'} fontSize={10} />
                                         </View>
                                         {viewDetail[index] &&
-                                            item.reply && item.reply.map((item, replyindex) => (
-                                                <View key={replyindex} style={[styles.reply]}>
+                                            item.replyTo && item.replyTo.map((item, replyindex) => (
+                                                <View key={replyindex} style={[styles.replyTo]}>
                                                     <Image
                                                         source={{ uri: item.uri }}
                                                         style={[
@@ -190,27 +171,27 @@ const Detail = () => {
                                                             styles.userImage
                                                         ]}
                                                     />
-                                                    <View style={styles.replyContent}>
-                                                        <View style={styles.replyHead}>
-                                                            <View style={styles.replyInfo}>
-                                                                <Text style={styles.replyTitle}>{item.name} ▶ {item.name}</Text>
+                                                    <View style={styles.replyToContent}>
+                                                        <View style={styles.replyToHead}>
+                                                            <View style={styles.replyToInfo}>
+                                                                <Text style={styles.replyToTitle}>{item.name} ▶ {item.name}</Text>
                                                             </View>
-                                                            <View style={styles.replyFeedback}>
-                                                                <View style={styles.replyFeedbackItem}>
+                                                            <View style={styles.replyToFeedback}>
+                                                                <View style={styles.replyToFeedbackItem}>
                                                                     <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                                                    <Text style={styles.replyFeedbackText}>{item.comments}</Text>
+                                                                    <Text style={styles.replyToFeedbackText}>{item.comments}</Text>
                                                                 </View>
-                                                                <View style={styles.replyFeedbackItem}>
+                                                                <View style={styles.replyToFeedbackItem}>
                                                                     <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                                    <Text style={styles.replyFeedbackText}>{item.likes}</Text>
+                                                                    <Text style={styles.replyToFeedbackText}>{item.likes}</Text>
                                                                 </View>
-                                                                <View style={styles.replyFeedbackItem}>
+                                                                <View style={styles.replyToFeedbackItem}>
                                                                     <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                                                    <Text style={styles.replyFeedbackText}>{item.star}</Text>
+                                                                    <Text style={styles.replyToFeedbackText}>{item.star}</Text>
                                                                 </View>
                                                             </View>
                                                         </View>
-                                                        <Text style={styles.replyText}>{item.post}</Text>
+                                                        <Text style={styles.replyToText}>{item.post}</Text>
                                                         <View style={{ alignItems: 'flex-end', marginTop: 5, marginHorizontal: 10 }}>
                                                             <TextButton onPress={() => handleReply(index, replyindex)} text='回   复' backgroundColor={'rgba(255, 255, 255, 0)'} textColor={'rgba(171, 171, 171, 1)'} fontSize={10} />
                                                         </View>
@@ -222,11 +203,11 @@ const Detail = () => {
                                             <TouchableOpacity onPress={() => toggleViewDetail(index)} style={styles.detailButton}>
                                                 {viewDetail[index] ?
                                                     <>
-                                                        <Text style={styles.detailText}>查看回复({item.reply ? item.reply.length : 0})</Text>
+                                                        <Text style={styles.detailText}>查看回复({item.replyTo ? item.replyTo.length : 0})</Text>
                                                         <IconButton size={10} iconSource={ICON_UP} enabled={false} />
                                                     </> :
                                                     <>
-                                                        <Text style={styles.detailText}>查看回复({item.reply ? item.reply.length : 0})</Text>
+                                                        <Text style={styles.detailText}>查看回复({item.replyTo ? item.replyTo.length : 0})</Text>
                                                         <IconButton size={10} iconSource={ICON_DOWN} enabled={false} />
                                                     </>
                                                 }
@@ -240,8 +221,8 @@ const Detail = () => {
                 </View>
             </View >
             {isReply &&
-                (<View style={styles.replyInputContainer}>
-                    <View style={styles.replyBorder}>
+                (<View style={styles.replyToInputContainer}>
+                    <View style={styles.replyToBorder}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20 }}>
                             <View style={{ width: 25 }}></View>
                             <View style={{ alignItems: 'center' }}>
@@ -257,7 +238,7 @@ const Detail = () => {
                                     styles.userImage
                                 ]}
                             />
-                            {isReply.replyindex === undefined ?
+                            {isReply.replyToindex === undefined ?
                                 <View style={styles.commentContent}>
                                     <View style={styles.commentHead}>
                                         <View style={styles.commentInfo}>
@@ -281,29 +262,29 @@ const Detail = () => {
                                     </View>
                                     <Text style={styles.commentText}>{comments[isReply.index].post}</Text>
                                 </View> :
-                                comments[isReply.index].reply &&
+                                comments[isReply.index].replyTo &&
                                 (<View style={styles.commentContent}>
                                     <View style={styles.commentHead}>
                                         <View style={styles.commentInfo}>
-                                            <Text style={styles.commentTitle}>{comments[isReply.index].reply![isReply.replyindex].name}</Text>
-                                            <Text style={styles.commentDate}>{comments[isReply.index].reply![isReply.replyindex].date}</Text>
+                                            <Text style={styles.commentTitle}>{comments[isReply.index].replyTo![isReply.replyToindex].name}</Text>
+                                            <Text style={styles.commentDate}>{comments[isReply.index].replyTo![isReply.replyToindex].date}</Text>
                                         </View>
                                         <View style={styles.commentFeedback}>
                                             <View style={styles.commentFeedbackItem}>
                                                 <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].reply![isReply.replyindex].comments}</Text>
+                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].replyTo![isReply.replyToindex].comments}</Text>
                                             </View>
                                             <View style={styles.commentFeedbackItem}>
                                                 <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].reply![isReply.replyindex].likes}</Text>
+                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].replyTo![isReply.replyToindex].likes}</Text>
                                             </View>
                                             <View style={styles.commentFeedbackItem}>
                                                 <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].reply![isReply.replyindex].star}</Text>
+                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].replyTo![isReply.replyToindex].star}</Text>
                                             </View>
                                         </View>
                                     </View>
-                                    <Text style={styles.commentText}>{comments[isReply.index].reply![isReply.replyindex].post}</Text>
+                                    <Text style={styles.commentText}>{comments[isReply.index].replyTo![isReply.replyToindex].post}</Text>
                                 </View>)
                             }
                         </View>
@@ -331,7 +312,7 @@ const Detail = () => {
                     </View>
                 </View>)
             }
-            <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} translation={ch} />
+            <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} translation={CHINESE_EMOJI_LANG} />
         </>
     );
 };
@@ -340,11 +321,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginHorizontal: 20,
-        marginVertical: 10,
     },
     contentContainer: {
         justifyContent: 'space-between',
-        paddingBottom: BOTTOM_TAPBAR_HEIGHT,
+        paddingBottom: BOTTOM_TAPBAR_HEIGHT + 10,
         zIndex: 50,
     },
     border: {
@@ -465,8 +445,8 @@ const styles = StyleSheet.create({
         fontSize: 9,
     },
     commentLine: {
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(79, 158, 191, 1)',
+        borderTopWidth: 1,
+        borderTopColor: 'rgba(79, 158, 191, 1)',
     },
     userImage: {
         top: 0,

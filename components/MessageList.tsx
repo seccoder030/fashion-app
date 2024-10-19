@@ -56,7 +56,6 @@ const MessageList = () => {
                         </TouchableOpacity>
                     </View>
                 ))}
-                <View style={{ margin: BOTTOM_TAPBAR_HEIGHT / 2 + 10 }} />
             </ScrollView>
         </View>
     );
@@ -71,6 +70,7 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         justifyContent: 'space-between',
+        paddingBottom: BOTTOM_TAPBAR_HEIGHT + 10,
         zIndex: 50,
     },
     border: {

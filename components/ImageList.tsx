@@ -1,22 +1,13 @@
 import { BOTTOM_TAPBAR_HEIGHT, ICON_COMMENT, ICON_HEARTFILL, SCREEN_HEIGHT, SCREEN_WIDTH, SEARCHTOP_TAPBAR_HEIGHT } from '@/constants/Config';
-import axios from 'axios';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ImageSourcePropType, Pressable, ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import IconButton from './IconButton';
 import Loading from './Loading';
 import Media from './Media';
 import Blank from './Blank';
 import Request from '@/utils/request';
 import { useAuth } from '@/context/Authentication';
-
-interface Item {
-    id: string;
-    imageUrl: ImageSourcePropType;
-    caption: string;
-    likes: number;
-    comments: number;
-}
 
 const ImageList = () => {
     const { token } = useAuth();
@@ -45,34 +36,43 @@ const ImageList = () => {
         return <Blank />
     }
 
-    function handleItem() {
+    const handleItem = () => {
         router.push('/DetailScreen');
-    }
+    };
+
+    const renderItem = ({ item }: { item: IPost }) => (
+        <Pressable onPress={handleItem} style={styles.card}>
+            <View style={styles.cardImage}>
+                <Media type={item.type} source={{ uri: item.uri }} backgroundColor={'transparent'} play={true} resizeMode={1} />
+            </View>
+            <View style={styles.cardFooter}>
+                <Text style={styles.text}>{item.title.length > 20 ? item.title.slice(0, 20) + '...' : item.title}</Text>
+                <View style={styles.info}>
+                    <View style={styles.infoItem}>
+                        <IconButton size={15} iconSource={ICON_COMMENT} enabled={false} />
+                        <Text style={styles.infoText}>{item.comments ? (item.comments > 1000 ? `${Math.floor(item.comments / 100) / 10}K` : `${item.comments}`) : '0'}</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <IconButton size={15} iconSource={ICON_HEARTFILL} enabled={false} />
+                        <Text style={styles.infoText}>{item.likes ? (item.likes > 1000 ? `${Math.floor(item.likes / 100) / 10}K` : `${item.likes}`) : '0'}</Text>
+                    </View>
+                </View>
+            </View>
+        </Pressable >
+
+    );
 
     return (
         <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-                {medias.map((item, index) => (
-                    <Pressable onPress={handleItem} key={index} style={styles.card}>
-                        <View style={styles.cardImage}>
-                            <Media type={item.type} source={{ uri: item.uri }} backgroundColor={'transparent'} play={true} resizeMode={1} />
-                        </View>
-                        <View style={styles.cardFooter}>
-                            <Text style={styles.text}>{item.title.length > 20 ? item.title.slice(0, 20) + '...' : item.title}</Text>
-                            <View style={styles.info}>
-                                <View style={styles.infoItem}>
-                                    <IconButton size={15} iconSource={ICON_COMMENT} enabled={false} />
-                                    <Text style={styles.infoText}>{item.comments ? (item.comments > 1000 ? `${Math.floor(item.comments / 100) / 10}K` : `${item.comments}`) : '0'}</Text>
-                                </View>
-                                <View style={styles.infoItem}>
-                                    <IconButton size={15} iconSource={ICON_HEARTFILL} enabled={false} />
-                                    <Text style={styles.infoText}>{item.likes ? (item.likes > 1000 ? `${Math.floor(item.likes / 100) / 10}K` : `${item.likes}`) : '0'}</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </Pressable >
-                ))}
-            </ScrollView>
+            <FlatList
+                data={medias}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                numColumns={2}
+                contentContainerStyle={styles.contentContainer}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+            />
         </View>
     );
 };
@@ -80,21 +80,15 @@ const ImageList = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginHorizontal: 10,
-        height: SCREEN_HEIGHT - SEARCHTOP_TAPBAR_HEIGHT
+        marginHorizontal: 10
     },
     contentContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        paddingHorizontal: 10,
-        paddingBottom: 500,
-        // marginBottom: BOTTOM_TAPBAR_HEIGHT,
-        // zIndex: 50
+        paddingBottom: BOTTOM_TAPBAR_HEIGHT - 10,
     },
     card: {
-        width: '48%',
+        width: (SCREEN_WIDTH - 60) / 2,
         aspectRatio: 0.63,
+        marginHorizontal: 10,
         marginBottom: 20,
         borderRadius: 5,
         overflow: 'hidden',
