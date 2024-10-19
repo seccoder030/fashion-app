@@ -1,4 +1,4 @@
-import { ICON_ADD, ICON_COMMENT, ICON_HEART, ICON_HEARTFILL, ICON_SHARE } from '@/constants/Config';
+import { ICON_ADD, ICON_AVATAR, ICON_COMMENT, ICON_HEART, ICON_HEARTFILL, ICON_SHARE } from '@/constants/Config';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
@@ -9,10 +9,10 @@ interface IActionBarProps {
   username: string;
   likes: number;
   comments: number;
-  uri: string;
+  uri?: string;
 }
 
-const ActionBar: React.FC<IActionBarProps> = ({ username, likes, comments, uri }) => {
+const ActionBar: React.FC<IActionBarProps> = ({ username, likes, comments, uri = undefined }) => {
   const [heart, setHeart] = useState<boolean>(false);
   const [add, setAdd] = useState<boolean>(false);
 
@@ -23,7 +23,7 @@ const ActionBar: React.FC<IActionBarProps> = ({ username, likes, comments, uri }
       <View style={styles.blur}></View>
       <View style={styles.content}>
         <Image
-          source={{ uri: uri }}
+          source={uri ? { uri: uri } : ICON_AVATAR}
           style={[
             { width: 40, height: 40 },
             styles.userImage

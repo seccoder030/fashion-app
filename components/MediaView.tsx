@@ -1,18 +1,12 @@
 import { BOTTOM_TAPBAR_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
-import { ResizeMode } from 'expo-av';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
-    Image,
     StyleSheet,
     Text,
-    ToastAndroid,
     View
 } from 'react-native';
-import CustomVideoPlayer from './CustomVideoPlayer';
 import ActionBar from './ActionBar';
-import Loading from './Loading';
 import Media from './Media';
-import Blank from './Blank';
 
 interface MediaViewProps {
     item: IPost;

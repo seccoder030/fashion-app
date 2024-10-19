@@ -85,6 +85,7 @@ export const ICON_SPLIT = require('@/assets/images/icons/split.png');
 export const ICON_PHOTO = require('@/assets/images/icons/photo.png');
 export const ICON_VIDEO = require('@/assets/images/icons/video.png');
 export const ICON_ALBUM = require('@/assets/images/icons/album.png');
+export const ICON_AVATAR = require('@/assets/images/icons/avatar.png');
 
 export const IMAGE_BG = require('@/assets/images/hd/bg (1).png')
 export const IMAGE_BG2 = require('@/assets/images/hd/bg (2).png')

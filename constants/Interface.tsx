@@ -56,11 +56,12 @@ interface IMessage {
 interface IComment {
     id: string;
     name: string;
-    uri: string;
+    uri?: string | undefined;
     date: string;
     comments: number;
     likes: number;
     star: number;
     post: string;
     replyTo?: string;
+    replys?: IComment[] | undefined;
 }
