@@ -36,7 +36,7 @@ export default function CategoryScreen() {
         fetchData();
     }, []);
 
-    if (categories === null) {
+    if (!categories) {
         return (
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="light-content" />

@@ -1,13 +1,11 @@
 
-import Loading from '@/components/Loading';
 import MediaView from '@/components/MediaView';
-import axios from 'axios';
+import { useAuth } from '@/context/Authentication';
+import Request from '@/utils/request';
 import { useEffect, useState } from 'react';
 import { StyleSheet, ToastAndroid, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import Blank from './Blank';
-import Request from '@/utils/request';
-import { useAuth } from '@/context/Authentication';
 
 interface MediaPageProps {
     tab?: string;

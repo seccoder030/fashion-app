@@ -9,12 +9,15 @@ export const TEST_SCREEN_HEIGHT = 3120;
 export const WIDTH_SCALL = SCREEN_WIDTH / TEST_SCREEN_WIDTH;
 export const HEIGHT_SCALL = SCREEN_HEIGHT / TEST_SCREEN_HEIGHT;
 
-export const BACKGROUND_GRADIENT_COLOR = ['rgba(98, 126, 197, 1)', 'rgba(64, 39, 117, 1)', 'rgba(81, 0, 83, 1)'];
+// export const BACKGROUND_GRADIENT_COLOR = ['rgba(98, 126, 197, 1)', 'rgba(64, 39, 117, 1)', 'rgba(81, 0, 83, 1)'];
+export const BACKGROUND_GRADIENT_COLOR = ['rgba(64, 39, 117, 1)', 'rgba(64, 39, 117, 1)', 'rgba(64, 39, 117, 1)'];
+// export const BACKGROUND_GRADIENT_COLOR = ['rgba(81, 0, 83, 1)', 'rgba(81, 0, 83, 1)', 'rgba(81, 0, 83, 1)'];
 
 export const BOTTOM_TAPBAR_HEIGHT = 65;
 export const HOMETOP_TAPBAR_HEIGHT = STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + 13 + 37 : 13 + 37;
 export const SEARCHTOP_TAPBAR_HEIGHT = STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + 115 : 115;
 export const SEARCHDETAILTOP_TAPBAR_HEIGHT = STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + 85 : 85;
+export const DETAILTOP_TAPBAR_HEIGHT = STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + 75 : 75;
 export const MESSAGELISTTOP_TAPBAR_HEIGHT = STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + 85 : 85;
 export const MESSAGETOP_TAPBAR_HEIGHT = STATUSBAR_HEIGHT ? STATUSBAR_HEIGHT + 85 : 85;
 
@@ -93,3 +96,17 @@ export const IMAGE_BG7 = require('@/assets/images/hd/bg (7).png')
 export const IMAGE_BG8 = require('@/assets/images/hd/bg (8).png')
 export const IMAGE_BG9 = require('@/assets/images/hd/bg (9).png')
 export const IMAGE_BG10 = require('@/assets/images/hd/bg (10).png')
+
+export const CHINESE_EMOJI_LANG = {
+    recently_used: '最近使用',
+    smileys_emotion: '笑脸与情感',
+    people_body: '人物与身体',
+    animals_nature: '动物与自然',
+    food_drink: '食物与饮料',
+    travel_places: '旅行与地点',
+    activities: '活动',
+    objects: '物体',
+    symbols: '符号',
+    flags: '旗帜',
+    search: '搜索',
+};

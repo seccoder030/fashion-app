@@ -1,4 +1,4 @@
-import { BOTTOM_TAPBAR_HEIGHT, ICON_AD, ICON_EMOJI, ICON_SEND, SCREEN_WIDTH } from '@/constants/Config';
+import { BOTTOM_TAPBAR_HEIGHT, CHINESE_EMOJI_LANG, ICON_AD, ICON_EMOJI, ICON_SEND, SCREEN_WIDTH } from '@/constants/Config';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from 'react-native';
 import EmojiPicker from 'rn-emoji-keyboard';
@@ -8,20 +8,6 @@ import { useAuth } from '@/context/Authentication';
 import { PinchGestureHandler, State } from 'react-native-gesture-handler';
 
 const Message = () => {
-    const ch = {
-        recently_used: '最近使用',
-        smileys_emotion: '笑脸与情感',
-        people_body: '人物与身体',
-        animals_nature: '动物与自然',
-        food_drink: '食物与饮料',
-        travel_places: '旅行与地点',
-        activities: '活动',
-        objects: '物体',
-        symbols: '符号',
-        flags: '旗帜',
-        search: '搜索',
-    }
-
     const avatar = 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png';
 
     const messagesProps: IMessage[] = [
@@ -230,7 +216,7 @@ const Message = () => {
                     <IconButton onPress={handleSend} size={20} iconSource={ICON_SEND} />
                 </View>
             </View>
-            <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} translation={ch} />
+            <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} translation={CHINESE_EMOJI_LANG} />
             <View style={{ margin: BOTTOM_TAPBAR_HEIGHT / 2 }}></View>
             {isSelectionMode && (
                 <View style={styles.selectionBar}>
