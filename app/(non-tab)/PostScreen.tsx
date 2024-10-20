@@ -2,14 +2,12 @@ import Blank from '@/components/Blank';
 import CategoryView from '@/components/CategoryView';
 import IconButton from '@/components/IconButton';
 import Loading from '@/components/Loading';
+import { useAuth } from '@/components/navigation/Authentication';
 import TextButton from '@/components/TextButton';
-import { BACKGROUND_GRADIENT_COLOR, ICON_BACK, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
-import { useAuth } from '@/context/Authentication';
+import { BACKGROUND_COLOR, ICON_BACK, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
 import Request from '@/utils/request';
-import axios from 'axios';
 import { ResizeMode, Video } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Image, SafeAreaView, StatusBar, StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native';
@@ -22,7 +20,6 @@ type PostScreenParams = {
 const PostScreen = () => {
     const { type, uri } = useLocalSearchParams<PostScreenParams>();
     const { token, user } = useAuth();
-    const [uploadProgress, setUploadProgress] = useState(0);
     const [title, setTitle] = useState<string>('');
     const [content, setContent] = useState<string>('');
     const [categories, setCategories] = useState<ICategory[] | null>(null);
@@ -47,14 +44,9 @@ const PostScreen = () => {
         return (
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="light-content" />
-                <LinearGradient
-                    colors={BACKGROUND_GRADIENT_COLOR}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.gradient}
-                >
+                <View style={styles.viewColor}>
                     <Loading backgroundColor={'transparent'} />
-                </LinearGradient>
+                </View>
             </SafeAreaView>
         );
     }
@@ -63,14 +55,9 @@ const PostScreen = () => {
         return (
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="light-content" />
-                <LinearGradient
-                    colors={BACKGROUND_GRADIENT_COLOR}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.gradient}
-                >
+                <View style={styles.viewColor}>
                     <Blank />
-                </LinearGradient>
+                </View>
             </SafeAreaView>
         );
     }
@@ -108,12 +95,6 @@ const PostScreen = () => {
                             headers: {
                                 'Content-Type': 'multipart/form-data',
                             },
-                            onUploadProgress(progressEvent) {
-                                if (progressEvent.total && progressEvent.total > 0) {
-                                    const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                                    setUploadProgress(progress);
-                                }
-                            },
                         });
 
                         if (res.status == 'success') ToastAndroid.show('注册成功！', ToastAndroid.SHORT);
@@ -132,12 +113,7 @@ const PostScreen = () => {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" />
-            <LinearGradient
-                colors={BACKGROUND_GRADIENT_COLOR}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.gradient}
-            >
+            <View style={styles.viewColor}>
                 <View style={styles.topBar}>
                     <IconButton onPress={() => router.back()} size={25} iconSource={ICON_BACK} />
                 </View>
@@ -211,7 +187,7 @@ const PostScreen = () => {
                         <TextButton onPress={handlePost} text='帖       子' backgroundColor={'rgba(255, 0, 153, 1)'} borderRadius={10} paddingHorizontal={35} paddingVertical={5} fontSize={25} />
                     </View>
                 </View>
-            </LinearGradient>
+            </View>
         </SafeAreaView>
     );
 }
@@ -220,8 +196,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    gradient: {
+    viewColor: {
         flex: 1,
+        backgroundColor: BACKGROUND_COLOR
     },
     topBar: {
         flexDirection: 'row',

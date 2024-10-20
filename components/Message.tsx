@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert 
 import EmojiPicker from 'rn-emoji-keyboard';
 import IconButton from './IconButton';
 import MessageBox from './MessageBox';
-import { useAuth } from '@/context/Authentication';
+import { useAuth } from '@/components/navigation/Authentication';
 import { PinchGestureHandler, State } from 'react-native-gesture-handler';
 
 const Message = () => {

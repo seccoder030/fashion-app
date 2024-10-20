@@ -1,5 +1,5 @@
-import { AuthProvider, useAuth } from "@/context/Authentication";
-import BackHandlerProvider from '@/context/BackHandlerProvider';
+import { AuthProvider, useAuth } from "@/components/navigation/Authentication";
+import BackHandlerProvider from '@/components/navigation/BackHandlerProvider';
 import { useFonts } from 'expo-font';
 import * as Notifications from 'expo-notifications';
 import { router, Slot } from 'expo-router';
@@ -31,7 +31,6 @@ async function registerForPushNotificationsAsync() {
     return;
   }
   const token = (await Notifications.getExpoPushTokenAsync()).data;
-  console.log(token);
   // Send this token to your server
 }
 

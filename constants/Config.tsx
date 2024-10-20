@@ -10,7 +10,7 @@ export const WIDTH_SCALL = SCREEN_WIDTH / TEST_SCREEN_WIDTH;
 export const HEIGHT_SCALL = SCREEN_HEIGHT / TEST_SCREEN_HEIGHT;
 
 // export const BACKGROUND_GRADIENT_COLOR = ['rgba(98, 126, 197, 1)', 'rgba(64, 39, 117, 1)', 'rgba(81, 0, 83, 1)'];
-export const BACKGROUND_GRADIENT_COLOR = ['rgba(64, 39, 117, 1)', 'rgba(64, 39, 117, 1)', 'rgba(64, 39, 117, 1)'];
+export const BACKGROUND_COLOR = 'rgba(64, 39, 117, 1)';
 // export const BACKGROUND_GRADIENT_COLOR = ['rgba(81, 0, 83, 1)', 'rgba(81, 0, 83, 1)', 'rgba(81, 0, 83, 1)'];
 
 export const BOTTOM_TAPBAR_HEIGHT = 65;
@@ -86,6 +86,7 @@ export const ICON_PHOTO = require('@/assets/images/icons/photo.png');
 export const ICON_VIDEO = require('@/assets/images/icons/video.png');
 export const ICON_ALBUM = require('@/assets/images/icons/album.png');
 export const ICON_AVATAR = require('@/assets/images/icons/avatar.png');
+export const IMAGE_PROFILEBG = require('@/assets/images/icons/profilebg.png');
 
 export const IMAGE_BG = require('@/assets/images/hd/bg (1).png')
 export const IMAGE_BG2 = require('@/assets/images/hd/bg (2).png')

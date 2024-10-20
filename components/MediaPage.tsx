@@ -1,6 +1,6 @@
 
 import MediaView from '@/components/MediaView';
-import { useAuth } from '@/context/Authentication';
+import { useAuth } from '@/components/navigation/Authentication';
 import Request from '@/utils/request';
 import { useEffect, useState } from 'react';
 import { StyleSheet, ToastAndroid, View } from 'react-native';
@@ -22,7 +22,6 @@ const MediaPage: React.FC<MediaPageProps> = ({
     useEffect(() => {
         const fetchData = async () => {
             if (token) {
-                Request.setAuthorizationToken(token);
                 try {
                     Request.setAuthorizationToken(token);
                     switch (page) {

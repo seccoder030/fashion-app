@@ -1,5 +1,4 @@
 import { BOTTOM_TAPBAR_HEIGHT, ICON_COMMENT, ICON_HEARTFILL, SCREEN_WIDTH } from '@/constants/Config';
-import { useAuth } from '@/context/Authentication';
 import Request from '@/utils/request';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -8,6 +7,7 @@ import Blank from './Blank';
 import IconButton from './IconButton';
 import Loading from './Loading';
 import Media from './Media';
+import { useAuth } from './navigation/Authentication';
 
 interface ImageListProps {
     search?: string;
@@ -16,7 +16,7 @@ interface ImageListProps {
 const ImageList: React.FC<ImageListProps> = ({
     search = ''
 }) => {
-    const { token } = useAuth();
+    const { token } = useAuth()
     const [medias, setMedias] = useState<IPost[] | null>(null);
 
     useEffect(() => {
@@ -24,7 +24,6 @@ const ImageList: React.FC<ImageListProps> = ({
             if (token) {
                 try {
                     Request.setAuthorizationToken(token);
-                    console.log(search)
                     if (search) {
                         var res = await Request.Get(`/post/search?query=${search}`);
                         setMedias(res);
@@ -48,12 +47,12 @@ const ImageList: React.FC<ImageListProps> = ({
         return <Blank />
     }
 
-    const handleItem = () => {
-        router.push('/DetailScreen');
-    };
+    const handleItem = (item: IPost) => {
+        router.push({ pathname: '/DetailScreen', params: { postId: item.id, userId: item.user_id, type: item.type ? "video" : "image", uri: item.uri, title: item.title, content: item.content, likesCount: item.likes, commentsCount: item.comments, favoCount: item.favorites } });
+    }
 
     const renderItem = ({ item }: { item: IPost }) => (
-        <Pressable onPress={handleItem} style={styles.card}>
+        <Pressable onPress={() => handleItem(item)} style={styles.card} >
             <View style={styles.cardImage}>
                 <Media type={item.type} source={{ uri: item.uri }} backgroundColor={'transparent'} play={true} resizeMode={1} />
             </View>
@@ -82,6 +81,7 @@ const ImageList: React.FC<ImageListProps> = ({
                 keyExtractor={(item) => item.id}
                 numColumns={2}
                 contentContainerStyle={styles.contentContainer}
+                columnWrapperStyle={styles.columnWrapper}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
             />
@@ -96,6 +96,9 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         paddingBottom: BOTTOM_TAPBAR_HEIGHT - 10,
+    },
+    columnWrapper: {
+        justifyContent: 'space-between',
     },
     card: {
         width: (SCREEN_WIDTH - 60) / 2,

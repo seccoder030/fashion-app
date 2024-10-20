@@ -1,6 +1,5 @@
 interface IPost {
     id: string;
-    comments: number;
     content: string;
     uri: string;
     user: IUser;
@@ -8,9 +7,10 @@ interface IPost {
     type: boolean;
     title: string;
     likes?: number;
+    comments?: number;
     favorited_users?: string;
     favorites?: number;
-    views?: number
+    views?: number;
     published_at?: string;
     updated_at?: string;
     created_at?: string;
@@ -29,7 +29,11 @@ interface IUser {
     birthday?: string;
     email?: string;
     email_verified_at?: string;
-    location: string;
+    location?: string;
+    content?: string;
+    school?: string;
+    profile_link?: string;
+    is_public?: boolean;
     uuid?: string;
     categories?: string[];
     phone?: string
@@ -55,13 +59,14 @@ interface IMessage {
 
 interface IComment {
     id: string;
-    name: string;
-    uri?: string;
-    date: string;
-    comments: number;
-    likes: number;
-    star: number;
-    post: string;
-    replyTo?: string;
-    replys?: IComment[] | undefined;
+    sender_id: string;
+    receiver_id: string;
+    comment_text: string;
+    sender_friends_count: number;
+    received_comments_count: number;
+    sender: {};
+    receiver: {};
+    post: {};
+    created_at?: string;
+    updated_at?: string;
 }

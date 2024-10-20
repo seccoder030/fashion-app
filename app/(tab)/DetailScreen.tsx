@@ -1,35 +1,39 @@
 import Detail from '@/components/Detail';
 import DetailTopTabBar from '@/components/DetailTopTabBar';
-import { BACKGROUND_GRADIENT_COLOR, SEARCHDETAILTOP_TAPBAR_HEIGHT } from '@/constants/Config';
-import { LinearGradient } from 'expo-linear-gradient';
+import { BACKGROUND_COLOR, SEARCHDETAILTOP_TAPBAR_HEIGHT } from '@/constants/Config';
+import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-export default function DetailScreen() {
+type DetailParams = {
+    postId: string;
+    userId: string;
+    type: string;
+    uri: string;
+    title: string;
+    content: string;
+    likesCount: string;
+    commentsCount: string;
+    favoCount: string;
+};
+
+const DetailScreen = () => {
+    const { postId, userId, type, uri, title, content, likesCount, commentsCount, favoCount } = useLocalSearchParams<DetailParams>();
+
     return (
-        <LinearGradient
-            colors={BACKGROUND_GRADIENT_COLOR}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.gradient}
-        >
+        <View style={styles.container} >
             <DetailTopTabBar />
-            <Detail />
-        </LinearGradient>
+            <Detail postId={postId} userId={userId} type={type === 'video' ? true : false} uri={uri} title={title} content={content} likesCount={parseInt(likesCount)} commentsCount={parseInt(commentsCount)} favoCount={parseInt(favoCount)} />
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    content: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    gradient: {
-        flex: 1,
         paddingTop: SEARCHDETAILTOP_TAPBAR_HEIGHT,
+        backgroundColor: BACKGROUND_COLOR
     },
 });
+
+export default DetailScreen;

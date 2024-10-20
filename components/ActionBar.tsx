@@ -1,70 +1,60 @@
+import { useAuth } from '@/components/navigation/Authentication';
 import { ICON_ADD, ICON_AVATAR, ICON_COMMENT, ICON_HEART, ICON_HEARTFILL, ICON_SHARE } from '@/constants/Config';
-import { useAuth } from '@/context/Authentication';
 import Request from '@/utils/request';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, ToastAndroid, View } from 'react-native';
 import IconButton from './IconButton';
 import IconTextButton from './IconTextButton';
 
 interface IActionBarProps {
-  userId: string;
   postId: string;
-  likes: number;
-  comments: number;
-  uri?: string;
+  userId: string;
+  type: boolean;
+  avatar: string | undefined;
+  uri: string | undefined;
+  title: string;
+  content: string;
+  preLikesCount: number;
+  commentsCount: number;
+  favoritesCount: number;
 }
 
-const ActionBar: React.FC<IActionBarProps> = ({ userId, postId, likes, comments, uri = undefined }) => {
-  const { token, user } = useAuth();
+const ActionBar: React.FC<IActionBarProps> = ({ postId, userId, type, avatar, uri, title, content, preLikesCount, commentsCount, favoritesCount }) => {
+  const { friends, favorites, updateFriends, updateFavorites } = useAuth();
   const [heart, setHeart] = useState<boolean>(false);
   const [add, setAdd] = useState<boolean>(false);
+  const [likesCount, setLikeCount] = useState<number>(preLikesCount);
+
+  const shortNumber = (num: number) => num ? num > 1000 ? `${Math.floor(num / 100) / 10}K` : `${num}` : 0
+
+  useEffect(() => {
+    if (friends) setAdd(friends.has(userId));
+    if (favorites) setHeart(favorites.has(postId));
+  }, [friends, favorites])
 
   const addFriend = async () => {
-    if (token) {
-      try {
-        Request.setAuthorizationToken(token);
-        // setAdd(true);
-        const res = await Request.Post('/post/friend/save', { friend_id: userId });
-        if (res.status === 'success') {
-          ToastAndroid.show(res.msg, ToastAndroid.SHORT);
-        } else {
-          // setAdd(false);
-          ToastAndroid.show(res.msg, ToastAndroid.SHORT);
-        }
-      } catch (error) {
-        console.log(error);
-        ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
-      }
-    }
+    const status = await updateFriends(userId);
+    if (status) setAdd(true);
   }
 
   const addLikes = async () => {
-    if (token) {
-      try {
-        Request.setAuthorizationToken(token);
-        const res = await Request.Post('/post/likes/save', { post_id: postId });
-        if (res.status === 'success') {
-          setHeart(!heart);
-          ToastAndroid.show(res.msg, ToastAndroid.SHORT);
-        } else {
-          ToastAndroid.show(res.msg, ToastAndroid.SHORT);
-        }
-      } catch (error) {
-        console.log(error);
-        ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
-      }
+    const status = await updateFavorites(postId);
+    if (status) {
+      setLikeCount(heart ? likesCount - 1 : likesCount + 1);
+      setHeart(!heart);
     }
   }
 
+  const handleItem = () => {
+    router.push({ pathname: '/DetailScreen', params: { postId: postId, userId: userId, type: type ? "video" : "image", uri: uri, title: title, content: content, likesCount: likesCount, commentsCount: commentsCount, favoCount: favoritesCount } });
+  }
   return (
     <View style={styles.container}>
-      {/* <BlurView intensity={30} experimentalBlurMethod='dimezisBlurView' style={styles.blur}>
-      </BlurView> */}
       <View style={styles.blur}></View>
       <View style={styles.content}>
         <Image
-          source={uri ? { uri: uri } : ICON_AVATAR}
+          source={avatar ? { uri: avatar } : ICON_AVATAR}
           style={[
             { width: 40, height: 40 },
             styles.userImage
@@ -76,8 +66,8 @@ const ActionBar: React.FC<IActionBarProps> = ({ userId, postId, likes, comments,
             <IconButton onPress={() => addFriend()} size={20} iconSource={ICON_ADD} />
           </View>
         }
-        <IconTextButton onPress={() => addLikes()} size={20} iconSource={heart ? ICON_HEARTFILL : ICON_HEART} iconStyle={styles.item} text={likes > 1000 ? `${Math.floor(likes / 100) / 10}K` : `${likes}`} />
-        <IconTextButton onPress={() => router.push('/DetailScreen')} size={20} iconSource={ICON_COMMENT} iconStyle={styles.item} text={comments > 1000 ? `${Math.floor(comments / 100) / 10}K` : `${comments}`} />
+        <IconTextButton onPress={() => addLikes()} size={20} iconSource={heart ? ICON_HEARTFILL : ICON_HEART} iconStyle={styles.item} text={shortNumber(likesCount).toString()} />
+        <IconTextButton onPress={() => handleItem()} size={20} iconSource={ICON_COMMENT} iconStyle={styles.item} text={shortNumber(commentsCount).toString()} />
         <IconTextButton onPress={() => alert("Share")} size={20} iconSource={ICON_SHARE} iconStyle={styles.item} text='Share' />
       </View>
 

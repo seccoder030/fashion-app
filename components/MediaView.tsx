@@ -26,7 +26,7 @@ const MediaView: React.FC<MediaViewProps> = ({
                 <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 13 }}>{item.title.length > 20 ? item.title.slice(0, 20) + '...' : item.title}</Text>
                 <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 11 }}>{item.content.length > 20 ? item.content.slice(0, 20) + '...' : item.content}</Text>
             </View>
-            <ActionBar userId={item.user.id} postId={item.id} likes={item.likes || 0} comments={item.comments || 0} uri={item.user.avatar} />
+            <ActionBar userId={item.user.id} postId={item.id} type={item.type} avatar={item.user.avatar} uri={item.uri} title={item.title} content={item.content} preLikesCount={item.likes || 0} commentsCount={item.comments || 0} favoritesCount={item.favorites || 0} />
         </>
     );
 };

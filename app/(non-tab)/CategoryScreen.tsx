@@ -1,11 +1,11 @@
 import Blank from '@/components/Blank';
 import CategoryView from '@/components/CategoryView';
 import Loading from '@/components/Loading';
+import { useAuth } from '@/components/navigation/Authentication';
 import TextButton from '@/components/TextButton';
-import { BACKGROUND_GRADIENT_COLOR, SCREEN_HEIGHT } from '@/constants/Config';
-import { useAuth } from '@/context/Authentication';
+import { BACKGROUND_COLOR, SCREEN_HEIGHT } from '@/constants/Config';
 import Request from '@/utils/request';
-import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
 
@@ -22,13 +22,15 @@ export default function CategoryScreen() {
                     const res = await Request.Get(`/category`);
                     if (res.status) {
                         setCategories(res.data);
-                        user?.categories && user?.categories.forEach(item => {
-                            setCheckedCategories(prevChecked => {
-                                const newChecked = new Set(prevChecked);
-                                newChecked.add(item);
-                                return newChecked;
+                        if (user?.categories) {
+                            user.categories.forEach((item: string) => {
+                                setCheckedCategories(prevChecked => {
+                                    const newChecked = new Set(prevChecked);
+                                    newChecked.add(item);
+                                    return newChecked;
+                                });
                             });
-                        });
+                        }
                     }
                 } catch (error) {
                     console.error('Error fetching categories:', error);
@@ -42,14 +44,9 @@ export default function CategoryScreen() {
         return (
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="light-content" />
-                <LinearGradient
-                    colors={BACKGROUND_GRADIENT_COLOR}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.gradient}
-                >
+                <View style={styles.viewColor}>
                     <Loading backgroundColor={'transparent'} />
-                </LinearGradient>
+                </View>
             </SafeAreaView>
         );
     }
@@ -58,14 +55,9 @@ export default function CategoryScreen() {
         return (
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="light-content" />
-                <LinearGradient
-                    colors={BACKGROUND_GRADIENT_COLOR}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.gradient}
-                >
+                <View style={styles.viewColor}>
                     <Blank />
-                </LinearGradient>
+                </View>
             </SafeAreaView>
         );
     }
@@ -76,19 +68,15 @@ export default function CategoryScreen() {
             checkedCategories.forEach(item => {
                 data.push(item);
             });
-            updateUserCategories(data);
+            const status = await updateUserCategories(data);
+            if (status) router.replace('/HomeScreen');
         }
     };
 
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" />
-            <LinearGradient
-                colors={BACKGROUND_GRADIENT_COLOR}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.gradient}
-            >
+            <View style={styles.viewColor}>
                 <View style={styles.contentCategories}>
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}>请选择您关注的类别</Text>
@@ -98,7 +86,7 @@ export default function CategoryScreen() {
                         <TextButton onPress={handleNext} text='选       择' backgroundColor={'rgba(255, 0, 153, 1)'} borderRadius={10} paddingHorizontal={35} paddingVertical={5} fontSize={25} />
                     </View>
                 </View>
-            </LinearGradient>
+            </View>
         </SafeAreaView>
     );
 }
@@ -107,8 +95,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    gradient: {
+    viewColor: {
         flex: 1,
+        backgroundColor: BACKGROUND_COLOR
     },
     contentCategories: {
         marginHorizontal: 20

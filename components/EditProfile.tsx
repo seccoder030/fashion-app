@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/Authentication';
+import { useAuth } from '@/components/navigation/Authentication';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -28,14 +28,22 @@ const EditProfile: React.FC<EditProfileProps> = ({
     const [name, setName] = useState('');
     const [username, setUserName] = useState('');
     const [birthday, setBirthDay] = useState<Date | null>(null);
+    const [phone, setPhone] = useState('');
     const [school, setSchool] = useState('');
-    const [level, setLevel] = useState('');
+    const [content, setContent] = useState('');
+    const [location, setLocation] = useState('');
+    const [link, setLink] = useState('');
 
     useEffect(() => {
         if (user) {
             if (user.name) setName(user.name);
             if (user.username) setUserName(user.username);
             if (user.birthday) setBirthDay(new Date(user.birthday));
+            if (user.phone) setPhone(user.phone);
+            if (user.school) setSchool(user.school);
+            if (user.content) setContent(user.content);
+            if (user.location) setLocation(user.location);
+            if (user.profile_link) setLink(user.profile_link);
         }
     }, [user]);
 
@@ -49,14 +57,25 @@ const EditProfile: React.FC<EditProfileProps> = ({
     };
 
     const handleSave = () => {
-        // setUser({})
+        setUser({
+            name: name,
+            username: username,
+            birthday: birthday?.toISOString(),
+            phone: phone,
+            school: school,
+            content: content,
+            location: location,
+            link: link,
+            avatar: avatar,
+            profileBg: profileBg
+        })
     }
 
     return (
         <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
             <View style={styles.info}>
                 <View style={styles.infoItem}>
-                    <Text style={styles.infoTitle}>姓       名</Text>
+                    <Text style={styles.infoTitle}>姓                 名</Text>
                     <TextInput
                         value={name}
                         onChangeText={value => setName(value)}
@@ -68,7 +87,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
             </View>
             <View style={styles.info}>
                 <View style={styles.infoItem}>
-                    <Text style={styles.infoTitle}>用户名称</Text>
+                    <Text style={styles.infoTitle}>用   户   名   称</Text>
                     <TextInput
                         value={username}
                         onChangeText={value => setUserName(value)}
@@ -80,7 +99,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
             </View>
             <View style={styles.info}>
                 <View style={styles.infoItem}>
-                    <Text style={styles.infoTitle}>性       别</Text>
+                    <Text style={styles.infoTitle}>性                 别</Text>
                     <Text
                         onPress={() => showMode()}
                         style={[styles.infoText, { padding: 5, color: birthday ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)' }]}
@@ -91,30 +110,60 @@ const EditProfile: React.FC<EditProfileProps> = ({
             </View>
             <View style={styles.info}>
                 <View style={styles.infoItem}>
-                    <Text style={styles.infoTitle}>出生日期</Text>
+                    <Text style={styles.infoTitle}>电   话   号   码</Text>
                     <TextInput
+                        value={phone}
+                        onChangeText={value => setPhone(value)}
                         style={styles.infoText}
-                        placeholder="请输入出生日期"
+                        placeholder="请输入电话号码"
                         placeholderTextColor="rgba(255, 255, 255, 0.5)"
                     />
                 </View>
             </View>
             <View style={styles.info}>
                 <View style={styles.infoItem}>
-                    <Text style={styles.infoTitle}>学校名称</Text>
+                    <Text style={styles.infoTitle}>学                 校</Text>
                     <TextInput
+                        value={school}
+                        onChangeText={value => setSchool(value)}
                         style={styles.infoText}
-                        placeholder="请输入学校名称"
+                        placeholder="请输入学校"
                         placeholderTextColor="rgba(255, 255, 255, 0.5)"
                     />
                 </View>
             </View>
             <View style={styles.info}>
                 <View style={styles.infoItem}>
-                    <Text style={styles.infoTitle}>年       级</Text>
+                    <Text style={styles.infoTitle}>内                 容</Text>
                     <TextInput
+                        value={content}
+                        onChangeText={value => setContent(value)}
                         style={styles.infoText}
-                        placeholder="请输入您的年级"
+                        placeholder="请输入内容"
+                        placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                    />
+                </View>
+            </View>
+            <View style={styles.info}>
+                <View style={styles.infoItem}>
+                    <Text style={styles.infoTitle}>地                 点</Text>
+                    <TextInput
+                        value={location}
+                        onChangeText={value => setLocation(value)}
+                        style={styles.infoText}
+                        placeholder="请输入地点"
+                        placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                    />
+                </View>
+            </View>
+            <View style={styles.info}>
+                <View style={styles.infoItem}>
+                    <Text style={styles.infoTitle}>个人资料链接</Text>
+                    <TextInput
+                        value={link}
+                        onChangeText={value => setLink(value)}
+                        style={styles.infoText}
+                        placeholder="请输入个人资料链接"
                         placeholderTextColor="rgba(255, 255, 255, 0.5)"
                     />
                 </View>
@@ -134,12 +183,12 @@ const EditProfile: React.FC<EditProfileProps> = ({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginVertical: 30
+        marginVertical: 20
     },
     info: {
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginVertical: 10
+        marginVertical: 7
     },
     infoItem: {
         flexDirection: 'row',

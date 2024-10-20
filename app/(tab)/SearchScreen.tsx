@@ -1,12 +1,11 @@
 import ImageList from '@/components/ImageList';
 import Loading from '@/components/Loading';
+import { useAuth } from '@/components/navigation/Authentication';
 import SearchTopTabBar from '@/components/SearchTopTabBar';
-import { BACKGROUND_GRADIENT_COLOR, SEARCHTOP_TAPBAR_HEIGHT } from '@/constants/Config';
-import { useAuth } from '@/context/Authentication';
+import { BACKGROUND_COLOR, SEARCHTOP_TAPBAR_HEIGHT } from '@/constants/Config';
 import Request from '@/utils/request';
-import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function SearchScreen() {
     const { token, user } = useAuth();
@@ -33,27 +32,14 @@ export default function SearchScreen() {
 
     if (!categories) {
         return (
-            <SafeAreaView style={styles.container}>
-                <StatusBar barStyle="light-content" />
-                <LinearGradient
-                    colors={BACKGROUND_GRADIENT_COLOR}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.gradient}
-                >
-                    <Loading backgroundColor={'transparent'} />
-                </LinearGradient>
-            </SafeAreaView>
+            <View style={styles.container}>
+                <Loading backgroundColor={'transparent'} />
+            </View>
         );
     }
 
     return (
-        <LinearGradient
-            colors={BACKGROUND_GRADIENT_COLOR}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.gradient}
-        >
+        <View style={styles.container}>
             <SearchTopTabBar tabs={categories} currentPage={currentPage} setCurrentPage={setCurrentPage} search={search} setSearch={setSearch} />
             {search ?
                 <ImageList search={search} /> :
@@ -61,16 +47,14 @@ export default function SearchScreen() {
                     <ImageList /> :
                     <ImageList search={categories[currentPage]} />
             }
-        </LinearGradient>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    gradient: {
-        flex: 1,
         paddingTop: SEARCHTOP_TAPBAR_HEIGHT,
+        backgroundColor: BACKGROUND_COLOR
     },
 });

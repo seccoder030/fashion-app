@@ -1,7 +1,12 @@
 import { BOTTOM_TAPBAR_HEIGHT, IMAGE_BG, IMAGE_BG10, IMAGE_BG2, IMAGE_BG3, IMAGE_BG4, IMAGE_BG5, IMAGE_BG6, IMAGE_BG7, IMAGE_BG8, IMAGE_BG9, SCREEN_WIDTH } from '@/constants/Config';
 import { router } from 'expo-router';
-import React from 'react';
-import { FlatList, Image, ImageSourcePropType, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Image, ImageSourcePropType, Pressable, ScrollView, StyleSheet, ToastAndroid, View } from 'react-native';
+import { useAuth } from './navigation/Authentication';
+import Request from '@/utils/request';
+import Loading from './Loading';
+import Blank from './Blank';
+import Media from './Media';
 
 interface Item {
     id: string;
@@ -12,10 +17,12 @@ interface Item {
 }
 
 interface ProfielViewProps {
+    mode: boolean;
     visible?: boolean;
 }
 
 const ProfileView: React.FC<ProfielViewProps> = ({
+    mode = true,
     visible = true
 }) => {
     const feedItems: Item[] = [
@@ -29,16 +36,52 @@ const ProfileView: React.FC<ProfielViewProps> = ({
         { id: '8', imageUrl: IMAGE_BG9, caption: '在此输入您的标题。', likes: 313, comments: 3131 },
         { id: '9', imageUrl: IMAGE_BG10, caption: '在此输入您的标题。', likes: 878, comments: 1208 },
         { id: '10', imageUrl: IMAGE_BG, caption: '在此输入您的标题。', likes: 351, comments: 1335 },
-        // Add more items as needed
     ];
 
-    function handleItem() {
-        router.push('/DetailScreen');
+    const { token } = useAuth()
+    const [medias, setMedias] = useState<IPost[] | null>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (token) {
+                try {
+                    Request.setAuthorizationToken(token);
+                    const res = await Request.Get(`/profile/posts`);
+                    if (res.status === 'success') {
+                        setMedias([]);
+                        if (mode) {
+                            res.me.map((item: { post: IPost }) => {
+                                setMedias(prev => [...(prev || []), item.post]);
+                            })
+                        } else {
+                            res.favorites.map((item: { post: IPost }) => {
+                                setMedias(prev => [...(prev || []), item.post]);
+                            })
+                        }
+                    }
+                } catch (error) {
+                    ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
+                }
+            }
+        }
+        fetchData();
+    }, [mode]);
+
+    if (!medias) {
+        return <Loading backgroundColor={'transparent'} />
     }
 
-    const renderItem = ({ item }: { item: Item }) => (
-        <Pressable onPress={handleItem} style={styles.card}>
-            <Image source={item.imageUrl} style={styles.cardImage} />
+    if (medias.length == 0) {
+        return <Blank />
+    }
+
+    const handleItem = (item: IPost) => {
+        router.push({ pathname: '/DetailScreen', params: { postId: item.id, userId: item.user_id, type: item.type ? "video" : "image", uri: item.uri, title: item.title, content: item.content, likesCount: item.likes, commentsCount: item.comments, favoCount: item.favorites } });
+    }
+
+    const renderItem = ({ item }: { item: IPost }) => (
+        <Pressable onPress={() => handleItem(item)} style={styles.card}>
+            <Media type={item.type} source={{ uri: item.uri }} backgroundColor={'transparent'} play={true} resizeMode={1} />
         </Pressable >
 
     );
@@ -46,7 +89,7 @@ const ProfileView: React.FC<ProfielViewProps> = ({
     return (
         <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
             <FlatList
-                data={feedItems}
+                data={medias}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
                 numColumns={3}
@@ -66,8 +109,6 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     contentContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
         paddingBottom: BOTTOM_TAPBAR_HEIGHT + 5,
         zIndex: 50
     },

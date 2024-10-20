@@ -1,5 +1,4 @@
 import { BOTTOM_TAPBAR_HEIGHT, ICON_HOME, ICON_MESSEAGE, ICON_POST, ICON_PROFILE, ICON_SEARCH } from '@/constants/Config';
-import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacityProps, View } from 'react-native';
@@ -25,14 +24,14 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({
 
   return (
     <View style={styles.container}>
-      <BlurView intensity={30} experimentalBlurMethod='dimezisBlurView' style={styles.blur}>
-      </BlurView>
-      <View style={styles.content}>
-        <IconButton onPress={() => goto(0)} size={30} iconSource={ICON_HOME} enabled={activePageID == 0 ? false : true} />
-        <IconButton onPress={() => goto(1)} size={30} iconSource={ICON_SEARCH} enabled={activePageID == 1 ? false : true} />
-        <IconButton onPress={() => router.push('/CameraScreen')} size={40} iconSource={ICON_POST} />
-        <IconButton onPress={() => goto(2)} size={30} iconSource={ICON_MESSEAGE} enabled={activePageID == 2 ? false : true} />
-        <IconButton onPress={() => goto(3)} size={30} iconSource={ICON_PROFILE} enabled={activePageID == 3 ? false : true} />
+      <View style={styles.blur}>
+        <View style={styles.content}>
+          <IconButton onPress={() => goto(0)} size={30} iconSource={ICON_HOME} enabled={activePageID == 0 ? false : true} />
+          <IconButton onPress={() => goto(1)} size={30} iconSource={ICON_SEARCH} enabled={activePageID == 1 ? false : true} />
+          <IconButton onPress={() => router.push('/CameraScreen')} size={40} iconSource={ICON_POST} />
+          <IconButton onPress={() => goto(2)} size={30} iconSource={ICON_MESSEAGE} enabled={activePageID == 2 ? false : true} />
+          <IconButton onPress={() => goto(3)} size={30} iconSource={ICON_PROFILE} enabled={activePageID == 3 ? false : true} />
+        </View>
       </View>
     </View>
   );
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1,
     borderRightWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.5)',
-    backgroundColor: 'rgba(33, 38, 55, 0.5)',
+    backgroundColor: 'rgba(33, 38, 55, 0.9)',
     elevation: 10,
   },
   content: {
@@ -71,7 +70,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 20,
     marginRight: 20,
-    transform: [{ translateY: (40 - BOTTOM_TAPBAR_HEIGHT) / 2 }],
   },
 });
 

@@ -1,8 +1,7 @@
 import IconButton from '@/components/IconButton';
+import { useAuth } from "@/components/navigation/Authentication";
 import TextButton from '@/components/TextButton';
-import { BACKGROUND_GRADIENT_COLOR, ICON_EMAIL, ICON_EYE, ICON_EYEOFF, ICON_TIKTOK, ICON_USER, ICON_USERLOCK, ICON_WECHAT, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
-import { useAuth } from "@/context/Authentication";
-import { LinearGradient } from 'expo-linear-gradient';
+import { BACKGROUND_COLOR, ICON_EMAIL, ICON_EYE, ICON_EYEOFF, ICON_TIKTOK, ICON_USER, ICON_USERLOCK, ICON_WECHAT, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -26,12 +25,7 @@ export default function SignUp() {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" />
-            <LinearGradient
-                colors={BACKGROUND_GRADIENT_COLOR}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.gradient}
-            >
+            <View style={styles.viewColor}>
                 <View style={styles.content}>
                     <View style={styles.topContainer}>
                         <View style={styles.titleContainer}>
@@ -137,7 +131,7 @@ export default function SignUp() {
                         <TextButton onPress={handleSignUp} text='报       名' backgroundColor={'rgba(255, 0, 153, 1)'} borderRadius={10} paddingHorizontal={35} paddingVertical={5} fontSize={25} />
                     </View>
                 </View>
-            </LinearGradient>
+            </View>
         </SafeAreaView>
     );
 };
@@ -150,8 +144,9 @@ const styles = StyleSheet.create({
         flex: 1,
         marginHorizontal: 30
     },
-    gradient: {
+    viewColor: {
         flex: 1,
+        backgroundColor: BACKGROUND_COLOR
     },
     topContainer: {
         height: SCREEN_HEIGHT * 0.45,

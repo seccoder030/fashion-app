@@ -1,5 +1,3 @@
-import Loading from "@/components/Loading"
-import { useAuth } from "@/context/Authentication"
 import { Stack } from "expo-router"
 import React from "react"
 

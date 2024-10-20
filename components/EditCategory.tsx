@@ -3,7 +3,7 @@ import CategoryView from '@/components/CategoryView';
 import Loading from '@/components/Loading';
 import TextButton from '@/components/TextButton';
 import { SCREEN_HEIGHT } from '@/constants/Config';
-import { useAuth } from '@/context/Authentication';
+import { useAuth } from '@/components/navigation/Authentication';
 import Request from '@/utils/request';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -26,13 +26,15 @@ const EditCategory: React.FC<EditCategoryProps> = ({
                     Request.setAuthorizationToken(token);
                     const res = await Request.Get(`/category`);
                     setCategories(res.data);
-                    user?.categories && user?.categories.forEach(item => {
-                        setCheckedCategories(prevChecked => {
-                            const newChecked = new Set(prevChecked);
-                            newChecked.add(item);
-                            return newChecked;
+                    if (user?.categories) {
+                        user.categories.forEach((item: string) => {
+                            setCheckedCategories(prevChecked => {
+                                const newChecked = new Set(prevChecked);
+                                newChecked.add(item);
+                                return newChecked;
+                            });
                         });
-                    });
+                    }
                 } catch (error) {
                     console.error('Error fetching categories:', error);
                 }
@@ -57,7 +59,7 @@ const EditCategory: React.FC<EditCategoryProps> = ({
             checkedCategories.forEach(item => {
                 data.push(item);
             });
-            updateUserCategories(data);
+            await updateUserCategories(data);
         }
     };
 

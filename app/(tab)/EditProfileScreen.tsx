@@ -1,10 +1,9 @@
 import EditCategory from '@/components/EditCategory';
 import EditProfile from '@/components/EditProfile';
 import IconButton from '@/components/IconButton';
-import { BACKGROUND_GRADIENT_COLOR, ICON_CAMERA, ICON_CAMERAFILL, ICON_HEARTLINE, ICON_LISTLINE, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
-import { useAuth } from '@/context/Authentication';
+import { useAuth } from '@/components/navigation/Authentication';
+import { BACKGROUND_COLOR, ICON_AVATAR, ICON_CAMERA, ICON_CAMERAFILL, ICON_HEARTLINE, ICON_LISTLINE, IMAGE_PROFILEBG, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
 import * as ImagePicker from 'expo-image-picker';
-import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
@@ -40,8 +39,8 @@ export default function EditProfileScreen() {
         });
 
         if (!result.canceled) {
-            setProfileBg(result.assets[0].uri);
-        } else return null
+            return result.assets[0].uri;
+        } else return null;
     }
 
     const handleProfileBg = async () => {
@@ -55,18 +54,13 @@ export default function EditProfileScreen() {
     }
 
     return (
-        <LinearGradient
-            colors={BACKGROUND_GRADIENT_COLOR}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.gradient}
-        >
+        <View style={styles.container}>
             <View style={styles.topContainer}>
-                <Image source={{ uri: profileBg }} style={styles.profileBg} />
+                <Image source={profileBg ? { uri: profileBg } : IMAGE_PROFILEBG} style={styles.profileBg} />
                 <View style={styles.changeProfileBg}>
                     <IconButton onPress={handleProfileBg} size={52} iconSource={ICON_CAMERAFILL} />
                 </View>
-                <Image source={{ uri: avatar }} style={styles.profileUser} />
+                <Image source={avatar ? { uri: avatar } : ICON_AVATAR} style={styles.profileUser} />
                 <View style={styles.changeProfileUser}>
                     <IconButton onPress={handleAvatar} size={27} iconSource={ICON_CAMERA} />
                 </View>
@@ -77,16 +71,14 @@ export default function EditProfileScreen() {
             </View>
             <EditProfile visible={activeTab} profileBg={profileBg} avatar={avatar} />
             <EditCategory visible={!activeTab} />
-        </LinearGradient>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    gradient: {
-        flex: 1,
+        backgroundColor: BACKGROUND_COLOR
     },
     topContainer: {
         alignItems: 'center',

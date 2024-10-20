@@ -1,29 +1,27 @@
 import { BOTTOM_TAPBAR_HEIGHT, CHINESE_EMOJI_LANG, DETAILTOP_TAPBAR_HEIGHT, ICON_AD, ICON_AVATAR, ICON_CANCEL, ICON_COMMENT, ICON_COMMENTPOST, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, ICON_UP, IMAGE_BG7, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import EmojiPicker from 'rn-emoji-keyboard';
 import IconButton from './IconButton';
 import TextButton from './TextButton';
 import Blank from './Blank';
-import { useAuth } from '@/context/Authentication';
+import { useAuth } from '@/components/navigation/Authentication';
+import Media from './Media';
+import Request from '@/utils/request';
 
-const item = { id: '1', imageUrl: IMAGE_BG7, caption: '在此输入您的标题。', likes: 578, comments: 1208, star: 1031 };
-const jsondata: IComment[] = [
-    { id: '1', name: '姓  名111', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-    { id: '2', name: '姓  名1', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '1' },
-    { id: '3', name: '姓  名2', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '1' },
-    { id: '4', name: '姓  名3', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '1' },
-    { id: '5', name: '姓  名4', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '2' },
-    { id: '6', name: '姓  名5', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '3' },
-    { id: '7', name: '姓  名222', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '2' },
-    { id: '8', name: '姓  名21', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-    { id: '9', name: '姓  名22', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '8' },
-    { id: '10', name: '姓  名23', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '8' },
-    { id: '11', name: '姓  名24', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 0, likes: 0, star: 0, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-    { id: '12', name: '姓  名25', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 0, likes: 0, star: 0, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '9' },
-];
+interface DetailParams {
+    postId: string;
+    userId: string;
+    type: boolean;
+    uri: string | undefined;
+    title: string;
+    content: string;
+    likesCount?: number;
+    commentsCount?: number;
+    favoCount?: number;
+};
 
-const Detail = () => {
+const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, content, likesCount, commentsCount, favoCount }) => {
     const { token, user } = useAuth();
     const [comments, setComments] = useState<IComment[] | null>(null);
     const [viewDetail, setViewDetail] = useState<boolean[]>([]);
@@ -33,97 +31,27 @@ const Detail = () => {
     const scrollViewRef = useRef<ScrollView>(null);
     const [isReply, setIsReply] = useState<{ index: number, replyindex: number | undefined } | undefined>(undefined);
 
-    function processComments(jsondata: IComment[]): IComment[] {
-        const commentMap: { [key: string]: IComment } = {};
-        const posts: IComment[] = [];
-
-        // First pass: create a map of all comments and identify posts
-        jsondata.forEach(item => {
-            commentMap[item.id] = { ...item, replys: [] };
-            if (!item.replyTo) {
-                posts.push(commentMap[item.id]);
-            }
-        });
-
-        // Function to find the root post of a comment
-        function findRootPost(comment: IComment): IComment {
-            if (!comment.replyTo) return comment;
-            return findRootPost(commentMap[comment.replyTo]);
-        }
-
-        // Second pass: organize replies
-        jsondata.forEach(item => {
-            if (item.replyTo) {
-                const rootPost = findRootPost(item);
-                if (!rootPost.replys) {
-                    rootPost.replys = [];
-                }
-                rootPost.replys.push(commentMap[item.id]);
-
-                // Also add to direct parent's replys if it exists
-                const parent = commentMap[item.replyTo];
-                if (parent && parent !== rootPost) {
-                    if (!parent.replys) {
-                        parent.replys = [];
-                    }
-                    parent.replys.push(commentMap[item.id]);
-                }
-            }
-        });
-
-        // Function to recursively sort replies
-        function sortReplies(comment: IComment) {
-            if (comment.replys && comment.replys.length > 0) {
-                comment.replys.sort((a, b) => parseInt(a.id) - parseInt(b.id));
-                comment.replys.forEach(sortReplies);
-            }
-        }
-
-        // Sort posts and their replies
-        posts.sort((a, b) => parseInt(a.id) - parseInt(b.id));
-        posts.forEach(sortReplies);
-
-        return posts;
-    }
+    const shortNumber = (num: number | undefined) => num ? num > 1000 ? `${Math.floor(num / 100) / 10}K` : `${num}` : 0
 
     useEffect(() => {
-        const posts = processComments(jsondata);
-        setComments(posts)
+        async function fetchData() {
+            if (token) {
+                try {
+                    Request.setAuthorizationToken(token);
+                    const res = await Request.Get(`/post/comments/get?post_id=${postId}`);
+                    if (res.status === 'success') { }
+                } catch (error) {
+                    console.log(error);
+                    ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
+                }
+
+            }
+        }
+        fetchData();
     }, []);
 
     if (!comments) {
         return <Blank />
-    }
-
-    // New function to get a comment by ID
-    function getCommentById(id: string): IComment | undefined {
-        if (comments) {
-            // First, check if the ID matches any top-level post
-            const post = comments.find(comment => comment.id === id);
-            if (post) return post;
-
-            // If not found in top-level posts, search in replies
-            for (const comment of comments) {
-                if (comment.replys) {
-                    const foundInReplies = searchInReplies(comment.replys, id);
-                    if (foundInReplies) return foundInReplies;
-                }
-            }
-        }
-
-        return undefined;
-    }
-
-    // Helper function to search for a comment in replies
-    function searchInReplies(replies: IComment[], id: string): IComment | undefined {
-        for (const reply of replies) {
-            if (reply.id === id) return reply;
-            if (reply.replys) {
-                const foundInNestedReplies = searchInReplies(reply.replys, id);
-                if (foundInNestedReplies) return foundInNestedReplies;
-            }
-        }
-        return undefined;
     }
 
     function handleItem() {
@@ -198,29 +126,31 @@ const Detail = () => {
                     <ScrollView ref={scrollViewRef} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                         <View style={styles.border}>
                             <View style={styles.cardLayout}>
-                                <Pressable onPress={handleItem} key={item.id} style={styles.card}>
-                                    <Image source={item.imageUrl} style={styles.cardImage} />
+                                <Pressable onPress={handleItem} style={styles.card}>
+                                    <View style={styles.cardImage}>
+                                        <Media type={type} source={{ uri: uri }} backgroundColor={'transparent'} play={true} resizeMode={1} />
+                                    </View>
                                     <View style={styles.cardFooter}>
                                         <View style={styles.info}>
                                             <View style={styles.infoItem}>
                                                 <IconButton size={15} iconSource={ICON_COMMENT} enabled={false} />
-                                                <Text style={styles.infoText}>{item.comments}</Text>
+                                                <Text style={styles.infoText}>{shortNumber(commentsCount)}</Text>
                                             </View>
                                             <View style={styles.infoItem}>
                                                 <IconButton size={15} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                <Text style={styles.infoText}>{item.likes}</Text>
+                                                <Text style={styles.infoText}>{shortNumber(likesCount)}</Text>
                                             </View>
                                             <View style={styles.infoItem}>
                                                 <IconButton size={15} iconSource={ICON_STAR} enabled={false} />
-                                                <Text style={styles.infoText}>{item.star}</Text>
+                                                <Text style={styles.infoText}>{shortNumber(favoCount)}</Text>
                                             </View>
                                         </View>
                                     </View>
                                 </Pressable >
                             </View>
                             <View style={styles.contentLayout}>
-                                <Text style={styles.title}>在此输入您的标题。</Text>
-                                <Text style={styles.text}>在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。在此处输入您的描述。</Text>
+                                <Text style={styles.title}>{title}</Text>
+                                <Text style={styles.text}>{content}</Text>
                                 <View style={styles.inputBar}>
                                     <TextInput
                                         value={postText}
@@ -259,15 +189,15 @@ const Detail = () => {
                                             <View style={styles.commentFeedback}>
                                                 <View style={styles.commentFeedbackItem}>
                                                     <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                                    <Text style={styles.commentFeedbackText}>{item.comments}</Text>
+                                                    <Text style={styles.commentFeedbackText}>{shortNumber(item.comments)}</Text>
                                                 </View>
                                                 <View style={styles.commentFeedbackItem}>
                                                     <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                    <Text style={styles.commentFeedbackText}>{item.likes}</Text>
+                                                    <Text style={styles.commentFeedbackText}>{shortNumber(item.likes)}</Text>
                                                 </View>
                                                 <View style={styles.commentFeedbackItem}>
                                                     <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                                    <Text style={styles.commentFeedbackText}>{item.star}</Text>
+                                                    <Text style={styles.commentFeedbackText}>{shortNumber(item.star)}</Text>
                                                 </View>
                                             </View>
                                         </View>
@@ -293,15 +223,15 @@ const Detail = () => {
                                                             <View style={styles.replyFeedback}>
                                                                 <View style={styles.replyFeedbackItem}>
                                                                     <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                                                    <Text style={styles.replyFeedbackText}>{replyitem.comments}</Text>
+                                                                    <Text style={styles.replyFeedbackText}>{shortNumber(replyitem.comments)}</Text>
                                                                 </View>
                                                                 <View style={styles.replyFeedbackItem}>
                                                                     <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                                    <Text style={styles.replyFeedbackText}>{replyitem.likes}</Text>
+                                                                    <Text style={styles.replyFeedbackText}>{shortNumber(replyitem.likes)}</Text>
                                                                 </View>
                                                                 <View style={styles.replyFeedbackItem}>
                                                                     <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                                                    <Text style={styles.replyFeedbackText}>{replyitem.star}</Text>
+                                                                    <Text style={styles.replyFeedbackText}>{shortNumber(replyitem.star)}</Text>
                                                                 </View>
                                                             </View>
                                                         </View>
@@ -363,15 +293,15 @@ const Detail = () => {
                                         <View style={styles.commentFeedback}>
                                             <View style={styles.commentFeedbackItem}>
                                                 <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].comments}</Text>
+                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].comments)}</Text>
                                             </View>
                                             <View style={styles.commentFeedbackItem}>
                                                 <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].likes}</Text>
+                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].likes)}</Text>
                                             </View>
                                             <View style={styles.commentFeedbackItem}>
                                                 <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].star}</Text>
+                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].star)}</Text>
                                             </View>
                                         </View>
                                     </View>
@@ -387,15 +317,15 @@ const Detail = () => {
                                         <View style={styles.commentFeedback}>
                                             <View style={styles.commentFeedbackItem}>
                                                 <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].replys![isReply.replyindex].comments}</Text>
+                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].replys![isReply.replyindex].comments)}</Text>
                                             </View>
                                             <View style={styles.commentFeedbackItem}>
                                                 <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].replys![isReply.replyindex].likes}</Text>
+                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].replys![isReply.replyindex].likes)}</Text>
                                             </View>
                                             <View style={styles.commentFeedbackItem}>
                                                 <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{comments[isReply.index].replys![isReply.replyindex].star}</Text>
+                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].replys![isReply.replyindex].star)}</Text>
                                             </View>
                                         </View>
                                     </View>
@@ -456,7 +386,6 @@ const styles = StyleSheet.create({
     card: {
         width: '70%',
         aspectRatio: 0.63,
-        borderRadius: 5,
         overflow: 'hidden',
         marginBottom: 10
     },

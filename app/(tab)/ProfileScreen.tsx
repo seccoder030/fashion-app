@@ -1,8 +1,7 @@
 import IconButton from '@/components/IconButton';
+import { useAuth } from '@/components/navigation/Authentication';
 import ProfileView from '@/components/ProfileView';
-import { BACKGROUND_GRADIENT_COLOR, ICON_EDIT, ICON_HEARTLINE, ICON_LISTLINE, IMAGE_PROFILEBG, IMAGE_PROFILEUSER, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
-import { useAuth } from '@/context/Authentication';
-import { LinearGradient } from 'expo-linear-gradient';
+import { BACKGROUND_COLOR, ICON_AVATAR, ICON_EDIT, ICON_HEARTLINE, ICON_LISTLINE, IMAGE_PROFILEBG, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -24,15 +23,10 @@ export default function ProfileScreen() {
     }
 
     return (
-        <LinearGradient
-            colors={BACKGROUND_GRADIENT_COLOR}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.gradient}
-        >
+        <View style={styles.container} >
             <View style={styles.topContainer}>
-                <Image source={{ uri: profileBg }} style={styles.profileBg} />
-                <Image source={{ uri: avatar }} style={styles.profileUser} />
+                <Image source={profileBg ? { uri: profileBg } : IMAGE_PROFILEBG} style={styles.profileBg} />
+                <Image source={avatar ? { uri: avatar } : ICON_AVATAR} style={styles.profileUser} />
             </View>
             <View style={styles.info}>
                 <View style={styles.infoItem}>
@@ -66,18 +60,15 @@ export default function ProfileScreen() {
                 <IconButton onPress={() => handleTab(true)} size={20} iconSource={ICON_LISTLINE} style={[styles.tabButton, activeTab && styles.activeTab]} />
                 <IconButton onPress={() => handleTab(false)} size={20} iconSource={ICON_HEARTLINE} style={[styles.tabButton, !activeTab && styles.activeTab]} />
             </View>
-            <ProfileView visible={activeTab} />
-            <ProfileView visible={!activeTab} />
-        </LinearGradient>
+            <ProfileView mode={activeTab} />
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    gradient: {
-        flex: 1,
+        backgroundColor: BACKGROUND_COLOR
     },
     topContainer: {
         alignItems: 'center',
