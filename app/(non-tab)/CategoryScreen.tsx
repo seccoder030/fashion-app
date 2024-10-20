@@ -20,21 +20,23 @@ export default function CategoryScreen() {
                 try {
                     Request.setAuthorizationToken(token);
                     const res = await Request.Get(`/category`);
-                    setCategories(res.data);
-                    user?.categories && user?.categories.forEach(item => {
-                        setCheckedCategories(prevChecked => {
-                            const newChecked = new Set(prevChecked);
-                            newChecked.add(item);
-                            return newChecked;
+                    if (res.status) {
+                        setCategories(res.data);
+                        user?.categories && user?.categories.forEach(item => {
+                            setCheckedCategories(prevChecked => {
+                                const newChecked = new Set(prevChecked);
+                                newChecked.add(item);
+                                return newChecked;
+                            });
                         });
-                    });
+                    }
                 } catch (error) {
                     console.error('Error fetching categories:', error);
                 }
             }
         }
         fetchData();
-    }, []);
+    }, [token]);
 
     if (!categories) {
         return (

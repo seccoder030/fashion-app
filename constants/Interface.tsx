@@ -56,7 +56,7 @@ interface IMessage {
 interface IComment {
     id: string;
     name: string;
-    uri?: string | undefined;
+    uri?: string;
     date: string;
     comments: number;
     likes: number;

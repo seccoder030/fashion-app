@@ -1,23 +1,32 @@
 import { SEARCHTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
 import { Feather } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import TextButton from './TextButton';
 
-const SearchTopTabBar = () => {
-  const [activeTab, setActiveTab] = useState('  全部  ');
+type SetCurrentPageFunction = Dispatch<SetStateAction<number>>;
+type SetSearchFunction = Dispatch<SetStateAction<string>>;
 
-  const tabs = [
-    { key: '  全部  ', icon: 'grid' },
-    { key: '  视频  ', icon: 'video' },
-    { key: '  图像  ', icon: 'image' },
-    { key: '  喜欢  ', icon: 'heart' },
-    { key: '  建议  ', icon: 'message-square' },
-    { key: '  收藏夹  ', icon: 'bookmark' },
-  ];
+interface SearchTopTabBarProps {
+  tabs: string[];
+  currentPage?: number;
+  setCurrentPage: SetCurrentPageFunction;
+  search?: string;
+  setSearch?: SetSearchFunction;
+}
 
-  function handleTab(key: string) {
-    setActiveTab(key)
-  }
+const SearchTopTabBar: React.FC<SearchTopTabBarProps> = ({
+  tabs,
+  currentPage = 0,
+  setCurrentPage,
+  search = '',
+  setSearch
+}) => {
+  useEffect(() => {
+    setCurrentPage(currentPage);
+  }, [currentPage]);
+
+  useEffect(() => { })
 
   return (
     <View style={styles.container}>
@@ -25,47 +34,21 @@ const SearchTopTabBar = () => {
         <View style={styles.searchBar}>
           <Feather name="search" size={24} color='rgba(0, 0, 0, 0.7)' style={styles.icon} />
           <TextInput
+            value={search}
+            onChangeText={(value) => setSearch && setSearch(value)}
             style={styles.input}
             placeholder="検  索"
             placeholderTextColor="#888"
           />
         </View>
         <View style={styles.tabBar}>
-          {tabs.map((tab) => (
-            tab.key === activeTab ?
-              <View
-                key={tab.key}
-                style={[styles.tab, activeTab === tab.key && styles.activeTab]}
-              >
-                <Feather
-                  name={tab.icon as any}
-                  size={20}
-                  color={activeTab === tab.key ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)'}
-                />
-                <Text style={[
-                  styles.tabText,
-                  activeTab === tab.key && styles.activeTabText
-                ]}>
-                  {tab.key}
-                </Text>
-              </View> :
-              <TouchableOpacity
-                key={tab.key}
-                style={[styles.tab, activeTab === tab.key && styles.activeTab]}
-                onPress={() => handleTab(tab.key)}
-              >
-                <Feather
-                  name={tab.icon as any}
-                  size={20}
-                  color={activeTab === tab.key ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)'}
-                />
-                <Text style={[
-                  styles.tabText,
-                  activeTab === tab.key && styles.activeTabText
-                ]}>
-                  {tab.key}
-                </Text>
-              </TouchableOpacity>
+          <View style={[{ padding: 5 }, currentPage === -1 && styles.activeTab]}>
+            <TextButton onPress={() => setCurrentPage(-1)} text='兴趣' backgroundColor={'rgba(0, 0, 0, 0)'} textColor={-1 === currentPage ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)'} />
+          </View>
+          {tabs.map((tab, index) => (
+            <View key={index} style={[{ padding: 5 }, currentPage === index && styles.activeTab]}>
+              <TextButton onPress={() => setCurrentPage(index)} text={tab} backgroundColor={'rgba(0, 0, 0, 0)'} textColor={index === currentPage ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)'} />
+            </View>
           ))}
         </View>
       </View>
@@ -109,10 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0)',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(88, 119, 234, 1)',
-  },
-  tab: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 5,
   },
   activeTab: {
     borderBottomWidth: 2,

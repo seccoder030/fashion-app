@@ -1,4 +1,4 @@
-import { BOTTOM_TAPBAR_HEIGHT, CHINESE_EMOJI_LANG, DETAILTOP_TAPBAR_HEIGHT, ICON_AD, ICON_CANCEL, ICON_COMMENT, ICON_COMMENTPOST, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, ICON_UP, IMAGE_BG7, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
+import { BOTTOM_TAPBAR_HEIGHT, CHINESE_EMOJI_LANG, DETAILTOP_TAPBAR_HEIGHT, ICON_AD, ICON_AVATAR, ICON_CANCEL, ICON_COMMENT, ICON_COMMENTPOST, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, ICON_UP, IMAGE_BG7, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import EmojiPicker from 'rn-emoji-keyboard';
@@ -19,8 +19,8 @@ const jsondata: IComment[] = [
     { id: '8', name: '姓  名21', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
     { id: '9', name: '姓  名22', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '8' },
     { id: '10', name: '姓  名23', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '8' },
-    { id: '11', name: '姓  名24', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-    { id: '12', name: '姓  名25', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 221, likes: 1141, star: 1249, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '9' },
+    { id: '11', name: '姓  名24', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 0, likes: 0, star: 0, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
+    { id: '12', name: '姓  名25', uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png', date: '2024. 10. 30', comments: 0, likes: 0, star: 0, post: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', replyTo: '9' },
 ];
 
 const Detail = () => {
@@ -131,27 +131,34 @@ const Detail = () => {
 
     function handleCommentPost() {
         if (comments && token && user) {
-            var arr: IComment[] = comments;
             var post: IComment;
             if (isReply) {
-                interface IComment {
-                    id: string;
-                    name: string;
-                    uri: string;
-                    date: string;
-                    comments: number;
-                    likes: number;
-                    star: number;
-                    post: string;
-                    replyTo?: string;
-                    replys?: IComment[] | undefined;
-                }
-            } else {
+                if (commentText.length === 0) return;
                 var id = "0";
-                post = { id: id, name: user.name, uri: undefined, date: new Date().toISOString(), comments: 0, likes: 0, star: 0, post: postText, replyTo: undefined };
-                arr.push(post);
-                console.log(arr);
-                setComments(arr);
+                post = { id: id, name: user.name, uri: user.avatar, date: new Date().toISOString(), comments: 0, likes: 0, star: 0, post: commentText, replyTo: isReply.replyindex && comments[isReply.index]?.replys?.[isReply.replyindex]?.id || undefined };
+                setViewDetail(prev => {
+                    const newViewDetail = [...prev];
+                    newViewDetail[isReply.index] = true;
+                    return newViewDetail;
+                });
+                const updatedComments = comments.map((comment, index) => {
+                    if (index === isReply.index) {
+                        return {
+                            ...comment,
+                            replys: [...(comment.replys || []), post]
+                        };
+                    }
+                    return comment;
+                });
+                setComments(updatedComments);
+                setIsReply(undefined);
+            } else {
+                if (postText.length === 0) return;
+                var id = "0";
+                post = { id: id, name: user.name, uri: user.avatar, date: new Date().toISOString(), comments: 0, likes: 0, star: 0, post: postText, replyTo: undefined };
+                setComments([...comments, post]);
+                setPostText('');
+                scrollViewRef.current?.scrollToEnd();
             }
         }
     }
@@ -237,7 +244,7 @@ const Detail = () => {
                             {comments.map((item, index) => (
                                 <View key={index} style={index == 0 ? styles.comment : [styles.comment, styles.commentLine]}>
                                     <Image
-                                        source={{ uri: item.uri }}
+                                        source={item.uri ? { uri: item.uri } : ICON_AVATAR}
                                         style={[
                                             { width: 42, height: 42 },
                                             styles.userImage
@@ -272,7 +279,7 @@ const Detail = () => {
                                             item.replys && item.replys.map((replyitem, replyindex) => (
                                                 <View key={replyindex} style={[styles.reply]}>
                                                     <Image
-                                                        source={{ uri: replyitem.uri }}
+                                                        source={replyitem.uri ? { uri: replyitem.uri } : ICON_AVATAR}
                                                         style={[
                                                             { width: 32, height: 32 },
                                                             styles.userImage
@@ -340,7 +347,7 @@ const Detail = () => {
                         </View>
                         <View style={styles.comment}>
                             <Image
-                                source={{ uri: comments[isReply.index].uri }}
+                                source={comments[isReply.index].uri ? { uri: comments[isReply.index].uri } : ICON_AVATAR}
                                 style={[
                                     { width: 42, height: 42 },
                                     styles.userImage

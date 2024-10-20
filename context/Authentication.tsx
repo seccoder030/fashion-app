@@ -160,7 +160,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
             const res = await axios.post<ISignUpResponse>(`${process.env.EXPO_PUBLIC_API_URL}/register`, { email, name, username, password, password_confirmation: password });
             if (res.data.msg === 'Register successfully!') {
                 ToastAndroid.show('注册成功！', ToastAndroid.SHORT);
-                router.replace("/sign-in");
+                signIn({ email, password });
             }
         } catch (error) {
             console.error('Error signing up:', error);

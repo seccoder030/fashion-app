@@ -1,32 +1,44 @@
-import { BOTTOM_TAPBAR_HEIGHT, ICON_COMMENT, ICON_HEARTFILL, SCREEN_HEIGHT, SCREEN_WIDTH, SEARCHTOP_TAPBAR_HEIGHT } from '@/constants/Config';
+import { BOTTOM_TAPBAR_HEIGHT, ICON_COMMENT, ICON_HEARTFILL, SCREEN_WIDTH } from '@/constants/Config';
+import { useAuth } from '@/context/Authentication';
+import Request from '@/utils/request';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, ToastAndroid, View } from 'react-native';
+import Blank from './Blank';
 import IconButton from './IconButton';
 import Loading from './Loading';
 import Media from './Media';
-import Blank from './Blank';
-import Request from '@/utils/request';
-import { useAuth } from '@/context/Authentication';
 
-const ImageList = () => {
+interface ImageListProps {
+    search?: string;
+}
+
+const ImageList: React.FC<ImageListProps> = ({
+    search = ''
+}) => {
     const { token } = useAuth();
     const [medias, setMedias] = useState<IPost[] | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                if (token) {
+            if (token) {
+                try {
                     Request.setAuthorizationToken(token);
-                    const res = await Request.Get('/post/get');
-                    setMedias(res.posts);
+                    console.log(search)
+                    if (search) {
+                        var res = await Request.Get(`/post/search?query=${search}`);
+                        setMedias(res);
+                    } else {
+                        var res = await Request.Get('/post/get');
+                        setMedias(res.posts);
+                    }
+                } catch (error) {
+                    ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
                 }
-            } catch (error) {
-                ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
             }
         }
         fetchData();
-    }, []);
+    }, [search]);
 
     if (!medias) {
         return <Loading backgroundColor={'transparent'} />

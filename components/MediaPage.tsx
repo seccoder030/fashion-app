@@ -6,15 +6,15 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, ToastAndroid, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import Blank from './Blank';
+import Loading from './Loading';
 
 interface MediaPageProps {
-    tab?: string;
+    page?: number;
 }
 
 const MediaPage: React.FC<MediaPageProps> = ({
-    tab = '校友圈'
+    page = 2
 }) => {
-    const tabs = ['精选', '推荐', '校友圈'];
     const { token, user } = useAuth();
     const [medias, setMedias] = useState<IPost[] | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
@@ -24,30 +24,33 @@ const MediaPage: React.FC<MediaPageProps> = ({
             if (token) {
                 Request.setAuthorizationToken(token);
                 try {
-                    if (tab === tabs[0]) {
-                        const res = await Request.Get('/post/get');
-                        setMedias(res.posts);
+                    Request.setAuthorizationToken(token);
+                    switch (page) {
+                        case 0:
+                            var res = await Request.Get('/post/get');
+                            break;
+                        case 1:
+                            var res = await Request.Get('/post/get');
+                            break;
+                        case 2:
+                            var res = await Request.Get('/post/get');
+                            break;
+                        default:
+                            var res = await Request.Get('/post/get');
+                            break;
                     }
-                    else if (tab === tabs[1]) {
-                        Request.setAuthorizationToken(token);
-                        const res = await Request.Get('/post/get');
-                        setMedias(res.posts);
-                    }
-                    else if (tab === tabs[2]) {
-                        Request.setAuthorizationToken(token);
-                        const res = await Request.Get('/post/get');
-                        setMedias(res.posts);
-                    }
+                    setMedias(res.posts);
                 } catch (error) {
+                    console.log(error);
                     ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
                 }
             }
         }
         fetchData();
-    }, [token]);
+    }, [token, page]);
 
     if (!medias) {
-        return <View style={{ backgroundColor: 'black' }} />;
+        return <Loading backgroundColor={'#000'} />;
     }
 
     if (medias.length === 0) {

@@ -1,20 +1,61 @@
 import { ICON_ADD, ICON_AVATAR, ICON_COMMENT, ICON_HEART, ICON_HEARTFILL, ICON_SHARE } from '@/constants/Config';
+import { useAuth } from '@/context/Authentication';
+import Request from '@/utils/request';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, ToastAndroid, View } from 'react-native';
 import IconButton from './IconButton';
 import IconTextButton from './IconTextButton';
 
 interface IActionBarProps {
-  username: string;
+  userId: string;
+  postId: string;
   likes: number;
   comments: number;
   uri?: string;
 }
 
-const ActionBar: React.FC<IActionBarProps> = ({ username, likes, comments, uri = undefined }) => {
+const ActionBar: React.FC<IActionBarProps> = ({ userId, postId, likes, comments, uri = undefined }) => {
+  const { token, user } = useAuth();
   const [heart, setHeart] = useState<boolean>(false);
   const [add, setAdd] = useState<boolean>(false);
+
+  const addFriend = async () => {
+    if (token) {
+      try {
+        Request.setAuthorizationToken(token);
+        // setAdd(true);
+        const res = await Request.Post('/post/friend/save', { friend_id: userId });
+        if (res.status === 'success') {
+          ToastAndroid.show(res.msg, ToastAndroid.SHORT);
+        } else {
+          // setAdd(false);
+          ToastAndroid.show(res.msg, ToastAndroid.SHORT);
+        }
+      } catch (error) {
+        console.log(error);
+        ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
+      }
+    }
+  }
+
+  const addLikes = async () => {
+    if (token) {
+      try {
+        Request.setAuthorizationToken(token);
+        const res = await Request.Post('/post/likes/save', { post_id: postId });
+        if (res.status === 'success') {
+          setHeart(!heart);
+          ToastAndroid.show(res.msg, ToastAndroid.SHORT);
+        } else {
+          ToastAndroid.show(res.msg, ToastAndroid.SHORT);
+        }
+      } catch (error) {
+        console.log(error);
+        ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
+      }
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -31,12 +72,11 @@ const ActionBar: React.FC<IActionBarProps> = ({ username, likes, comments, uri =
         />
         {add ?
           <View style={styles.item}></View> :
-          <IconButton onPress={() => setAdd(true)} size={20} iconSource={ICON_ADD} iconStyle={styles.item} />
+          <View style={styles.item}>
+            <IconButton onPress={() => addFriend()} size={20} iconSource={ICON_ADD} />
+          </View>
         }
-        {heart ?
-          <IconTextButton onPress={() => setHeart(false)} size={20} iconSource={ICON_HEARTFILL} iconStyle={styles.item} text={likes > 1000 ? `${Math.floor(likes / 100) / 10}K` : `${likes}`} /> :
-          <IconTextButton onPress={() => setHeart(true)} size={20} iconSource={ICON_HEART} iconStyle={styles.item} text={likes > 1000 ? `${Math.floor(likes / 100) / 10}K` : `${likes}`} />
-        }
+        <IconTextButton onPress={() => addLikes()} size={20} iconSource={heart ? ICON_HEARTFILL : ICON_HEART} iconStyle={styles.item} text={likes > 1000 ? `${Math.floor(likes / 100) / 10}K` : `${likes}`} />
         <IconTextButton onPress={() => router.push('/DetailScreen')} size={20} iconSource={ICON_COMMENT} iconStyle={styles.item} text={comments > 1000 ? `${Math.floor(comments / 100) / 10}K` : `${comments}`} />
         <IconTextButton onPress={() => alert("Share")} size={20} iconSource={ICON_SHARE} iconStyle={styles.item} text='Share' />
       </View>
@@ -65,7 +105,7 @@ const styles = StyleSheet.create({
   },
   userImage: {
     marginTop: 10,
-    marginBottom: -20,
+    marginBottom: -10,
     borderRadius: 40,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.7)',
@@ -78,9 +118,8 @@ const styles = StyleSheet.create({
   },
   item: {
     paddingHorizontal: 5,
-    paddingVertical: 10,
     marginHorizontal: 5,
-    marginVertical: 12,
+    height: 40,
     zIndex: 5
   }
 });

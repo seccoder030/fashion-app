@@ -34,7 +34,7 @@ const PostScreen = () => {
                 try {
                     Request.setAuthorizationToken(token);
                     const res = await Request.Get('/category');
-                    setCategories(res.data);
+                    if (res.status) setCategories(res.data);
                 } catch (error) {
                     console.error('Error fetching categories:', error);
                 }
@@ -101,7 +101,6 @@ const PostScreen = () => {
                         data.push(item);
                     });
                     formData.append('category_id', data.toString());
-                    console.log(data.toString())
 
                     try {
                         Request.setAuthorizationToken(token);
