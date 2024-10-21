@@ -241,7 +241,7 @@ export default function CameraScreen() {
                 <View style={styles.captureContainer}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '50%' }}>
                         <IconButton onPress={handlePost} size={55} iconSource={ICON_CONFIRM} />
-                        <IconButton onPress={handleSave} size={55} iconSource={ICON_SAVE} />
+                        {/* <IconButton onPress={handleSave} size={55} iconSource={ICON_SAVE} /> */}
                         <IconButton onPress={closePreview} size={55} iconSource={ICON_CANCEL} />
                     </View>
                 </View>

@@ -25,8 +25,9 @@ const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ source, resizeMod
         if (play) videoRef.current?.playAsync();
         else videoRef.current?.pauseAsync();
         if (reset) {
-            videoRef.current?.setPositionAsync(0);
             videoRef.current?.playAsync();
+        } else {
+            videoRef.current?.setPositionAsync(0);
         }
         if (error) ToastAndroid.show(error, ToastAndroid.SHORT);
     }, [play, reset, error]);

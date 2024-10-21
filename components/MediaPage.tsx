@@ -65,7 +65,7 @@ const MediaPage: React.FC<MediaPageProps> = ({
     return (
         <PagerView onPageSelected={handlePageSelected} style={styles.view} initialPage={currentPage} orientation='vertical'>
             {medias.map((item, index) => (
-                <MediaView key={index} item={item} reset={currentPage == index ? true : false} />
+                <MediaView key={index} item={item} active={currentPage === index ? true : false} />
             ))}
         </PagerView>
     );

@@ -8,6 +8,7 @@ import Blank from './Blank';
 import { useAuth } from '@/components/navigation/Authentication';
 import Media from './Media';
 import Request from '@/utils/request';
+import Loading from './Loading';
 
 interface DetailParams {
     postId: string;
@@ -21,9 +22,46 @@ interface DetailParams {
     favoCount?: number;
 };
 
+interface User {
+    id: number;
+    name: string;
+    avatar: string | null;
+}
+
+interface Post {
+    id: number;
+    title: string;
+    content: string;
+    type: boolean;
+    likes: number;
+    favorites: number;
+    comments: number;
+    created_at: string;
+    updated_at: string;
+}
+
+interface Comment {
+    id: number;
+    sender_id: number;
+    receiver_id: number;
+    post_id: number;
+    comment_text: string;
+    created_at: string;
+    updated_at: string;
+    sender_friends_count: number;
+    received_comments_count: number;
+    sender: User;
+    receiver: User;
+    post: Post;
+}
+
+interface CommentNode extends Comment {
+    replies: Comment[];
+}
+
 const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, content, likesCount, commentsCount, favoCount }) => {
     const { token, user } = useAuth();
-    const [comments, setComments] = useState<IComment[] | null>(null);
+    const [comments, setComments] = useState<CommentNode[] | null>(null);
     const [viewDetail, setViewDetail] = useState<boolean[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [postText, setPostText] = useState<string>('');
@@ -33,13 +71,71 @@ const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, cont
 
     const shortNumber = (num: number | undefined) => num ? num > 1000 ? `${Math.floor(num / 100) / 10}K` : `${num}` : 0
 
+    function buildCommentTree(comments: Comment[]): CommentNode[] {
+        const commentMap = new Map<number, CommentNode>();
+        const rootComments: CommentNode[] = [];
+
+        // First pass: Identify root comments and create CommentNode objects
+        comments.forEach(comment => {
+            if (!comments.some(c => c.sender_id === comment.receiver_id && c.id < comment.id)) {
+                const rootComment: CommentNode = {
+                    ...comment,
+                    replies: []
+                };
+                rootComments.push(rootComment);
+                commentMap.set(comment.id, rootComment);
+            }
+        });
+
+        // Second pass: Assign non-root comments as replies
+        comments.forEach(comment => {
+            if (!commentMap.has(comment.id)) {
+                const rootComment = rootComments.find(rc =>
+                    rc.id < comment.id && (rc.sender_id === comment.receiver_id || hasDescendantConnection(rc, comment, comments))
+                );
+                if (rootComment) {
+                    rootComment.replies.push(comment);
+                } else {
+                    // If no root comment is found, treat this as a new root comment
+                    const newRootComment: CommentNode = {
+                        ...comment,
+                        replies: []
+                    };
+                    rootComments.push(newRootComment);
+                    commentMap.set(comment.id, newRootComment);
+                }
+            }
+        });
+
+        // Sort root comments and their replies by creation date
+        rootComments.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        rootComments.forEach(rc => {
+            rc.replies.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        });
+
+        return rootComments;
+    }
+
+    function hasDescendantConnection(rootComment: CommentNode, potentialDescendant: Comment, allComments: Comment[]): boolean {
+        let currentId = potentialDescendant.receiver_id;
+        while (currentId !== rootComment.sender_id) {
+            const parent = allComments.find(c => c.sender_id === currentId && c.id < potentialDescendant.id);
+            if (!parent) return false;
+            currentId = parent.receiver_id;
+        }
+        return true;
+    }
+
     useEffect(() => {
         async function fetchData() {
             if (token) {
                 try {
                     Request.setAuthorizationToken(token);
                     const res = await Request.Get(`/post/comments/get?post_id=${postId}`);
-                    if (res.status === 'success') { }
+                    if (res.status === 'success') {
+                        const commentTree = buildCommentTree(res.comments);
+                        setComments(commentTree);
+                    }
                 } catch (error) {
                     console.log(error);
                     ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
@@ -51,42 +147,58 @@ const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, cont
     }, []);
 
     if (!comments) {
+        return <Loading backgroundColor={'transparent'} />;
+    }
+
+    if (comments.length === 0) {
         return <Blank />
     }
 
     function handleItem() {
     }
 
-    function handleCommentPost() {
+    async function handleCommentPost() {
         if (comments && token && user) {
-            var post: IComment;
-            if (isReply) {
-                if (commentText.length === 0) return;
-                var id = "0";
-                post = { id: id, name: user.name, uri: user.avatar, date: new Date().toISOString(), comments: 0, likes: 0, star: 0, post: commentText, replyTo: isReply.replyindex && comments[isReply.index]?.replys?.[isReply.replyindex]?.id || undefined };
-                setViewDetail(prev => {
-                    const newViewDetail = [...prev];
-                    newViewDetail[isReply.index] = true;
-                    return newViewDetail;
-                });
-                const updatedComments = comments.map((comment, index) => {
-                    if (index === isReply.index) {
-                        return {
-                            ...comment,
-                            replys: [...(comment.replys || []), post]
-                        };
+            try {
+                Request.setAuthorizationToken(token);
+                const formdata = new FormData();
+                formdata.append('sender[id]', user.id);
+                formdata.append('post_id', postId);
+                if (isReply && commentText.length !== 0) {
+                    if (isReply.replyindex !== undefined && comments[isReply.index].replies)
+                        formdata.append('receiver[id]', comments[isReply.index].replies && comments[isReply.index].replies[isReply.replyindex].sender_id.toString());
+                    else formdata.append('receiver[id]', comments[isReply.index].sender_id.toString());
+                    setViewDetail(prev => {
+                        const newViewDetail = [...prev];
+                        newViewDetail[isReply.index] = true;
+                        return newViewDetail;
+                    });
+                    formdata.append('content', commentText);
+                }
+                else if (postText.length !== 0) {
+                    formdata.append('receiver[id]', userId);
+                    formdata.append('content', postText);
+                }
+                const res = await Request.Post(`${process.env.EXPO_PUBLIC_API_URL}/post/comments/save`, formdata, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
                     }
-                    return comment;
                 });
-                setComments(updatedComments);
-                setIsReply(undefined);
-            } else {
-                if (postText.length === 0) return;
-                var id = "0";
-                post = { id: id, name: user.name, uri: user.avatar, date: new Date().toISOString(), comments: 0, likes: 0, star: 0, post: postText, replyTo: undefined };
-                setComments([...comments, post]);
-                setPostText('');
-                scrollViewRef.current?.scrollToEnd();
+                if (res.status === 'success') {
+                    const commentTree = buildCommentTree(res.comment);
+                    console.log(commentTree)
+                    setComments(commentTree);
+                    setPostText('');
+                    setCommentText('');
+                    setIsReply(undefined);
+                    if (!isReply) {
+                        scrollViewRef.current?.scrollToEnd();
+                    }
+                }
+                ToastAndroid.show(res.msg, ToastAndroid.SHORT);
+            } catch (error) {
+                console.log(error);
+                ToastAndroid.show('您的请求失败', ToastAndroid.SHORT);
             }
         }
     }
@@ -174,7 +286,7 @@ const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, cont
                             {comments.map((item, index) => (
                                 <View key={index} style={index == 0 ? styles.comment : [styles.comment, styles.commentLine]}>
                                     <Image
-                                        source={item.uri ? { uri: item.uri } : ICON_AVATAR}
+                                        source={item.sender.avatar ? { uri: item.sender.avatar } : ICON_AVATAR}
                                         style={[
                                             { width: 42, height: 42 },
                                             styles.userImage
@@ -183,33 +295,33 @@ const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, cont
                                     <View style={styles.commentContent}>
                                         <View style={styles.commentHead}>
                                             <View style={styles.commentInfo}>
-                                                <Text style={styles.commentTitle}>{item.name}</Text>
-                                                <Text style={styles.commentDate}>{item.date}</Text>
+                                                <Text style={styles.commentTitle}>{item.sender.name}</Text>
+                                                <Text style={styles.commentDate}>{new Date(item.updated_at).toDateString()}</Text>
                                             </View>
-                                            <View style={styles.commentFeedback}>
+                                            {/* <View style={styles.commentFeedback}>
                                                 <View style={styles.commentFeedbackItem}>
                                                     <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                                    <Text style={styles.commentFeedbackText}>{shortNumber(item.comments)}</Text>
+                                                    <Text style={styles.commentFeedbackText}>{shortNumber(0)}</Text>
                                                 </View>
                                                 <View style={styles.commentFeedbackItem}>
                                                     <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                    <Text style={styles.commentFeedbackText}>{shortNumber(item.likes)}</Text>
+                                                    <Text style={styles.commentFeedbackText}>{shortNumber(0)}</Text>
                                                 </View>
                                                 <View style={styles.commentFeedbackItem}>
                                                     <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                                    <Text style={styles.commentFeedbackText}>{shortNumber(item.star)}</Text>
+                                                    <Text style={styles.commentFeedbackText}>{shortNumber(0)}</Text>
                                                 </View>
-                                            </View>
+                                            </View> */}
                                         </View>
-                                        <Text style={styles.commentText}>{item.post}</Text>
+                                        <Text style={styles.commentText}>{item.comment_text}</Text>
                                         <View style={{ alignItems: 'flex-end', marginTop: 5, marginHorizontal: 10 }}>
                                             <TextButton onPress={() => handleReply(index)} text='回   复' backgroundColor={'rgba(255, 255, 255, 0)'} textColor={'rgba(171, 171, 171, 1)'} fontSize={10} />
                                         </View>
                                         {viewDetail[index] &&
-                                            item.replys && item.replys.map((replyitem, replyindex) => (
+                                            item.replies && item.replies.map((replyitem, replyindex) => (
                                                 <View key={replyindex} style={[styles.reply]}>
                                                     <Image
-                                                        source={replyitem.uri ? { uri: replyitem.uri } : ICON_AVATAR}
+                                                        source={replyitem.sender.avatar ? { uri: replyitem.sender.avatar } : ICON_AVATAR}
                                                         style={[
                                                             { width: 32, height: 32 },
                                                             styles.userImage
@@ -218,24 +330,24 @@ const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, cont
                                                     <View style={styles.replyContent}>
                                                         <View style={styles.replyHead}>
                                                             <View style={styles.replyInfo}>
-                                                                <Text style={styles.replyTitle}>{replyitem.name}{replyitem.replyTo && ` ▶ ${getCommentById(replyitem.replyTo)?.name}`}</Text>
+                                                                <Text style={styles.replyTitle}>{replyitem.sender.name}{` ▶ ${replyitem.receiver.name}`}</Text>
                                                             </View>
-                                                            <View style={styles.replyFeedback}>
+                                                            {/* <View style={styles.replyFeedback}>
                                                                 <View style={styles.replyFeedbackItem}>
                                                                     <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                                                    <Text style={styles.replyFeedbackText}>{shortNumber(replyitem.comments)}</Text>
+                                                                    <Text style={styles.replyFeedbackText}>{shortNumber(0)}</Text>
                                                                 </View>
                                                                 <View style={styles.replyFeedbackItem}>
                                                                     <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                                    <Text style={styles.replyFeedbackText}>{shortNumber(replyitem.likes)}</Text>
+                                                                    <Text style={styles.replyFeedbackText}>{shortNumber(0)}</Text>
                                                                 </View>
                                                                 <View style={styles.replyFeedbackItem}>
                                                                     <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                                                    <Text style={styles.replyFeedbackText}>{shortNumber(replyitem.star)}</Text>
+                                                                    <Text style={styles.replyFeedbackText}>{shortNumber(0)}</Text>
                                                                 </View>
-                                                            </View>
+                                                            </View> */}
                                                         </View>
-                                                        <Text style={styles.replyText}>{replyitem.post}</Text>
+                                                        <Text style={styles.replyText}>{replyitem.comment_text}</Text>
                                                         <View style={{ alignItems: 'flex-end', marginTop: 5, marginHorizontal: 10 }}>
                                                             <TextButton onPress={() => handleReply(index, replyindex)} text='回   复' backgroundColor={'rgba(255, 255, 255, 0)'} textColor={'rgba(171, 171, 171, 1)'} fontSize={10} />
                                                         </View>
@@ -243,16 +355,16 @@ const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, cont
                                                 </View>
                                             ))
                                         }
-                                        {item.replys && item.replys.length > 0 &&
+                                        {item.replies.length > 0 &&
                                             <View style={styles.detail}>
                                                 <TouchableOpacity onPress={() => toggleViewDetail(index)} style={styles.detailButton}>
                                                     {viewDetail[index] ?
                                                         <>
-                                                            <Text style={styles.detailText}>查看回复({item.replys.length})</Text>
+                                                            <Text style={styles.detailText}>查看回复({item.replies.length})</Text>
                                                             <IconButton size={10} iconSource={ICON_UP} enabled={false} />
                                                         </> :
                                                         <>
-                                                            <Text style={styles.detailText}>查看回复({item.replys.length})</Text>
+                                                            <Text style={styles.detailText}>查看回复({item.replies.length})</Text>
                                                             <IconButton size={10} iconSource={ICON_DOWN} enabled={false} />
                                                         </>
                                                     }
@@ -277,7 +389,7 @@ const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, cont
                         </View>
                         <View style={styles.comment}>
                             <Image
-                                source={comments[isReply.index].uri ? { uri: comments[isReply.index].uri } : ICON_AVATAR}
+                                source={comments[isReply.index].sender.avatar ? { uri: comments[isReply.index].sender.avatar } : ICON_AVATAR}
                                 style={[
                                     { width: 42, height: 42 },
                                     styles.userImage
@@ -287,49 +399,21 @@ const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, cont
                                 <View style={styles.commentContent}>
                                     <View style={styles.commentHead}>
                                         <View style={styles.commentInfo}>
-                                            <Text style={styles.commentTitle}>{comments[isReply.index].name}</Text>
-                                            <Text style={styles.commentDate}>{comments[isReply.index].date}</Text>
-                                        </View>
-                                        <View style={styles.commentFeedback}>
-                                            <View style={styles.commentFeedbackItem}>
-                                                <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].comments)}</Text>
-                                            </View>
-                                            <View style={styles.commentFeedbackItem}>
-                                                <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].likes)}</Text>
-                                            </View>
-                                            <View style={styles.commentFeedbackItem}>
-                                                <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].star)}</Text>
-                                            </View>
+                                            <Text style={styles.commentTitle}>{comments[isReply.index].sender.name}</Text>
+                                            <Text style={styles.commentDate}>{new Date(comments[isReply.index].updated_at).toDateString()}</Text>
                                         </View>
                                     </View>
-                                    <Text style={styles.commentText}>{comments[isReply.index].post}</Text>
+                                    <Text style={styles.commentText}>{comments[isReply.index].comment_text}</Text>
                                 </View> :
-                                comments[isReply.index].replys &&
+                                comments[isReply.index].replies &&
                                 <View style={styles.commentContent}>
                                     <View style={styles.commentHead}>
                                         <View style={styles.commentInfo}>
-                                            <Text style={styles.commentTitle}>{comments[isReply.index].replys![isReply.replyindex].name}</Text>
-                                            <Text style={styles.commentDate}>{comments[isReply.index].replys![isReply.replyindex].date}</Text>
-                                        </View>
-                                        <View style={styles.commentFeedback}>
-                                            <View style={styles.commentFeedbackItem}>
-                                                <IconButton size={12} iconSource={ICON_COMMENT} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].replys![isReply.replyindex].comments)}</Text>
-                                            </View>
-                                            <View style={styles.commentFeedbackItem}>
-                                                <IconButton size={12} iconSource={ICON_HEARTFILL} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].replys![isReply.replyindex].likes)}</Text>
-                                            </View>
-                                            <View style={styles.commentFeedbackItem}>
-                                                <IconButton size={12} iconSource={ICON_STAR} enabled={false} />
-                                                <Text style={styles.commentFeedbackText}>{shortNumber(comments[isReply.index].replys![isReply.replyindex].star)}</Text>
-                                            </View>
+                                            <Text style={styles.commentTitle}>{comments[isReply.index].replies[isReply.replyindex].sender.name}</Text>
+                                            <Text style={styles.commentDate}>{new Date(comments[isReply.index].replies[isReply.replyindex].updated_at).toDateString()}</Text>
                                         </View>
                                     </View>
-                                    <Text style={styles.commentText}>{comments[isReply.index].replys![isReply.replyindex].post}</Text>
+                                    <Text style={styles.commentText}>{comments[isReply.index].replies[isReply.replyindex].comment_text}</Text>
                                 </View>
                             }
                         </View>
@@ -376,7 +460,8 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(255, 255, 255, 0.2)',
         borderWidth: 1,
         backgroundColor: 'rgba(1, 1, 1, 0.15)',
-        padding: 10
+        padding: 10,
+        minHeight: SCREEN_HEIGHT - DETAILTOP_TAPBAR_HEIGHT - BOTTOM_TAPBAR_HEIGHT - 20
     },
     cardLayout: {
         flexDirection: 'row',

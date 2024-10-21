@@ -97,8 +97,11 @@ const PostScreen = () => {
                             },
                         });
 
-                        if (res.status == 'success') ToastAndroid.show('注册成功！', ToastAndroid.SHORT);
-                        router.back();
+                        ToastAndroid.show(res.msg, ToastAndroid.SHORT);
+                        console.log(res.msg)
+                        if (res.status === 'success') {
+                            router.back();
+                        }
                     } catch (error) {
                         console.error('Error fetching categories:', error);
                     }
