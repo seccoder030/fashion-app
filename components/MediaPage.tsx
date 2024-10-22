@@ -13,9 +13,9 @@ interface MediaPageProps {
 }
 
 const MediaPage: React.FC<MediaPageProps> = ({
-    page = 2
+    page = 1
 }) => {
-    const { token, user } = useAuth();
+    const { token, user, friends, favorites } = useAuth();
     const [medias, setMedias] = useState<IPost[] | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
 
@@ -24,21 +24,14 @@ const MediaPage: React.FC<MediaPageProps> = ({
             if (token) {
                 try {
                     Request.setAuthorizationToken(token);
-                    switch (page) {
-                        case 0:
-                            var res = await Request.Get('/post/get');
-                            break;
-                        case 1:
-                            var res = await Request.Get('/post/get');
-                            break;
-                        case 2:
-                            var res = await Request.Get('/post/get');
-                            break;
-                        default:
-                            var res = await Request.Get('/post/get');
-                            break;
-                    }
-                    setMedias(res.posts);
+                    var res = await Request.Get('/post/get');
+                    var arr: IPost[] = [];
+                    res.posts.map((item: IPost) => {
+                        page === 0 ? favorites && favorites.has(item.id) && arr.push(item) :
+                            page === 1 ? arr.push(item) :
+                                friends && friends.has(item.user_id) && arr.push(item)
+                    })
+                    setMedias(arr);
                 } catch (error) {
                     console.log(error);
                     ToastAndroid.show('API 错误！', ToastAndroid.SHORT);

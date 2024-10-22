@@ -275,11 +275,13 @@ export default function CameraScreen() {
                     } />
                 </View>
                 <View style={styles.itemTopContainer}>
-                    <IconTextButton onPress={() => setImageMode()} iconStyle={styles.item} size={26} iconSource={ICON_PHOTO} text={'照片'} />
+                    {/* <IconTextButton onPress={() => setImageMode()} iconStyle={styles.item} size={26} iconSource={ICON_PHOTO} text={'照片'} /> */}
+                    <IconTextButton iconStyle={styles.item} size={26} iconSource={ICON_PHOTO} text={'照片'} />
                 </View>
                 <View style={styles.itemMediumContainer}>
                     <IconTextButton iconStyle={styles.item} size={26} iconSource={ICON_SPLIT} text={'分段拍'} />
-                    <IconTextButton onPress={() => setIsVideoMode(true)} iconStyle={styles.item} size={26} iconSource={ICON_VIDEO} text={'视频'} />
+                    {/* <IconTextButton onPress={() => setIsVideoMode(true)} iconStyle={styles.item} size={26} iconSource={ICON_VIDEO} text={'视频'} /> */}
+                    <IconTextButton iconStyle={styles.item} size={26} iconSource={ICON_VIDEO} text={'视频'} />
                 </View>
                 <View style={styles.itemBottomContainer}>
                     <IconTextButton iconStyle={styles.item} size={26} iconSource={ICON_EFFECT} text={'特效'} />

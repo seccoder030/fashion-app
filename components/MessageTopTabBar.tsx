@@ -45,7 +45,7 @@ const MessageToptabBar: React.FC<MessageToptabBarProps> = ({
             {/* <Text style={styles.text}>(正在打字...)</Text> */}
           </View>
         </View>
-        <Menu>
+        {/* <Menu>
           <MenuTrigger>
             <Image source={ICON_MORE} style={{ width: 20, height: 20 }} />
           </MenuTrigger>
@@ -69,7 +69,7 @@ const MessageToptabBar: React.FC<MessageToptabBarProps> = ({
               </View>
             </MenuOption>
           </MenuOptions>
-        </Menu>
+        </Menu> */}
       </View>
     </View>
   );

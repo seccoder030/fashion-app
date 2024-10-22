@@ -229,7 +229,51 @@ const Message: React.FC<MessageProps> = ({
     }
 
     if (messages.length === 0) {
-        return <Blank />;
+        return (
+            <View style={{ flex: 1 }}>
+                <View style={styles.container}>
+                    <Blank />
+                    <View style={styles.inputBarContainer}>
+                        <View style={styles.inputBar}>
+                            <TextInput
+                                value={text}
+                                onChangeText={(value) => setText(value)}
+                                style={[styles.input, { fontSize: fontSize }]}
+                                placeholder="请输入您的意见。"
+                                placeholderTextColor="#888"
+                                multiline={true}
+                            />
+                            <View style={{ justifyContent: 'flex-end', paddingBottom: 5 }}>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <IconButton
+                                        onPress={handleAd}
+                                        size={15}
+                                        iconSource={ICON_AD}
+                                        style={styles.inputBarIcon}
+                                    />
+                                    <IconButton
+                                        onPress={handleEmoji}
+                                        size={15}
+                                        iconSource={ICON_EMOJI}
+                                        style={styles.inputBarIcon}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                        <View style={{ justifyContent: 'flex-end', paddingBottom: 7, marginLeft: 7 }}>
+                            <IconButton onPress={handleSend} size={20} iconSource={ICON_SEND} />
+                        </View>
+                    </View>
+
+                    <EmojiPicker
+                        onEmojiSelected={handlePick}
+                        open={isOpen}
+                        onClose={() => setIsOpen(false)}
+                        translation={CHINESE_EMOJI_LANG}
+                    />
+                </View>
+            </View>
+        );
     }
 
     return (
@@ -256,9 +300,9 @@ const Message: React.FC<MessageProps> = ({
                                         message={item}
                                         replyMessage={item.reply_id ? messageById(item.reply_id) : null}
                                         fontSize={fontSize}
-                                        handlePress={() => item.id && handlePress(item.id)}
-                                        handleLongPress={() => item.id && handleLongPress(item.id)}
-                                        handleReplyPress={() => item.id && handleReplyPress(item.id)}
+                                        // handlePress={() => item.id && handlePress(item.id)}
+                                        // handleLongPress={() => item.id && handleLongPress(item.id)}
+                                        // handleReplyPress={() => item.id && handleReplyPress(item.id)}
                                         selected={selectedMessages.includes(item.id)}
                                     /> :
                                     <View key={item.updated_at} style={styles.titleContainer}>
@@ -302,7 +346,7 @@ const Message: React.FC<MessageProps> = ({
                             </View>
                         </View>
                     </View>
-                    <View style={{ justifyContent: 'flex-end', paddingBottom: 7 }}>
+                    <View style={{ justifyContent: 'flex-end', paddingBottom: 7, marginLeft: 7 }}>
                         <IconButton onPress={handleSend} size={20} iconSource={ICON_SEND} />
                     </View>
                 </View>
@@ -314,9 +358,7 @@ const Message: React.FC<MessageProps> = ({
                     translation={CHINESE_EMOJI_LANG}
                 />
 
-                <View style={{ margin: BOTTOM_TAPBAR_HEIGHT / 2 }}></View>
-
-                {isSelectionMode && (
+                {/* {isSelectionMode && (
                     <View style={styles.selectionBar}>
                         <TouchableOpacity onPress={() => showPopupMenu(selectedMessages)}>
                             <Text style={styles.selectionBarText}>选项</Text>
@@ -329,7 +371,7 @@ const Message: React.FC<MessageProps> = ({
                             <Text style={styles.selectionBarText}>取消</Text>
                         </TouchableOpacity>
                     </View>
-                )}
+                )} */}
             </View>
         </GestureHandlerRootView>
     );
@@ -339,7 +381,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginHorizontal: 20,
-        marginTop: 10
+        marginTop: 10,
+        paddingBottom: BOTTOM_TAPBAR_HEIGHT + 50
     },
     contentContainer: {
         justifyContent: 'space-between',
@@ -355,6 +398,9 @@ const styles = StyleSheet.create({
         color: 'rgba(255, 255, 255, 0.5)',
     },
     inputBarContainer: {
+        position: 'absolute',
+        bottom: BOTTOM_TAPBAR_HEIGHT,
+        width: SCREEN_WIDTH - 40,
         flexDirection: 'row',
         marginVertical: 10,
         backgroundColor: 'rgba(255, 255, 255, 1)',
@@ -362,7 +408,7 @@ const styles = StyleSheet.create({
     },
     inputBar: {
         flexDirection: 'row',
-        width: SCREEN_WIDTH - 80,
+        width: SCREEN_WIDTH - 90,
         backgroundColor: 'rgba(236, 236, 236, 1)',
         borderRadius: 5,
         paddingHorizontal: 15,

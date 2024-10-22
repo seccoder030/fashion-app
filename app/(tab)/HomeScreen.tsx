@@ -7,7 +7,7 @@ import { StyleSheet, View } from 'react-native';
 const tabs = ['精选', '推荐', '校友圈'];
 
 export default function HomeScreen() {
-    const [currentPage, setCurrentPage] = useState(2);
+    const [currentPage, setCurrentPage] = useState(1);
 
     return (
         <View style={styles.container}>
