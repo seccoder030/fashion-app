@@ -48,7 +48,7 @@ const ImageList: React.FC<ImageListProps> = ({
     }
 
     const handleItem = (item: IPost) => {
-        router.push({ pathname: '/DetailScreen', params: { postId: item.id, userId: item.user_id, type: item.type ? "video" : "image", uri: item.uri, title: item.title, content: item.content, likesCount: item.likes, commentsCount: item.comments, favoCount: item.favorites } });
+        router.push({ pathname: '/DetailScreen', params: { postId: item.id, userId: item.user_id, avatar: item.user.avatar, name: item.user.name, type: item.type ? "video" : "image", uri: item.uri, title: item.title, content: item.content, likesCount: item.likes, commentsCount: item.comments, favoCount: item.favorites } });
     }
 
     const renderItem = ({ item }: { item: IPost }) => (
@@ -92,13 +92,13 @@ const ImageList: React.FC<ImageListProps> = ({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginHorizontal: 10
+        marginHorizontal: 10,
+        justifyContent: 'flex-start',
     },
     contentContainer: {
         paddingBottom: BOTTOM_TAPBAR_HEIGHT - 10,
     },
     columnWrapper: {
-        justifyContent: 'space-between',
     },
     card: {
         width: (SCREEN_WIDTH - 60) / 2,

@@ -183,12 +183,12 @@ const EditProfile: React.FC<EditProfileProps> = ({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginVertical: 20
+        marginVertical: 10
     },
     info: {
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginVertical: 7
+        marginVertical: 5
     },
     infoItem: {
         flexDirection: 'row',

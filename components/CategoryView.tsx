@@ -42,6 +42,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
                         checked={checkedCategories.has(item.id)}
                     />
                 ))}
+                <View></View>
             </ScrollView>
         </View>
     );

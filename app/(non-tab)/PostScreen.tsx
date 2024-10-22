@@ -22,6 +22,7 @@ const PostScreen = () => {
     const { token, user } = useAuth();
     const [title, setTitle] = useState<string>('');
     const [content, setContent] = useState<string>('');
+    const [link, setLink] = useState<string>('');
     const [categories, setCategories] = useState<ICategory[] | null>(null);
     const [checkedCategories, setCheckedCategories] = useState<Set<string>>(new Set());
 
@@ -83,6 +84,8 @@ const PostScreen = () => {
                     // Append other data
                     formData.append('title', title);
                     formData.append('content', content);
+                    formData.append('user_id', user.id);
+                    formData.append('profile_link', link);
                     var data = Array();
                     checkedCategories.forEach(item => {
                         data.push(item);
@@ -100,7 +103,8 @@ const PostScreen = () => {
                         ToastAndroid.show(res.msg, ToastAndroid.SHORT);
                         console.log(res.msg)
                         if (res.status === 'success') {
-                            router.back();
+                            if (router.canDismiss()) router.dismissAll();
+                            router.replace('/HomeScreen');
                         }
                     } catch (error) {
                         console.error('Error fetching categories:', error);
@@ -150,7 +154,7 @@ const PostScreen = () => {
                     </View>
                     <View style={styles.post}>
                         <View style={styles.postItem}>
-                            <Text style={styles.postTitle}>标         题:</Text>
+                            <Text style={styles.postTitle}>标                题:</Text>
                             <View style={styles.postTextContainer}>
                                 <TextInput
                                     value={title}
@@ -165,12 +169,12 @@ const PostScreen = () => {
                     </View>
                     <View style={styles.post}>
                         <View style={styles.postItem}>
-                            <Text style={styles.postTitle}>内         容:</Text>
+                            <Text style={styles.postTitle}>内                容:</Text>
                             <View style={styles.postTextContainer}>
                                 <TextInput
                                     value={content}
                                     onChangeText={(value) => setContent(value)}
-                                    style={[styles.postText, { height: 100 }]}
+                                    style={[styles.postText, { height: 70 }]}
                                     placeholder="请输入内容。"
                                     placeholderTextColor="rgba(255, 255, 255, 0.5)"
                                     multiline={true}
@@ -182,12 +186,27 @@ const PostScreen = () => {
                     </View>
                     <View style={styles.post}>
                         <View style={styles.postItem}>
-                            <Text style={styles.postTitle}>内         容:</Text>
+                            <Text style={styles.postTitle}>个人资料链接:</Text>
+                            <View style={styles.postTextContainer}>
+                                <TextInput
+                                    value={link}
+                                    onChangeText={(value) => setLink(value)}
+                                    style={styles.postText}
+                                    placeholder="请输入个人资料链接。"
+                                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                    textAlignVertical='top'
+                                />
+                            </View>
+                        </View>
+                    </View>
+                    <View style={styles.post}>
+                        <View style={styles.postItem}>
+                            <Text style={styles.postTitle}>内                容:</Text>
                         </View>
                     </View>
                     <CategoryView categories={categories} checkedCategories={checkedCategories} setCheckedCategories={setCheckedCategories} height={150} />
                     <View style={styles.postButton}>
-                        <TextButton onPress={handlePost} text='帖       子' backgroundColor={'rgba(255, 0, 153, 1)'} borderRadius={10} paddingHorizontal={35} paddingVertical={5} fontSize={25} />
+                        <TextButton onPress={handlePost} text='帖                子' backgroundColor={'rgba(255, 0, 153, 1)'} borderRadius={10} paddingHorizontal={25} paddingVertical={5} fontSize={15} />
                     </View>
                 </View>
             </View>
@@ -222,7 +241,7 @@ const styles = StyleSheet.create({
     },
     post: {
         justifyContent: 'space-between',
-        marginVertical: 10
+        marginVertical: 5
     },
     postItem: {
         justifyContent: 'space-between',
@@ -231,7 +250,7 @@ const styles = StyleSheet.create({
         color: 'rgba(255, 255, 255, 1)',
         marginHorizontal: 10,
         marginVertical: 5,
-        fontSize: 17,
+        fontSize: 15,
     },
     postTextContainer: {
         flexDirection: 'row',
@@ -243,16 +262,11 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         width: SCREEN_WIDTH - 80,
         color: 'rgba(255, 255, 255, 1)',
-        fontSize: 15,
+        fontSize: 13,
     },
     postButton: {
         alignItems: 'center',
         marginVertical: 30
-    },
-    progressBar: {
-        width: '100%',
-        height: 10,
-        borderRadius: 5,
     },
 });
 

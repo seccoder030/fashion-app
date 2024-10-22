@@ -10,8 +10,9 @@ import IconTextButton from './IconTextButton';
 interface IActionBarProps {
   postId: string;
   userId: string;
-  type: boolean;
   avatar: string | undefined;
+  name: string;
+  type: boolean;
   uri: string | undefined;
   title: string;
   content: string;
@@ -20,7 +21,7 @@ interface IActionBarProps {
   favoritesCount: number;
 }
 
-const ActionBar: React.FC<IActionBarProps> = ({ postId, userId, type, avatar, uri, title, content, preLikesCount, commentsCount, favoritesCount }) => {
+const ActionBar: React.FC<IActionBarProps> = ({ postId, userId, avatar, name, type, uri, title, content, preLikesCount, commentsCount, favoritesCount }) => {
   const { friends, favorites, updateFriends, updateFavorites } = useAuth();
   const [heart, setHeart] = useState<boolean>(false);
   const [add, setAdd] = useState<boolean>(false);
@@ -47,7 +48,7 @@ const ActionBar: React.FC<IActionBarProps> = ({ postId, userId, type, avatar, ur
   }
 
   const handleItem = () => {
-    router.push({ pathname: '/DetailScreen', params: { postId: postId, userId: userId, type: type ? "video" : "image", uri: uri, title: title, content: content, likesCount: likesCount, commentsCount: commentsCount, favoCount: favoritesCount } });
+    router.push({ pathname: '/DetailScreen', params: { postId: postId, userId: userId, avatar: avatar, name: name, type: type ? "video" : "image", uri: uri, title: title, content: content, likesCount: likesCount, commentsCount: commentsCount, favoCount: favoritesCount } });
   }
   return (
     <View style={styles.container}>

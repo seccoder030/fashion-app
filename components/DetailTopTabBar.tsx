@@ -1,14 +1,60 @@
-import { ICON_BACK, SEARCHDETAILTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
+import { ICON_AVATAR, ICON_BACK, SEARCHDETAILTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
 import { router } from 'expo-router';
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import IconButton from './IconButton';
 import TextButton from './TextButton';
+import { useAuth } from './navigation/Authentication';
+import Request from '@/utils/request';
 
-const DetailToptabBar = () => {
-  const uri = 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png';
+interface DetailToptabBarProps {
+  postId: string;
+  userId: string;
+  avatar: string;
+  name: string;
+};
 
-  function handleTab() {
+const DetailToptabBar: React.FC<DetailToptabBarProps> = ({
+  postId,
+  userId,
+  avatar,
+  name
+}) => {
+  const { token, user } = useAuth();
+
+  const deleteItem = async () => {
+    if (token) {
+      try {
+        Request.setAuthorizationToken(token);
+        const res = await Request.Post(`/profile/posts/delete`, { id: postId });
+        if (res.status === 'success') {
+          if (router.canDismiss()) router.dismissAll();
+          router.replace('/HomeScreen');
+        }
+        ToastAndroid.show(res.msg, ToastAndroid.SHORT);
+      } catch (error) {
+        console.log(error);
+        ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
+      }
+    }
+  };
+
+  function handleDelete() {
+    return Alert.alert(
+      "Confirm Deletion",
+      "Are you want to delete this item?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          onPress: () => deleteItem(),
+          style: "destructive"
+        }
+      ]
+    );
   }
 
   function handleBack() {
@@ -22,16 +68,16 @@ const DetailToptabBar = () => {
           <IconButton onPress={handleBack} size={25} iconSource={ICON_BACK} />
           <View style={styles.user}>
             <Image
-              source={{ uri: uri }}
+              source={avatar ? { uri: avatar } : ICON_AVATAR}
               style={[
                 { width: 42, height: 42 },
                 styles.userImage
               ]}
             />
-            <Text style={styles.userName}>昵   称</Text>
+            <Text style={styles.userName}>{name}</Text>
           </View>
         </View>
-        <TextButton onPress={handleTab} text='立即关注' backgroundColor={'#FF1493'} borderRadius={20} paddingHorizontal={15} paddingVertical={3} />
+        {user?.id == userId && <TextButton onPress={handleDelete} text='删除帖子' backgroundColor={'#FF1493'} borderRadius={20} paddingHorizontal={15} paddingVertical={3} />}
       </View>
     </View>
   );

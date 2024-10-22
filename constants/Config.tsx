@@ -88,17 +88,6 @@ export const ICON_ALBUM = require('@/assets/images/icons/album.png');
 export const ICON_AVATAR = require('@/assets/images/icons/avatar.png');
 export const IMAGE_PROFILEBG = require('@/assets/images/icons/profilebg.png');
 
-export const IMAGE_BG = require('@/assets/images/hd/bg (1).png')
-export const IMAGE_BG2 = require('@/assets/images/hd/bg (2).png')
-export const IMAGE_BG3 = require('@/assets/images/hd/bg (3).png')
-export const IMAGE_BG4 = require('@/assets/images/hd/bg (4).png')
-export const IMAGE_BG5 = require('@/assets/images/hd/bg (5).png')
-export const IMAGE_BG6 = require('@/assets/images/hd/bg (6).png')
-export const IMAGE_BG7 = require('@/assets/images/hd/bg (7).png')
-export const IMAGE_BG8 = require('@/assets/images/hd/bg (8).png')
-export const IMAGE_BG9 = require('@/assets/images/hd/bg (9).png')
-export const IMAGE_BG10 = require('@/assets/images/hd/bg (10).png')
-
 export const CHINESE_EMOJI_LANG = {
     recently_used: '最近使用',
     smileys_emotion: '笑脸与情感',

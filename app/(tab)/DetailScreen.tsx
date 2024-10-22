@@ -8,6 +8,8 @@ import { StyleSheet, View } from 'react-native';
 type DetailParams = {
     postId: string;
     userId: string;
+    avatar: string;
+    name: string;
     type: string;
     uri: string;
     title: string;
@@ -18,11 +20,11 @@ type DetailParams = {
 };
 
 const DetailScreen = () => {
-    const { postId, userId, type, uri, title, content, likesCount, commentsCount, favoCount } = useLocalSearchParams<DetailParams>();
+    const { postId, userId, avatar, name, type, uri, title, content, likesCount, commentsCount, favoCount } = useLocalSearchParams<DetailParams>();
 
     return (
         <View style={styles.container} >
-            <DetailTopTabBar />
+            <DetailTopTabBar postId={postId} userId={userId} avatar={avatar} name={name} />
             <Detail postId={postId} userId={userId} type={type === 'video' ? true : false} uri={uri} title={title} content={content} likesCount={parseInt(likesCount)} commentsCount={parseInt(commentsCount)} favoCount={parseInt(favoCount)} />
         </View>
     );

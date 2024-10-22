@@ -1,11 +1,11 @@
 interface IPost {
     id: string;
-    content: string;
     uri: string;
-    user: IUser;
     user_id: string;
     type: boolean;
     title: string;
+    content: string;
+    user: IUser;
     likes?: number;
     comments?: number;
     favorited_users?: string;
@@ -42,31 +42,44 @@ interface IUser {
     updated_at?: string;
 }
 
-interface IWithMedia {
-    type: string;
-    uri: string;
+interface IComment {
+    id: number;
+    sender_id: number;
+    receiver_id: number;
+    post_id: number;
+    comment_text: string;
+    sender_friends_count: number;
+    received_comments_count: number;
+    sender: IUser;
+    receiver: IUser;
+    post: IPost;
+    created_at?: string;
+    updated_at?: string;
+}
+
+interface ICommentNode extends IComment {
+    replies: IComment[];
+}
+
+interface IFriend {
+    id: string;
+    user_id: string;
+    frined_id: string;
+    user1: IUser;
+    created_at?: string;
+    updated_at?: string;
 }
 
 interface IMessage {
     id: string | null;
-    userid?: string;
-    date: string;
-    receive?: boolean;
-    text?: string;
-    replyMessage?: IMessage;
-    medias?: IWithMedia[];
-}
-
-interface IComment {
-    id: string;
     sender_id: string;
     receiver_id: string;
-    comment_text: string;
-    sender_friends_count: number;
-    received_comments_count: number;
-    sender: {};
-    receiver: {};
-    post: {};
+    message: string;
+    sender?: IUser;
+    receiver?: IUser;
+    reply_id?: string | null;
+    seen_at?: string | null;
+    message_deleted_at?: string | null;
     created_at?: string;
     updated_at?: string;
 }

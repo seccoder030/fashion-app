@@ -5,7 +5,7 @@ import { useAuth } from '@/components/navigation/Authentication';
 import { BACKGROUND_COLOR, ICON_AVATAR, ICON_CAMERA, ICON_CAMERAFILL, ICON_HEARTLINE, ICON_LISTLINE, IMAGE_PROFILEBG, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 export default function EditProfileScreen() {
     const { user } = useAuth();
@@ -65,6 +65,31 @@ export default function EditProfileScreen() {
                     <IconButton onPress={handleAvatar} size={27} iconSource={ICON_CAMERA} />
                 </View>
             </View>
+            <View style={styles.info}>
+                <View style={styles.infoItem}>
+                    <Text style={styles.infoText}>514</Text>
+                    <Text style={styles.infoText}>获 赞</Text>
+                </View>
+                <View style={styles.infoItem}>
+                    <Text style={styles.infoText}>252</Text>
+                    <Text style={styles.infoText}>朋 友</Text>
+                </View>
+                <View style={styles.infoCenter}></View>
+                <View style={styles.infoItem}>
+                    <Text style={styles.infoText}>736</Text>
+                    <Text style={styles.infoText}>关 注</Text>
+                </View>
+                <View style={styles.infoItem}>
+                    <Text style={styles.infoText}>943</Text>
+                    <Text style={styles.infoText}>粉 丝</Text>
+                </View>
+            </View>
+            <View style={styles.infoDetail}>
+                <Text style={styles.infoText}>{user?.name}</Text>
+            </View>
+            <View style={styles.infoDetail}>
+                <Text style={styles.infoDetailText}>在这里写一个关于你自己的简短介绍。</Text>
+            </View>
             <View style={styles.tabContainer}>
                 <IconButton onPress={() => handleTab(true)} size={20} iconSource={ICON_LISTLINE} style={[styles.tabButton, activeTab && styles.activeTab]} />
                 <IconButton onPress={() => handleTab(false)} size={20} iconSource={ICON_HEARTLINE} style={[styles.tabButton, !activeTab && styles.activeTab]} />
@@ -82,7 +107,7 @@ const styles = StyleSheet.create({
     },
     topContainer: {
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: -(SCREEN_WIDTH * 0.125),
     },
     profileBg: {
         width: '100%',
@@ -105,6 +130,8 @@ const styles = StyleSheet.create({
         width: SCREEN_WIDTH * 0.25,
         height: SCREEN_WIDTH * 0.25,
         borderRadius: SCREEN_WIDTH * 0.25,
+        borderWidth: 2,
+        borderColor: 'rgba(255, 255, 255, 1)',
         marginTop: -(SCREEN_WIDTH * 0.125)
     },
     changeProfileUser: {
@@ -117,6 +144,46 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'rgba(255, 255, 255, 1)',
         marginTop: -(SCREEN_WIDTH * 0.25)
+    },
+    info: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        height: SCREEN_WIDTH * 0.125,
+        marginHorizontal: 20,
+        marginBottom: 5
+    },
+    infoItem: {
+        alignItems: 'center',
+        marginHorizontal: 10
+    },
+    infoText: {
+        color: 'rgba(255, 255, 255, 1)',
+        fontSize: 12,
+        paddingVertical: 2
+    },
+    infoCenter: {
+        width: SCREEN_WIDTH * 0.25
+    },
+    infoDetail: {
+        alignItems: 'center',
+        paddingVertical: 5
+    },
+    infoDetailText: {
+        color: 'rgba(255, 255, 255, 1)',
+        fontSize: 13,
+    },
+    editButtonContainer: {
+        alignItems: 'center',
+        marginTop: -16
+    },
+    editButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 20,
+        height: 20,
+        backgroundColor: 'white',
+        borderRadius: 20
     },
     tabContainer: {
         flexDirection: 'row',

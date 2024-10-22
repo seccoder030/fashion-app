@@ -170,6 +170,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
     useEffect(() => {
         const initializeAuth = async () => {
+            console.log(segments)
             const inAuthGroup = segments[0] === '(auth)';
 
             if (!token && !inAuthGroup) {

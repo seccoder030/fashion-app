@@ -1,26 +1,13 @@
-import { BOTTOM_TAPBAR_HEIGHT, CHINESE_EMOJI_LANG, DETAILTOP_TAPBAR_HEIGHT, ICON_AD, ICON_AVATAR, ICON_CANCEL, ICON_COMMENT, ICON_COMMENTPOST, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, ICON_UP, IMAGE_BG7, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
+import { useAuth } from '@/components/navigation/Authentication';
+import { BOTTOM_TAPBAR_HEIGHT, CHINESE_EMOJI_LANG, DETAILTOP_TAPBAR_HEIGHT, ICON_AD, ICON_AVATAR, ICON_CANCEL, ICON_COMMENT, ICON_COMMENTPOST, ICON_DOWN, ICON_EMOJI, ICON_HEARTFILL, ICON_STAR, ICON_UP, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
+import Request from '@/utils/request';
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import EmojiPicker from 'rn-emoji-keyboard';
 import IconButton from './IconButton';
-import TextButton from './TextButton';
-import Blank from './Blank';
-import { useAuth } from '@/components/navigation/Authentication';
-import Media from './Media';
-import Request from '@/utils/request';
 import Loading from './Loading';
-
-interface DetailParams {
-    postId: string;
-    userId: string;
-    type: boolean;
-    uri: string | undefined;
-    title: string;
-    content: string;
-    likesCount?: number;
-    commentsCount?: number;
-    favoCount?: number;
-};
+import Media from './Media';
+import TextButton from './TextButton';
 
 interface User {
     id: number;
@@ -59,7 +46,19 @@ interface CommentNode extends Comment {
     replies: Comment[];
 }
 
-const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, content, likesCount, commentsCount, favoCount }) => {
+interface DetailProps {
+    postId: string;
+    userId: string;
+    type: boolean;
+    uri: string | undefined;
+    title: string;
+    content: string;
+    likesCount?: number;
+    commentsCount?: number;
+    favoCount?: number;
+};
+
+const Detail: React.FC<DetailProps> = ({ postId, userId, type, uri, title, content, likesCount, commentsCount, favoCount }) => {
     const { token, user } = useAuth();
     const [comments, setComments] = useState<CommentNode[] | null>(null);
     const [viewDetail, setViewDetail] = useState<boolean[]>([]);
@@ -150,10 +149,6 @@ const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, cont
         return <Loading backgroundColor={'transparent'} />;
     }
 
-    if (comments.length === 0) {
-        return <Blank />
-    }
-
     function handleItem() {
     }
 
@@ -168,11 +163,6 @@ const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, cont
                     if (isReply.replyindex !== undefined && comments[isReply.index].replies)
                         formdata.append('receiver[id]', comments[isReply.index].replies && comments[isReply.index].replies[isReply.replyindex].sender_id.toString());
                     else formdata.append('receiver[id]', comments[isReply.index].sender_id.toString());
-                    setViewDetail(prev => {
-                        const newViewDetail = [...prev];
-                        newViewDetail[isReply.index] = true;
-                        return newViewDetail;
-                    });
                     formdata.append('content', commentText);
                 }
                 else if (postText.length !== 0) {
@@ -186,13 +176,18 @@ const Detail: React.FC<DetailParams> = ({ postId, userId, type, uri, title, cont
                 });
                 if (res.status === 'success') {
                     const commentTree = buildCommentTree(res.comment);
-                    console.log(commentTree)
                     setComments(commentTree);
                     setPostText('');
                     setCommentText('');
                     setIsReply(undefined);
                     if (!isReply) {
                         scrollViewRef.current?.scrollToEnd();
+                    } else {
+                        setViewDetail(prev => {
+                            const newViewDetail = [...prev];
+                            newViewDetail[isReply.index] = true;
+                            return newViewDetail;
+                        });
                     }
                 }
                 ToastAndroid.show(res.msg, ToastAndroid.SHORT);

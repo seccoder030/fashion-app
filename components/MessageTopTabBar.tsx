@@ -1,4 +1,4 @@
-import { ICON_BACK, ICON_DELETE, ICON_MORE, ICON_SELECTALL, ICON_SELECTALLOFF, SEARCHDETAILTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
+import { ICON_AVATAR, ICON_BACK, ICON_DELETE, ICON_MORE, ICON_SELECTALL, ICON_SELECTALLOFF, SEARCHDETAILTOP_TAPBAR_HEIGHT, STATUSBAR_HEIGHT } from '@/constants/Config';
 import { router } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -10,9 +10,17 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 
-const SearchDetailToptabBar = () => {
-  const uri = 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png';
+interface MessageToptabBarProps {
+  userId: string;
+  name: string;
+  avatar: string | undefined;
+}
 
+const MessageToptabBar: React.FC<MessageToptabBarProps> = ({
+  userId,
+  name,
+  avatar
+}) => {
   function handleBack() {
     router.back();
   }
@@ -27,14 +35,14 @@ const SearchDetailToptabBar = () => {
           <IconButton onPress={handleBack} size={25} iconSource={ICON_BACK} />
           <View style={styles.user}>
             <Image
-              source={{ uri: uri }}
+              source={avatar ? { uri: avatar } : ICON_AVATAR}
               style={[
                 { width: 42, height: 42 },
                 styles.userImage
               ]}
             />
-            <Text style={styles.userName}>昵   称</Text>
-            <Text style={styles.text}>(正在打字...)</Text>
+            <Text style={styles.userName}>{name}</Text>
+            {/* <Text style={styles.text}>(正在打字...)</Text> */}
           </View>
         </View>
         <Menu>
@@ -113,4 +121,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SearchDetailToptabBar;
+export default MessageToptabBar;

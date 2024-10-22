@@ -1,6 +1,6 @@
-import { SCREEN_WIDTH } from '@/constants/Config';
+import { ICON_AVATAR, ICON_CHECK, SCREEN_WIDTH } from '@/constants/Config';
 import { ResizeMode, Video } from 'expo-av';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Image,
     Pressable,
@@ -10,8 +10,11 @@ import {
 } from 'react-native';
 
 interface MessageBoxProps {
-    avatar: string;
+    userId: string | undefined;
+    receiverAvatar: string | undefined;
+    senderAvatar: string | undefined;
     message: IMessage;
+    replyMessage?: IMessage | null;
     fontSize?: number;
     handlePress?: ((e: any) => void) | null;
     handleLongPress?: ((e: any) => void) | null;
@@ -20,8 +23,11 @@ interface MessageBoxProps {
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
-    avatar,
+    userId,
+    receiverAvatar,
+    senderAvatar,
     message,
+    replyMessage = null,
     fontSize = 10,
     handlePress = null,
     handleLongPress = null,
@@ -29,6 +35,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     selected = false,
 }) => {
     const [aspectRatio, setAspectRatio] = useState(16 / 9);
+    const [check, setCheck] = useState(false);
+    const [recheck, setReCheck] = useState(false);
+
+    useEffect(() => {
+        if (message.id && parseInt(message.id) > 0) setCheck(true);
+    }, [message])
 
     const handleImageLoad = (event: any) => {
         const { width, height } = event.nativeEvent.source;
@@ -47,10 +59,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     return (
         <>
             {
-                message.receive ?
+                message.sender_id !== userId ?
                     <View style={styles.receive}>
                         <Image
-                            source={{ uri: avatar }}
+                            source={receiverAvatar ? { uri: receiverAvatar } : ICON_AVATAR}
                             style={[
                                 { width: 30, height: 30 },
                                 styles.userImage
@@ -58,9 +70,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                         />
                         <View style={{ width: '70%', flexDirection: 'row', justifyContent: 'flex-start' }}>
                             <View style={[styles.content, { backgroundColor: selected ? 'rgba(252, 252, 252, 0.5)' : 'rgba(252, 252, 252, 1)' }]}>
-                                {message.replyMessage && <View style={[styles.content, { backgroundColor: selected ? 'rgba(193, 237, 255, 0.5)' : 'rgba(193, 237, 255, 1)', borderColor: selected ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 1)', borderLeftWidth: 5, marginBottom: 10, marginHorizontal: 0 }]}>
+                                {replyMessage && <View style={[styles.content, { backgroundColor: selected ? 'rgba(193, 237, 255, 0.5)' : 'rgba(193, 237, 255, 1)', borderColor: selected ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 1)', borderLeftWidth: 5, marginBottom: 10, marginHorizontal: 0 }]}>
                                     <Pressable onPress={handleReplyPress} onLongPress={handleLongPress}>
-                                        {message.replyMessage.medias && message.replyMessage.medias.map((item, index) => (
+                                        {/* {message.reply.medias && message.reply.medias.map((item, index) => (
                                             item.type === "video" ?
                                                 <Video
                                                     key={index}
@@ -88,15 +100,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                                                     /> :
                                                     <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 15 }}>文件无法播放</Text>
                                                 )
-                                        ))}
-                                        <Text style={[styles.text, { fontSize: fontSize }]}>{message.replyMessage.text}</Text>
+                                        ))} */}
+                                        <Text style={[styles.text, { fontSize: fontSize }]}>{replyMessage.message}</Text>
                                         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                            <Text style={styles.date}>{new Date(message.replyMessage.date).toDateString()}</Text>
+                                            <Text style={styles.date}>{replyMessage.updated_at && new Date(replyMessage.updated_at).toDateString()}</Text>
+                                            {check && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
+                                            {recheck && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
                                         </View>
                                     </Pressable>
                                 </View>}
                                 <Pressable onPress={handlePress} onLongPress={handleLongPress}>
-                                    {message.medias && message.medias.map((item, index) => (
+                                    {/* {message.medias && message.medias.map((item, index) => (
                                         item.type === "video" ?
                                             <Video
                                                 key={index}
@@ -124,10 +138,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                                                 /> :
                                                 <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 15 }}>文件无法播放</Text>
                                             )
-                                    ))}
-                                    <Text style={[styles.text, { fontSize: fontSize }]}>{message.text}</Text>
+                                    ))} */}
+                                    <Text style={[styles.text, { fontSize: fontSize }]}>{message.message}</Text>
                                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                        <Text style={styles.date}>{new Date(message.date).toDateString()}</Text>
+                                        <Text style={styles.date}>{message.updated_at && new Date(message.updated_at).toDateString()}</Text>
+                                        {check && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
+                                        {recheck && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
                                     </View>
                                 </Pressable>
                             </View>
@@ -137,9 +153,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     <View style={styles.send}>
                         <View style={{ width: '70%', flexDirection: 'row', justifyContent: 'flex-end' }}>
                             <View style={[styles.content, { backgroundColor: selected ? 'rgba(193, 237, 255, 0.5)' : 'rgba(193, 237, 255, 1)' }]}>
-                                {message.replyMessage && <View style={[styles.content, { backgroundColor: selected ? 'rgba(252, 252, 252, 0.5)' : 'rgba(252, 252, 252, 1)', borderColor: selected ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 1)', borderLeftWidth: 5, marginBottom: 10, marginHorizontal: 0 }]}>
+                                {replyMessage && <View style={[styles.content, { backgroundColor: selected ? 'rgba(252, 252, 252, 0.5)' : 'rgba(252, 252, 252, 1)', borderColor: selected ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 1)', borderLeftWidth: 5, marginBottom: 10, marginHorizontal: 0 }]}>
                                     <Pressable onPress={handleReplyPress} onLongPress={handleLongPress}>
-                                        {message.replyMessage.medias && message.replyMessage.medias.map((item, index) => (
+                                        {/* {message.reply.medias && message.reply.medias.map((item, index) => (
                                             item.type === "video" ?
                                                 <Video
                                                     key={index}
@@ -167,15 +183,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                                                     /> :
                                                     <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 15 }}>文件无法播放</Text>
                                                 )
-                                        ))}
-                                        <Text style={[styles.text, { fontSize: fontSize }]}>{[message.replyMessage.text]}</Text>
+                                        ))} */}
+                                        <Text style={[styles.text, { fontSize: fontSize }]}>{[replyMessage.message]}</Text>
                                         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                            <Text style={styles.date}>{new Date(message.replyMessage.date).toDateString()}</Text>
+                                            <Text style={styles.date}>{replyMessage.updated_at && new Date(replyMessage.updated_at).toDateString()}</Text>
+                                            {check && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
+                                            {recheck && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
                                         </View>
                                     </Pressable>
                                 </View>}
                                 <Pressable onPress={handlePress} onLongPress={handleLongPress}>
-                                    {message.medias && message.medias.map((item, index) => (
+                                    {/* {message.medias && message.medias.map((item, index) => (
                                         item.type === "video" ?
                                             <Video
                                                 key={index}
@@ -203,16 +221,18 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                                                 /> :
                                                 <Text style={{ color: 'rgba(255, 255, 255, 1)', fontSize: 15 }}>文件无法播放</Text>
                                             )
-                                    ))}
-                                    <Text style={[styles.text, { fontSize: fontSize }]}>{message.text}</Text>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                        <Text style={styles.date}>{new Date(message.date).toDateString()}</Text>
+                                    ))} */}
+                                    <Text style={[styles.text, { fontSize: fontSize }]}>{message.message}</Text>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+                                        <Text style={styles.date}>{message.updated_at && new Date(message.updated_at).toDateString()}</Text>
+                                        {check && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
+                                        {recheck && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
                                     </View>
                                 </Pressable>
                             </View>
                         </View>
                         <Image
-                            source={{ uri: avatar }}
+                            source={senderAvatar ? { uri: senderAvatar } : ICON_AVATAR}
                             style={[
                                 { width: 30, height: 30 },
                                 styles.userImage

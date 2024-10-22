@@ -1,15 +1,15 @@
 import IconButton from '@/components/IconButton';
 import IconTextButton from '@/components/IconTextButton';
 import TextButton from '@/components/TextButton';
-import { ICON_ALBUM, ICON_BACK, ICON_BEAUTY, ICON_CANCEL, ICON_CAPTURE, ICON_CONFIRM, ICON_EFFECT, ICON_FILTER, ICON_FLIP, ICON_MUSIC, ICON_PHOTO, ICON_RECORDSTART, ICON_RECORDSTOP, ICON_SAVE, ICON_SPEED, ICON_SPLIT, ICON_TIMER, ICON_UNION, ICON_VIDEO, SCREEN_WIDTH } from '@/constants/Config';
-import { Camera, CameraCapturedPicture, CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { ICON_ALBUM, ICON_BACK, ICON_BEAUTY, ICON_CANCEL, ICON_CAPTURE, ICON_CONFIRM, ICON_EFFECT, ICON_FILTER, ICON_FLIP, ICON_MUSIC, ICON_PHOTO, ICON_RECORDSTART, ICON_RECORDSTOP, ICON_SPEED, ICON_SPLIT, ICON_TIMER, ICON_UNION, ICON_VIDEO, SCREEN_WIDTH } from '@/constants/Config';
+import { ResizeMode, Video } from 'expo-av';
+import { Camera, CameraCapturedPicture, CameraType, CameraView } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, SafeAreaView, StatusBar, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { ResizeMode, Video } from 'expo-av';
 
 export default function CameraScreen() {
     const [facing, setFacing] = useState<CameraType>('back');

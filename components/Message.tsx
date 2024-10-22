@@ -1,39 +1,58 @@
 import { BOTTOM_TAPBAR_HEIGHT, CHINESE_EMOJI_LANG, ICON_AD, ICON_EMOJI, ICON_SEND, SCREEN_WIDTH } from '@/constants/Config';
 import React, { useEffect, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, ToastAndroid } from 'react-native';
 import EmojiPicker from 'rn-emoji-keyboard';
 import IconButton from './IconButton';
 import MessageBox from './MessageBox';
 import { useAuth } from '@/components/navigation/Authentication';
-import { PinchGestureHandler, State } from 'react-native-gesture-handler';
+import { PinchGestureHandler, State, GestureHandlerRootView } from 'react-native-gesture-handler';
+import Request from '@/utils/request';
+import Loading from './Loading';
+import Blank from './Blank';
 
-const Message = () => {
-    const avatar = 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png';
+interface MessageProps {
+    userId: string;
+    avatar: string | undefined;
+}
 
-    const messagesProps: IMessage[] = [
-        { id: '1', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。\n请输入您的意见。\n请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', medias: [{ type: "image", uri: 'http://192.168.143.79:8000/uploads/6630f4ec425715657a558476_Image (3).webp' }] },
-        { id: '2', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。\n请输入您的意见。\n请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。', medias: [{ type: "video", uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' }] },
-        { id: '3', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。', medias: [{ type: "video", uri: 'http://192.168.143.79:8000/uploads/1 (1).mp4' }] },
-        { id: '4', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。', replyMessage: { id: '3', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。' } },
-        { id: '5', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。', replyMessage: { id: '3', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: true, text: '请输入您的意见。', medias: [{ type: "image", uri: 'https://johnyanderson-portfolio.onrender.com/assets/images/logo/logo.png' }] } },
-        { id: '6', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。请输入您的意见。' },
-        { id: '7', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
-        { id: '8', userid: '姓  名', date: '2024-10-13T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
-        { id: '9', userid: '姓  名', date: '2024-10-14T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
-        { id: '10', userid: '姓  名', date: '2024-10-14T13:15:30.000Z', receive: false, text: '请输入您的意见。' },
-        { id: '11', userid: '姓  名', date: '2024-10-18T13:15:30.000Z', receive: true, text: '请输入您的意见。' },
-    ]
-
+const Message: React.FC<MessageProps> = ({
+    userId,
+    avatar
+}) => {
     const { token, user } = useAuth();
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [text, setText] = useState<string>('');
     const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
     const [isSelectionMode, setIsSelectionMode] = useState<boolean>(false);
-    const [messages, setMessages] = useState<IMessage[]>([]);
+    const [messages, setMessages] = useState<IMessage[] | null>(null);
     const [fontSize, setFontSize] = useState(10);
+    const [date, setDate] = useState(new Date(0))
     const scrollViewRef = useRef<ScrollView>(null);
     const [scale, setScale] = useState(1);
+    const [unCheckId, setUnCheckId] = useState(0);
     const baseScale = useRef(1);
+
+    const messageById = (id: string): IMessage | null => {
+        const res = messages ? messages.find(item => item.id === id) : null;
+        return res ? res : null;
+    };
+
+    useEffect(() => {
+        async function fetchData() {
+            if (token) {
+                try {
+                    Request.setAuthorizationToken(token);
+                    var res = await Request.Get(`/messages/get/${userId}`);
+                    setMessages(res);
+                    scrollViewRef.current?.scrollToEnd();
+                } catch (error) {
+                    console.log(error);
+                    ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
+                }
+            }
+        }
+        fetchData();
+    }, [])
 
     const onPinchGestureEvent = (event: any) => {
         const newScale = baseScale.current * event.nativeEvent.scale;
@@ -49,43 +68,65 @@ const Message = () => {
         }
     };
 
-    useEffect(() => {
-        preProcess(messagesProps)
-    }, [])
-
-    const preProcess = (items: IMessage[]) => {
-        if (items.length > 0) {
-            var arr = Array();
-            var date = new Date(items[0].date);
-            arr.push({ id: null, date: items[0].date });
-            arr.push(items[0]);
-            for (let i = 1; i < items.length; i++) {
-
-                if (date.toDateString() === new Date(items[i].date).toDateString()) {
-                    arr.push(items[i]);
-                } else {
-                    arr.push({ id: null, date: items[i].date });
-                    date = new Date(items[i].date);
-                    arr.push(items[i]);
-                }
-            }
-            setMessages(arr);
-        }
+    if (!messages) {
+        return <Loading backgroundColor={'transparent'} />;
     }
 
-    function handleSend() {
-        // Implement send logic here
-        if (user) {
-            const message: IMessage = {
-                id: messages.length === 0 ? '0' : messages[messages.length - 1].id,
-                userid: user.id,
-                date: new Date().toISOString(),
-                receive: false,
-                text: text
+    if (messages.length === 0) {
+        return <Blank />;
+    }
+
+    async function handleSend() {
+        if (token && text && user) {
+            const tempId = unCheckId - 1;
+            try {
+                Request.setAuthorizationToken(token);
+
+                // Create temporary message with unique ID
+                setUnCheckId(tempId);
+
+                const tempMessage: IMessage = {
+                    id: tempId.toString(),
+                    sender_id: user.id,
+                    receiver_id: userId,
+                    updated_at: new Date().toISOString(),
+                    message: text
+                };
+
+                // Add temporary message to the UI
+                const updatedMessages = messages ? [...messages, tempMessage] : [tempMessage];
+                setMessages(updatedMessages);
+                setText('');
+                scrollViewRef.current?.scrollToEnd();
+
+                // Send API request
+                const res = await Request.Post(`/messages`, {
+                    receiver_id: userId,
+                    message: text
+                });
+
+                // Update the message with response from server
+                if (res.message && messages) {
+                    const serverMessage = res.message.message as IMessage;
+
+                    // Create new messages array with the updated message
+                    const finalMessages = updatedMessages.map(msg =>
+                        msg.id === tempId.toString() ? serverMessage : msg
+                    );
+
+                    setMessages(finalMessages);
+                    setUnCheckId(tempId + 1);
+                    scrollViewRef.current?.scrollToEnd();
+                }
+            } catch (error) {
+                // Optionally: Remove the temporary message if API call fails
+                if (messages) {
+                    const fallbackMessages = messages.filter(msg =>
+                        msg.id !== tempId.toString()
+                    );
+                    setMessages(fallbackMessages);
+                }
             }
-            setMessages([...messages, message]);
-            scrollViewRef.current?.scrollToEnd();
-            setText('');
         }
     }
 
@@ -105,16 +146,12 @@ const Message = () => {
         if (isSelectionMode) {
             toggleMessageSelection(id);
         } else {
-            // Show pop-up menu for single message
             showPopupMenu([id]);
         }
     }
 
     function handleReplyPress(id: string) {
-        if (isSelectionMode) {
-            toggleMessageSelection(id);
-        } else {
-        }
+        // Implement reply logic
     }
 
     function handleLongPress(id: string) {
@@ -154,85 +191,87 @@ const Message = () => {
     }
 
     function handleCopy(messageIds: string[]) {
-        // Implement copy logic
         console.log("Copying messages:", messageIds);
     }
 
     function handleReply(messageIds: string[]) {
-        // Implement reply logic
         console.log("Replying to messages:", messageIds);
     }
 
     function handleDelete(messageIds: string[]) {
-        // Implement delete logic
         console.log("Deleting messages:", messageIds);
     }
 
     return (
-        <View style={styles.container}>
-            <PinchGestureHandler
-                onGestureEvent={onPinchGestureEvent}
-                onHandlerStateChange={onPinchHandlerStateChange}
-            >
-                <ScrollView ref={scrollViewRef} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-                    <View style={styles.messageContainer}>
-                        {messages.map((item, index) => (
-                            item.id ?
-                                <MessageBox
-                                    key={index}
-                                    avatar={avatar}
-                                    message={item}
-                                    fontSize={fontSize}
-                                    handlePress={() => item.id && handlePress(item.id)}
-                                    handleLongPress={() => item.id && handleLongPress(item.id)}
-                                    handleReplyPress={() => item.id && handleReplyPress(item.id)}
-                                    selected={selectedMessages.includes(item.id)}
-                                /> :
-                                <View key={index} style={styles.titleContainer}>
-                                    <Text style={[styles.titleText, { fontSize: fontSize + 2 }]}>{new Date(item.date).toDateString() === new Date().toDateString() ? '今   天' : new Date(item.date).toDateString()}</Text>
-                                </View>
-                        ))}
-                    </View>
-                </ScrollView>
-            </PinchGestureHandler>
-            <View style={styles.inputBarContainer}>
-                <View style={styles.inputBar}>
-                    <TextInput
-                        value={text}
-                        onChangeText={(value) => setText(value)}
-                        style={[styles.input, { fontSize: fontSize }]}
-                        placeholder="请输入您的意见。"
-                        placeholderTextColor="#888"
-                        multiline={true}
-                    />
-                    <View style={{ justifyContent: 'flex-end', paddingBottom: 5 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <IconButton onPress={handleAd} size={15} iconSource={ICON_AD} style={styles.inputBarIcon} />
-                            <IconButton onPress={handleEmoji} size={15} iconSource={ICON_EMOJI} style={styles.inputBarIcon} />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                <PinchGestureHandler
+                    onGestureEvent={onPinchGestureEvent}
+                    onHandlerStateChange={onPinchHandlerStateChange}
+                >
+                    <ScrollView ref={scrollViewRef} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+                        <View style={styles.messageContainer}>
+                            {messages.map((item, index) => (
+                                item.id ?
+                                    <MessageBox
+                                        key={index}
+                                        userId={user?.id}
+                                        receiverAvatar={avatar}
+                                        senderAvatar={user?.avatar}
+                                        message={item}
+                                        replyMessage={item.reply_id ? messageById(item.reply_id) : null}
+                                        fontSize={fontSize}
+                                        handlePress={() => item.id && handlePress(item.id)}
+                                        handleLongPress={() => item.id && handleLongPress(item.id)}
+                                        handleReplyPress={() => item.id && handleReplyPress(item.id)}
+                                        selected={selectedMessages.includes(item.id)}
+                                    /> :
+                                    <View key={index} style={styles.titleContainer}>
+                                        <Text style={[styles.titleText, { fontSize: fontSize + 2 }]}>{item.updated_at && (new Date(item.updated_at).toDateString() === new Date().toDateString() ? '今   天' : new Date(item.updated_at).toDateString())}</Text>
+                                    </View>
+                            ))}
+                        </View>
+                    </ScrollView>
+                </PinchGestureHandler>
+                <View style={styles.inputBarContainer}>
+                    <View style={styles.inputBar}>
+                        <TextInput
+                            value={text}
+                            onChangeText={(value) => setText(value)}
+                            style={[styles.input, { fontSize: fontSize }]}
+                            placeholder="请输入您的意见。"
+                            placeholderTextColor="#888"
+                            multiline={true}
+                        />
+                        <View style={{ justifyContent: 'flex-end', paddingBottom: 5 }}>
+                            <View style={{ flexDirection: 'row' }}>
+                                <IconButton onPress={handleAd} size={15} iconSource={ICON_AD} style={styles.inputBarIcon} />
+                                <IconButton onPress={handleEmoji} size={15} iconSource={ICON_EMOJI} style={styles.inputBarIcon} />
+                            </View>
                         </View>
                     </View>
+                    <View style={{ justifyContent: 'flex-end', paddingBottom: 7 }}>
+                        <IconButton onPress={handleSend} size={20} iconSource={ICON_SEND} />
+                    </View>
                 </View>
-                <View style={{ justifyContent: 'flex-end', paddingBottom: 7 }}>
-                    <IconButton onPress={handleSend} size={20} iconSource={ICON_SEND} />
-                </View>
+                <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} translation={CHINESE_EMOJI_LANG} />
+                <View style={{ margin: BOTTOM_TAPBAR_HEIGHT / 2 }}></View>
+                {isSelectionMode && (
+                    <View style={styles.selectionBar}>
+                        <TouchableOpacity onPress={() => showPopupMenu(selectedMessages)}>
+                            <Text style={styles.selectionBarText}>选项</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.selectionBarText}>{selectedMessages.length} 已选择</Text>
+                        <TouchableOpacity onPress={() => {
+                            setSelectedMessages([]);
+                            setIsSelectionMode(false);
+                        }}>
+                            <Text style={styles.selectionBarText}>取消</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
-            <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} translation={CHINESE_EMOJI_LANG} />
-            <View style={{ margin: BOTTOM_TAPBAR_HEIGHT / 2 }}></View>
-            {isSelectionMode && (
-                <View style={styles.selectionBar}>
-                    <TouchableOpacity onPress={() => showPopupMenu(selectedMessages)}>
-                        <Text style={styles.selectionBarText}>选项</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.selectionBarText}>{selectedMessages.length} 已选择</Text>
-                    <TouchableOpacity onPress={() => {
-                        setSelectedMessages([]);
-                        setIsSelectionMode(false);
-                    }}>
-                        <Text style={styles.selectionBarText}>取消</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-        </View>
+        </GestureHandlerRootView>
     );
 };
 

@@ -51,7 +51,7 @@ export default function ProfileScreen() {
                 <IconButton onPress={() => router.push('/EditProfileScreen')} size={15} iconSource={ICON_EDIT} style={styles.editButton} />
             </View>
             <View style={styles.infoDetail}>
-                <Text style={styles.infoText}>昵  称</Text>
+                <Text style={styles.infoText}>{user?.name}</Text>
             </View>
             <View style={styles.infoDetail}>
                 <Text style={styles.infoDetailText}>在这里写一个关于你自己的简短介绍。</Text>
@@ -60,7 +60,8 @@ export default function ProfileScreen() {
                 <IconButton onPress={() => handleTab(true)} size={20} iconSource={ICON_LISTLINE} style={[styles.tabButton, activeTab && styles.activeTab]} />
                 <IconButton onPress={() => handleTab(false)} size={20} iconSource={ICON_HEARTLINE} style={[styles.tabButton, !activeTab && styles.activeTab]} />
             </View>
-            <ProfileView mode={activeTab} />
+            {activeTab && <ProfileView mode={activeTab} />}
+            {!activeTab && <ProfileView mode={activeTab} />}
         </View>
     );
 };

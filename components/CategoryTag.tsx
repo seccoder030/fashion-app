@@ -31,7 +31,7 @@ const CategoryTag: React.FC<CategoryTagProps> = ({
         },
         buttontext: {
             color: 'rgba(0, 0, 0, 1)',
-            fontSize: 15
+            fontSize: 10
         }
     });
 

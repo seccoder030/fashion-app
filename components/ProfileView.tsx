@@ -1,19 +1,19 @@
-import { BOTTOM_TAPBAR_HEIGHT, IMAGE_BG, IMAGE_BG10, IMAGE_BG2, IMAGE_BG3, IMAGE_BG4, IMAGE_BG5, IMAGE_BG6, IMAGE_BG7, IMAGE_BG8, IMAGE_BG9, SCREEN_WIDTH } from '@/constants/Config';
+import { BOTTOM_TAPBAR_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
+import Request from '@/utils/request';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, ImageSourcePropType, Pressable, ScrollView, StyleSheet, ToastAndroid, View } from 'react-native';
-import { useAuth } from './navigation/Authentication';
-import Request from '@/utils/request';
-import Loading from './Loading';
+import { FlatList, Pressable, StyleSheet, ToastAndroid, View } from 'react-native';
 import Blank from './Blank';
+import Loading from './Loading';
 import Media from './Media';
+import { useAuth } from './navigation/Authentication';
 
-interface Item {
+interface IFavorites {
     id: string;
-    imageUrl: ImageSourcePropType;
-    caption: string;
-    likes: number;
-    comments: number;
+    user_id: string;
+    post_id: string;
+    user: IUser;
+    post: IPost;
 }
 
 interface ProfielViewProps {
@@ -25,21 +25,8 @@ const ProfileView: React.FC<ProfielViewProps> = ({
     mode = true,
     visible = true
 }) => {
-    const feedItems: Item[] = [
-        { id: '1', imageUrl: IMAGE_BG2, caption: '在此输入您的标题。', likes: 878, comments: 1208 },
-        { id: '2', imageUrl: IMAGE_BG3, caption: '在此输入您的标题。', likes: 351, comments: 1335 },
-        { id: '3', imageUrl: IMAGE_BG4, caption: '在此输入您的标题。', likes: 242, comments: 4231 },
-        { id: '4', imageUrl: IMAGE_BG5, caption: '在此输入您的标题。', likes: 313, comments: 3131 },
-        { id: '5', imageUrl: IMAGE_BG6, caption: '在此输入您的标题。', likes: 878, comments: 1208 },
-        { id: '6', imageUrl: IMAGE_BG7, caption: '在此输入您的标题。', likes: 351, comments: 1335 },
-        { id: '7', imageUrl: IMAGE_BG8, caption: '在此输入您的标题。', likes: 242, comments: 4231 },
-        { id: '8', imageUrl: IMAGE_BG9, caption: '在此输入您的标题。', likes: 313, comments: 3131 },
-        { id: '9', imageUrl: IMAGE_BG10, caption: '在此输入您的标题。', likes: 878, comments: 1208 },
-        { id: '10', imageUrl: IMAGE_BG, caption: '在此输入您的标题。', likes: 351, comments: 1335 },
-    ];
-
     const { token } = useAuth()
-    const [medias, setMedias] = useState<IPost[] | null>(null);
+    const [medias, setMedias] = useState<IFavorites[] | IPost[] | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -50,13 +37,9 @@ const ProfileView: React.FC<ProfielViewProps> = ({
                     if (res.status === 'success') {
                         setMedias([]);
                         if (mode) {
-                            res.me.map((item: { post: IPost }) => {
-                                setMedias(prev => [...(prev || []), item.post]);
-                            })
+                            setMedias(res.me as IPost[]);
                         } else {
-                            res.favorites.map((item: { post: IPost }) => {
-                                setMedias(prev => [...(prev || []), item.post]);
-                            })
+                            setMedias(res.favorites as IFavorites[]);
                         }
                     }
                 } catch (error) {
@@ -75,15 +58,24 @@ const ProfileView: React.FC<ProfielViewProps> = ({
         return <Blank />
     }
 
-    const handleItem = (item: IPost) => {
-        router.push({ pathname: '/DetailScreen', params: { postId: item.id, userId: item.user_id, type: item.type ? "video" : "image", uri: item.uri, title: item.title, content: item.content, likesCount: item.likes, commentsCount: item.comments, favoCount: item.favorites } });
+    const handleItem = (item: IFavorites | IPost) => {
+        if (mode) {
+            item = (item as IPost);
+            router.push({ pathname: '/DetailScreen', params: { postId: item.id, userId: item.user_id, avatar: item.user.avatar, name: item.user.name, type: item.type ? "video" : "image", uri: item.uri, title: item.title, content: item.content, likesCount: item.likes, commentsCount: item.comments, favoCount: item.favorites } });
+        }
+        else {
+            item = (item as IFavorites);
+            router.push({ pathname: '/DetailScreen', params: { postId: item.post_id, userId: item.user_id, avatar: item.user.avatar, name: item.user.name, type: item.post.type ? "video" : "image", uri: item.post.uri, title: item.post.title, content: item.post.content, likesCount: item.post.likes, commentsCount: item.post.comments, favoCount: item.post.favorites } });
+        }
     }
 
-    const renderItem = ({ item }: { item: IPost }) => (
+    const renderItem = ({ item }: { item: IFavorites | IPost }) => (
         <Pressable onPress={() => handleItem(item)} style={styles.card}>
-            <Media type={item.type} source={{ uri: item.uri }} backgroundColor={'transparent'} play={true} resizeMode={1} />
+            {mode ?
+                <Media type={(item as IPost).type} source={{ uri: (item as IPost).uri }} backgroundColor={'transparent'} play={true} resizeMode={1} /> :
+                <Media type={(item as IFavorites).post.type} source={{ uri: (item as IFavorites).post.uri }} backgroundColor={'transparent'} play={true} resizeMode={1} />
+            }
         </Pressable >
-
     );
 
     return (
@@ -104,7 +96,6 @@ const ProfileView: React.FC<ProfielViewProps> = ({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         marginHorizontal: 10,
         marginTop: 10
     },
