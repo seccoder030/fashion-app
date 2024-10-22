@@ -104,8 +104,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                                         <Text style={[styles.text, { fontSize: fontSize }]}>{replyMessage.message}</Text>
                                         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                                             <Text style={styles.date}>{replyMessage.updated_at && new Date(replyMessage.updated_at).toDateString()}</Text>
-                                            {check && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
-                                            {recheck && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
                                         </View>
                                     </Pressable>
                                 </View>}
@@ -142,8 +140,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                                     <Text style={[styles.text, { fontSize: fontSize }]}>{message.message}</Text>
                                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                                         <Text style={styles.date}>{message.updated_at && new Date(message.updated_at).toDateString()}</Text>
-                                        {check && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
-                                        {recheck && <Image source={ICON_CHECK} style={{ width: 10, height: 10, opacity: 0.5, marginTop: 5, marginLeft: 5 }} />}
                                     </View>
                                 </Pressable>
                             </View>

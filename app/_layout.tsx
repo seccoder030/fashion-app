@@ -6,6 +6,7 @@ import { router, Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { MenuProvider } from 'react-native-popup-menu';
+import { PusherProvider } from "@/components/navigation/PusherContext";
 import 'react-native-reanimated';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -55,9 +56,11 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <BackHandlerProvider>
-        <MenuProvider>
-          <Slot />
-        </MenuProvider>
+        <PusherProvider>
+          <MenuProvider>
+            <Slot />
+          </MenuProvider>
+        </PusherProvider>
       </BackHandlerProvider>
     </AuthProvider>
   );

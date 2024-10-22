@@ -9,10 +9,20 @@ import { PinchGestureHandler, State, GestureHandlerRootView } from 'react-native
 import Request from '@/utils/request';
 import Loading from './Loading';
 import Blank from './Blank';
+import { usePusher } from '@/hooks/usePusher';
 
 interface MessageProps {
     userId: string;
     avatar: string | undefined;
+}
+
+interface IMessage {
+    id: string;
+    sender_id: string;
+    receiver_id: string;
+    message: string;
+    updated_at: string;
+    reply_id?: string;
 }
 
 const Message: React.FC<MessageProps> = ({
@@ -26,11 +36,39 @@ const Message: React.FC<MessageProps> = ({
     const [isSelectionMode, setIsSelectionMode] = useState<boolean>(false);
     const [messages, setMessages] = useState<IMessage[] | null>(null);
     const [fontSize, setFontSize] = useState(10);
-    const [date, setDate] = useState(new Date(0))
+    const [pendingMessages, setPendingMessages] = useState<{ [key: string]: string }>({});
     const scrollViewRef = useRef<ScrollView>(null);
     const [scale, setScale] = useState(1);
-    const [unCheckId, setUnCheckId] = useState(0);
     const baseScale = useRef(1);
+
+    // Modified handleNewMessage to handle ID replacement
+    const handleNewMessage = (data: any) => {
+        console.log("Received message:", data);
+        const serverMessage = data.message.message as IMessage;
+
+        setMessages(currentMessages => {
+            if (!currentMessages) return [serverMessage];
+
+            // Remove any temporary message and add the server message
+            const filteredMessages = currentMessages.filter(msg => {
+                // Keep all messages except the temporary one with negative ID
+                const isTemporaryMessage = parseInt(msg.id) < 0 &&
+                    msg.message === serverMessage.message &&
+                    msg.sender_id === serverMessage.sender_id;
+                return !isTemporaryMessage;
+            });
+
+            return [...filteredMessages, serverMessage];
+        });
+
+        scrollViewRef.current?.scrollToEnd();
+    };
+
+    const { isConnected, error: pusherError } = usePusher({
+        channelName: 'broad_cast_message',
+        eventName: 'broadcast.message',
+        onEvent: handleNewMessage
+    });
 
     const messageById = (id: string): IMessage | null => {
         const res = messages ? messages.find(item => item.id === id) : null;
@@ -52,7 +90,7 @@ const Message: React.FC<MessageProps> = ({
             }
         }
         fetchData();
-    }, [])
+    }, []);
 
     const onPinchGestureEvent = (event: any) => {
         const newScale = baseScale.current * event.nativeEvent.scale;
@@ -68,64 +106,48 @@ const Message: React.FC<MessageProps> = ({
         }
     };
 
-    if (!messages) {
-        return <Loading backgroundColor={'transparent'} />;
-    }
-
-    if (messages.length === 0) {
-        return <Blank />;
-    }
-
     async function handleSend() {
         if (token && text && user) {
-            const tempId = unCheckId - 1;
+            const tempId = (-Date.now()).toString(); // Use negative timestamp as temporary ID
+
             try {
-                Request.setAuthorizationToken(token);
-
-                // Create temporary message with unique ID
-                setUnCheckId(tempId);
-
+                // Create temporary message
                 const tempMessage: IMessage = {
-                    id: tempId.toString(),
+                    id: tempId,
                     sender_id: user.id,
                     receiver_id: userId,
                     updated_at: new Date().toISOString(),
                     message: text
                 };
 
-                // Add temporary message to the UI
-                const updatedMessages = messages ? [...messages, tempMessage] : [tempMessage];
-                setMessages(updatedMessages);
+                // Optimistically add message to UI
+                setMessages(current =>
+                    current ? [...current, tempMessage] : [tempMessage]
+                );
                 setText('');
                 scrollViewRef.current?.scrollToEnd();
 
                 // Send API request
+                Request.setAuthorizationToken(token);
                 const res = await Request.Post(`/messages`, {
                     receiver_id: userId,
                     message: text
                 });
 
-                // Update the message with response from server
-                if (res.message && messages) {
-                    const serverMessage = res.message.message as IMessage;
-
-                    // Create new messages array with the updated message
-                    const finalMessages = updatedMessages.map(msg =>
-                        msg.id === tempId.toString() ? serverMessage : msg
-                    );
-
-                    setMessages(finalMessages);
-                    setUnCheckId(tempId + 1);
-                    scrollViewRef.current?.scrollToEnd();
+                // Store the mapping between server ID and temp ID
+                if (res.id) {
+                    setPendingMessages(current => ({
+                        ...current,
+                        [res.id]: tempId
+                    }));
                 }
             } catch (error) {
-                // Optionally: Remove the temporary message if API call fails
-                if (messages) {
-                    const fallbackMessages = messages.filter(msg =>
-                        msg.id !== tempId.toString()
-                    );
-                    setMessages(fallbackMessages);
-                }
+                // Handle error - remove temporary message
+                setMessages(current =>
+                    current ? current.filter(msg => msg.id !== tempId) : null
+                );
+                console.log(error);
+                ToastAndroid.show('消息发送失败！', ToastAndroid.SHORT);
             }
         }
     }
@@ -202,6 +224,14 @@ const Message: React.FC<MessageProps> = ({
         console.log("Deleting messages:", messageIds);
     }
 
+    if (!messages) {
+        return <Loading backgroundColor={'transparent'} />;
+    }
+
+    if (messages.length === 0) {
+        return <Blank />;
+    }
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={styles.container}>
@@ -209,12 +239,17 @@ const Message: React.FC<MessageProps> = ({
                     onGestureEvent={onPinchGestureEvent}
                     onHandlerStateChange={onPinchHandlerStateChange}
                 >
-                    <ScrollView ref={scrollViewRef} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+                    <ScrollView
+                        ref={scrollViewRef}
+                        contentContainerStyle={styles.contentContainer}
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                    >
                         <View style={styles.messageContainer}>
-                            {messages.map((item, index) => (
+                            {messages.map((item) => (
                                 item.id ?
                                     <MessageBox
-                                        key={index}
+                                        key={item.id}
                                         userId={user?.id}
                                         receiverAvatar={avatar}
                                         senderAvatar={user?.avatar}
@@ -226,13 +261,20 @@ const Message: React.FC<MessageProps> = ({
                                         handleReplyPress={() => item.id && handleReplyPress(item.id)}
                                         selected={selectedMessages.includes(item.id)}
                                     /> :
-                                    <View key={index} style={styles.titleContainer}>
-                                        <Text style={[styles.titleText, { fontSize: fontSize + 2 }]}>{item.updated_at && (new Date(item.updated_at).toDateString() === new Date().toDateString() ? '今   天' : new Date(item.updated_at).toDateString())}</Text>
+                                    <View key={item.updated_at} style={styles.titleContainer}>
+                                        <Text style={[styles.titleText, { fontSize: fontSize + 2 }]}>
+                                            {item.updated_at && (
+                                                new Date(item.updated_at).toDateString() === new Date().toDateString()
+                                                    ? '今   天'
+                                                    : new Date(item.updated_at).toDateString()
+                                            )}
+                                        </Text>
                                     </View>
                             ))}
                         </View>
                     </ScrollView>
                 </PinchGestureHandler>
+
                 <View style={styles.inputBarContainer}>
                     <View style={styles.inputBar}>
                         <TextInput
@@ -245,8 +287,18 @@ const Message: React.FC<MessageProps> = ({
                         />
                         <View style={{ justifyContent: 'flex-end', paddingBottom: 5 }}>
                             <View style={{ flexDirection: 'row' }}>
-                                <IconButton onPress={handleAd} size={15} iconSource={ICON_AD} style={styles.inputBarIcon} />
-                                <IconButton onPress={handleEmoji} size={15} iconSource={ICON_EMOJI} style={styles.inputBarIcon} />
+                                <IconButton
+                                    onPress={handleAd}
+                                    size={15}
+                                    iconSource={ICON_AD}
+                                    style={styles.inputBarIcon}
+                                />
+                                <IconButton
+                                    onPress={handleEmoji}
+                                    size={15}
+                                    iconSource={ICON_EMOJI}
+                                    style={styles.inputBarIcon}
+                                />
                             </View>
                         </View>
                     </View>
@@ -254,8 +306,16 @@ const Message: React.FC<MessageProps> = ({
                         <IconButton onPress={handleSend} size={20} iconSource={ICON_SEND} />
                     </View>
                 </View>
-                <EmojiPicker onEmojiSelected={handlePick} open={isOpen} onClose={() => setIsOpen(false)} translation={CHINESE_EMOJI_LANG} />
+
+                <EmojiPicker
+                    onEmojiSelected={handlePick}
+                    open={isOpen}
+                    onClose={() => setIsOpen(false)}
+                    translation={CHINESE_EMOJI_LANG}
+                />
+
                 <View style={{ margin: BOTTOM_TAPBAR_HEIGHT / 2 }}></View>
+
                 {isSelectionMode && (
                     <View style={styles.selectionBar}>
                         <TouchableOpacity onPress={() => showPopupMenu(selectedMessages)}>
