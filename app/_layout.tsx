@@ -1,6 +1,6 @@
 import { AuthProvider, useAuth } from "@/components/navigation/Authentication";
 import BackHandlerProvider from '@/components/navigation/BackHandlerProvider';
-import { PusherProvider } from "@/components/navigation/PusherContext";
+import { NotificationProvider } from "@/components/navigation/notificationContext";
 import { useFonts } from 'expo-font';
 import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -28,11 +28,11 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <BackHandlerProvider>
-        <PusherProvider>
+        <NotificationProvider>
           <MenuProvider>
             <Slot />
           </MenuProvider>
-        </PusherProvider>
+        </NotificationProvider>
       </BackHandlerProvider>
     </AuthProvider>
   );

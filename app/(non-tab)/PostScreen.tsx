@@ -101,7 +101,6 @@ const PostScreen = () => {
                         });
 
                         ToastAndroid.show(res.msg, ToastAndroid.SHORT);
-                        console.log(res.msg)
                         if (res.status === 'success') {
                             if (router.canDismiss()) router.dismissAll();
                             router.replace('/HomeScreen');

@@ -10,6 +10,7 @@ import Request from '@/utils/request';
 import Loading from './Loading';
 import Blank from './Blank';
 import { usePusher } from '@/hooks/usePusher';
+import { useNotifications } from './navigation/notificationContext';
 
 interface MessageProps {
     userId: string;
@@ -42,8 +43,7 @@ const Message: React.FC<MessageProps> = ({
     const baseScale = useRef(1);
 
     // Modified handleNewMessage to handle ID replacement
-    const handleNewMessage = (data: any) => {
-        console.log("Received message:", data);
+    const handleNewMessage = async (data: any) => {
         const serverMessage = data.message.message as IMessage;
 
         setMessages(currentMessages => {

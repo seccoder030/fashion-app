@@ -4,6 +4,7 @@ import IconButton from '@/components/IconButton';
 import { useAuth } from '@/components/navigation/Authentication';
 import { BACKGROUND_COLOR, ICON_AVATAR, ICON_CAMERA, ICON_CAMERAFILL, ICON_HEARTLINE, ICON_LISTLINE, IMAGE_PROFILEBG, SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/Config';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
@@ -34,12 +35,22 @@ export default function EditProfileScreen() {
         // Launch the image picker
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
         });
 
         if (!result.canceled) {
-            return result.assets[0].uri;
+            const customDirectory = `${FileSystem.cacheDirectory}my_custom_folder/`;
+            await FileSystem.makeDirectoryAsync(customDirectory, { intermediates: true });
+            const fileExtension = result.assets[0].uri.split('.').pop();
+            const fileName = `photo_${Date.now()}.${fileExtension}`;
+            const customUri = `${customDirectory}${fileName}`;
+            await FileSystem.moveAsync({
+                from: result.assets[0].uri,
+                to: customUri,
+            });
+            return customUri;
         } else return null;
     }
 

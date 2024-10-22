@@ -68,7 +68,7 @@ const Detail: React.FC<DetailProps> = ({ postId, userId, type, uri, title, conte
     const scrollViewRef = useRef<ScrollView>(null);
     const [isReply, setIsReply] = useState<{ index: number, replyindex: number | undefined } | undefined>(undefined);
 
-    const shortNumber = (num: number | undefined) => num ? num > 1000 ? `${Math.floor(num / 100) / 10}K` : `${num}` : 0
+    const shortNumber = (num: number | undefined) => num ? num >= 1000 ? `${Math.floor(num / 100) / 10}K` : `${num}` : 0
 
     function buildCommentTree(comments: Comment[]): CommentNode[] {
         const commentMap = new Map<number, CommentNode>();

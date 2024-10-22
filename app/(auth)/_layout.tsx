@@ -7,7 +7,7 @@ export default function AuthLayout() {
     const { isLoading } = useAuth()
 
     if (isLoading) {
-        return <Loading />
+        return <Loading mode={0} />
     }
 
     return (

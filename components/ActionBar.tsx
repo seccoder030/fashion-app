@@ -1,5 +1,5 @@
 import { useAuth } from '@/components/navigation/Authentication';
-import { ICON_ADD, ICON_AVATAR, ICON_COMMENT, ICON_HEART, ICON_HEARTFILL, ICON_SHARE } from '@/constants/Config';
+import { HOMETOP_TAPBAR_HEIGHT, ICON_ADD, ICON_AVATAR, ICON_COMMENT, ICON_HEART, ICON_HEARTFILL, ICON_SHARE, SCREEN_HEIGHT } from '@/constants/Config';
 import Request from '@/utils/request';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -22,15 +22,17 @@ interface IActionBarProps {
 }
 
 const ActionBar: React.FC<IActionBarProps> = ({ postId, userId, avatar, name, type, uri, title, content, preLikesCount, commentsCount, favoritesCount }) => {
+  const { user } = useAuth();
   const { friends, favorites, updateFriends, updateFavorites } = useAuth();
   const [heart, setHeart] = useState<boolean>(false);
   const [add, setAdd] = useState<boolean>(false);
   const [likesCount, setLikeCount] = useState<number>(preLikesCount);
 
-  const shortNumber = (num: number) => num ? num > 1000 ? `${Math.floor(num / 100) / 10}K` : `${num}` : 0
+  const shortNumber = (num: number) => num ? num >= 1000 ? `${Math.floor(num / 100) / 10}K` : `${num}` : 0
 
   useEffect(() => {
-    if (friends) setAdd(friends.has(userId));
+    if (userId === user?.id) setAdd(true);
+    else if (friends) setAdd(friends.has(userId));
     if (favorites) setHeart(favorites.has(postId));
   }, [friends, favorites])
 
@@ -80,7 +82,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'absolute',
-    bottom: 0,
+    top: (SCREEN_HEIGHT - HOMETOP_TAPBAR_HEIGHT) / 2 - 125,
     right: 5,
     zIndex: 6,
   },

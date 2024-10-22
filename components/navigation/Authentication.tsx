@@ -106,6 +106,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
                 catch(error =>
                     console.log(error)
                 );
+            console.log(res)
             if (res.status === 'success') {
                 var arr: IUser = res.user;
                 arr.categories = JSON.parse(res.user.categories);
@@ -133,7 +134,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
         } catch (error) {
             setToken(null);
             setUser(null);
-            console.error('Error updating user:', error);
+            console.error('Error getting user:', error);
             ToastAndroid.show('获取用户信息失败', ToastAndroid.SHORT);
             throw error;
         }
@@ -229,7 +230,6 @@ export function AuthProvider(props: React.PropsWithChildren) {
         const formData = new FormData();
 
         if (data.avatar?.startsWith('file:///')) {
-            console.log(data.avatar)
             const fileInfo = await FileSystem.getInfoAsync(data.avatar);
             if (fileInfo.exists) {
                 const fileExtension = data.avatar.split('.').pop();
@@ -244,7 +244,6 @@ export function AuthProvider(props: React.PropsWithChildren) {
         }
 
         if (data.profileBg?.startsWith('file:///')) {
-            console.log(data.profileBg)
             const fileInfo = await FileSystem.getInfoAsync(data.profileBg);
             if (fileInfo.exists) {
                 const fileExtension = data.profileBg.split('.').pop();
