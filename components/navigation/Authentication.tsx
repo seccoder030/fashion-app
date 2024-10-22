@@ -111,7 +111,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
                 var arr: IUser = res.user;
                 arr.categories = JSON.parse(res.user.categories);
                 setUser(arr);
-                const resFriends = await Request.Get('/chat/friends/get');
+                const resFriends = await Request.Get('/friends/get');
                 const resFavorites = await Request.Get('/profile/posts');
                 if (resFriends.status === 'success' && resFavorites.status === 'success') {
                     resFriends.friends.forEach((item: { friend_id: string }) => {
