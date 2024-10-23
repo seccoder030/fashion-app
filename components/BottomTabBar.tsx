@@ -4,14 +4,8 @@ import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacityProps, View } from 'react-native';
 import IconButton from './IconButton';
 
-interface BottomTabBarProps extends TouchableOpacityProps {
-  thisId?: number;
-}
-
-const BottomTabBar: React.FC<BottomTabBarProps> = ({
-  thisId = 0,
-}) => {
-  const [activePageID, setActivePageID] = useState(thisId);
+const BottomTabBar = () => {
+  const [activePageID, setActivePageID] = useState(0);
 
   function goto(pageID: number) {
     if (activePageID == pageID) return;

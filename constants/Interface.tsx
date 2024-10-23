@@ -70,6 +70,17 @@ interface IFriend {
     updated_at?: string;
 }
 
+interface IPendingFriend {
+    event_type: string;
+    message: string;
+    notify_id: string;
+    receiver_id: string;
+    sender_avatar: string;
+    sender_id: string;
+    sender_name: string;
+    updated_at: string;
+}
+
 interface IMessage {
     id: string | null;
     sender_id: string;

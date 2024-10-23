@@ -7,11 +7,12 @@ import Blank from './Blank';
 import Loading from './Loading';
 import { useAuth } from './navigation/Authentication';
 import IconButton from './IconButton';
+import { usePusher } from '@/hooks/usePusher';
 
 const MessageList = () => {
     const { token } = useAuth();
     const [friends, setFriends] = useState<IFriend[] | null>(null);
-    const [pendingFriends, setPendingFriends] = useState<IFriend[] | null>(null);
+    const [pendingFriends, setPendingFriends] = useState<IPendingFriend[] | null>(null);
 
     useEffect(() => {
         async function fetchData() {
@@ -21,7 +22,7 @@ const MessageList = () => {
                     var resFriends = await Request.Get('/friends/get');
                     setFriends(resFriends.friends);
                     var resNotify = await Request.Get('/notify');
-                    console.log(resNotify);
+                    setPendingFriends(resNotify.message);
                 } catch (error) {
                     console.log(error);
                     ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
@@ -30,6 +31,32 @@ const MessageList = () => {
         }
         fetchData();
     }, [])
+
+    // Modified handleNewMessage to handle ID replacement
+    const handleNewMessage = async (data: any) => {
+        if (data.message.event_type === "new_notification") {
+            const pendingMessages = data.message as IPendingFriend;
+
+            if (pendingFriends) setPendingFriends([...pendingFriends, pendingMessages]);
+            else setPendingFriends([pendingMessages]);
+        } else if (data.message.event_type === "declined_notification") {
+            const pendingMessages = data.message as IPendingFriend;
+
+            setPendingFriends(prevItems => {
+                if (!prevItems) return [];
+                const index = prevItems.findIndex(pendingItem => pendingItem.notify_id === pendingMessages.notify_id);
+                const newItems = [...prevItems];
+                newItems.splice(index, 1);
+                return newItems;
+            });
+        }
+    };
+
+    const { isConnected, error: pusherError } = usePusher({
+        channelName: 'broad_cast_message',
+        eventName: 'broadcast.message',
+        onEvent: handleNewMessage
+    });
 
     if (!friends || !pendingFriends) {
         return <Loading backgroundColor={'transparent'} />;
@@ -43,9 +70,69 @@ const MessageList = () => {
         router.push({ pathname: '/MessageScreen', params: { userId: item.user1.id, name: item.user1.name, avatar: item.user1.avatar } });
     }
 
+    async function handleFriend(item: IPendingFriend, type: string) {
+        if (token) {
+            try {
+                Request.setAuthorizationToken(token);
+                var res = await Request.Post('/friend/handle_friend', {
+                    status: type,
+                    notify_id: item.notify_id,
+                    sender_id: item.sender_id,
+                    receiver_id: item.receiver_id
+                });
+                console.log(res)
+            } catch (error) {
+                console.log(error);
+                ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
+            }
+        }
+    }
+
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+                {pendingFriends.map((item, index) => (
+                    <View style={styles.border}>
+                        <View style={styles.message}>
+                            <Image
+                                source={item.sender_avatar ? { uri: item.sender_avatar } : ICON_AVATAR}
+                                style={[
+                                    { width: 42, height: 42 },
+                                    styles.userImage
+                                ]}
+                            />
+                            <View style={styles.pedingMessageContent}>
+                                <View style={styles.messageItem}>
+                                    <Text style={styles.messageTitle}>{item.sender_name}</Text>
+                                    {/* {item.unread > 0 &&
+                                        <View style={styles.borderUnread}>
+                                            <Text style={styles.messageUnread}>{item.unread}</Text>
+                                        </View>
+                                    } */}
+                                </View>
+                                <View style={styles.messageItem}>
+                                    {/* <Text style={styles.messageText}>{item.message.length > 20 ? item.message.slice(0, 20) + '...' : item.message}</Text> */}
+                                    <Text style={styles.messageDate}>{item.updated_at && new Date(item.updated_at).toDateString()}</Text>
+                                </View>
+                            </View>
+                            {item.event_type !== 'new_notification' ?
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                    <View style={{ marginRight: 10 }}>
+                                        <IconButton onPress={() => handleFriend(item, 'accept')} size={35} iconSource={ICON_CONFIRM} />
+                                    </View>
+                                    <View>
+                                        <IconButton onPress={() => handleFriend(item, 'declined')} size={35} iconSource={ICON_CANCEL} />
+                                    </View>
+                                </View> :
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                    <View style={{ marginLeft: 45 }}>
+                                        <IconButton onPress={() => handleFriend(item, 'removed')} size={35} iconSource={ICON_CANCEL} />
+                                    </View>
+                                </View>
+                            }
+                        </View>
+                    </View>
+                ))}
                 {friends.map((item, index) => (
                     <View key={index} style={styles.border}>
                         <TouchableOpacity onPress={() => handleItem(item)} style={styles.message}>
@@ -71,41 +158,6 @@ const MessageList = () => {
                                 </View>
                             </View>
                         </TouchableOpacity>
-                    </View>
-                ))}
-                {pendingFriends.map((item, index) => (
-                    <View style={styles.border}>
-                        <View style={styles.message}>
-                            <Image
-                                source={ICON_AVATAR}
-                                style={[
-                                    { width: 42, height: 42 },
-                                    styles.userImage
-                                ]}
-                            />
-                            <View style={styles.pedingMessageContent}>
-                                <View style={styles.messageItem}>
-                                    <Text style={styles.messageTitle}>{'aaa'}</Text>
-                                    {/* {item.unread > 0 &&
-                                        <View style={styles.borderUnread}>
-                                            <Text style={styles.messageUnread}>{item.unread}</Text>
-                                        </View>
-                                    } */}
-                                </View>
-                                <View style={styles.messageItem}>
-                                    {/* <Text style={styles.messageText}>{item.message.length > 20 ? item.message.slice(0, 20) + '...' : item.message}</Text> */}
-                                    <Text style={styles.messageDate}>{'aaa'}</Text>
-                                </View>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                <View style={{ marginRight: 10 }}>
-                                    <IconButton size={35} iconSource={ICON_CONFIRM} />
-                                </View>
-                                <View>
-                                    <IconButton size={35} iconSource={ICON_CANCEL} />
-                                </View>
-                            </View>
-                        </View>
                     </View>
                 ))}
             </ScrollView>

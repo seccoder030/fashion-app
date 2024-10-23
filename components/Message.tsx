@@ -1,16 +1,15 @@
-import { BOTTOM_TAPBAR_HEIGHT, CHINESE_EMOJI_LANG, ICON_AD, ICON_EMOJI, ICON_SEND, SCREEN_WIDTH } from '@/constants/Config';
-import React, { useEffect, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, ToastAndroid } from 'react-native';
-import EmojiPicker from 'rn-emoji-keyboard';
-import IconButton from './IconButton';
-import MessageBox from './MessageBox';
 import { useAuth } from '@/components/navigation/Authentication';
-import { PinchGestureHandler, State, GestureHandlerRootView } from 'react-native-gesture-handler';
-import Request from '@/utils/request';
-import Loading from './Loading';
-import Blank from './Blank';
+import { BOTTOM_TAPBAR_HEIGHT, CHINESE_EMOJI_LANG, ICON_AD, ICON_EMOJI, ICON_SEND, SCREEN_WIDTH } from '@/constants/Config';
 import { usePusher } from '@/hooks/usePusher';
-import { useNotifications } from './navigation/notificationContext';
+import Request from '@/utils/request';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native';
+import { GestureHandlerRootView, PinchGestureHandler, State } from 'react-native-gesture-handler';
+import EmojiPicker from 'rn-emoji-keyboard';
+import Blank from './Blank';
+import IconButton from './IconButton';
+import Loading from './Loading';
+import MessageBox from './MessageBox';
 
 interface MessageProps {
     userId: string;
@@ -44,6 +43,7 @@ const Message: React.FC<MessageProps> = ({
 
     // Modified handleNewMessage to handle ID replacement
     const handleNewMessage = async (data: any) => {
+        if (data.message.event_type !== "new_message") return;
         const serverMessage = data.message.message as IMessage;
 
         setMessages(currentMessages => {
