@@ -12,6 +12,7 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({
   thisId = 0,
 }) => {
   const [activePageID, setActivePageID] = useState(thisId);
+
   function goto(pageID: number) {
     if (activePageID == pageID) return;
     setActivePageID(pageID);

@@ -1,4 +1,4 @@
-import { BOTTOM_TAPBAR_HEIGHT, ICON_AVATAR, SCREEN_WIDTH } from '@/constants/Config';
+import { BOTTOM_TAPBAR_HEIGHT, ICON_AVATAR, ICON_CANCEL, ICON_CONFIRM, SCREEN_WIDTH } from '@/constants/Config';
 import Request from '@/utils/request';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -6,18 +6,22 @@ import { Image, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, Vi
 import Blank from './Blank';
 import Loading from './Loading';
 import { useAuth } from './navigation/Authentication';
+import IconButton from './IconButton';
 
 const MessageList = () => {
     const { token } = useAuth();
     const [friends, setFriends] = useState<IFriend[] | null>(null);
+    const [pendingFriends, setPendingFriends] = useState<IFriend[] | null>(null);
 
     useEffect(() => {
         async function fetchData() {
             if (token) {
                 try {
                     Request.setAuthorizationToken(token);
-                    var res = await Request.Get('/chat/friends/get');
-                    setFriends(res.friends);
+                    var resFriends = await Request.Get('/friends/get');
+                    setFriends(resFriends.friends);
+                    var resNotify = await Request.Get('/notify');
+                    console.log(resNotify);
                 } catch (error) {
                     console.log(error);
                     ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
@@ -27,11 +31,11 @@ const MessageList = () => {
         fetchData();
     }, [])
 
-    if (!friends) {
+    if (!friends || !pendingFriends) {
         return <Loading backgroundColor={'transparent'} />;
     }
 
-    if (friends.length === 0) {
+    if (friends.length === 0 && pendingFriends.length === 0) {
         return <Blank />
     }
 
@@ -67,6 +71,41 @@ const MessageList = () => {
                                 </View>
                             </View>
                         </TouchableOpacity>
+                    </View>
+                ))}
+                {pendingFriends.map((item, index) => (
+                    <View style={styles.border}>
+                        <View style={styles.message}>
+                            <Image
+                                source={ICON_AVATAR}
+                                style={[
+                                    { width: 42, height: 42 },
+                                    styles.userImage
+                                ]}
+                            />
+                            <View style={styles.pedingMessageContent}>
+                                <View style={styles.messageItem}>
+                                    <Text style={styles.messageTitle}>{'aaa'}</Text>
+                                    {/* {item.unread > 0 &&
+                                        <View style={styles.borderUnread}>
+                                            <Text style={styles.messageUnread}>{item.unread}</Text>
+                                        </View>
+                                    } */}
+                                </View>
+                                <View style={styles.messageItem}>
+                                    {/* <Text style={styles.messageText}>{item.message.length > 20 ? item.message.slice(0, 20) + '...' : item.message}</Text> */}
+                                    <Text style={styles.messageDate}>{'aaa'}</Text>
+                                </View>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                <View style={{ marginRight: 10 }}>
+                                    <IconButton size={35} iconSource={ICON_CONFIRM} />
+                                </View>
+                                <View>
+                                    <IconButton size={35} iconSource={ICON_CANCEL} />
+                                </View>
+                            </View>
+                        </View>
                     </View>
                 ))}
             </ScrollView>
@@ -106,6 +145,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginLeft: 10,
         width: SCREEN_WIDTH - 135
+    },
+    pedingMessageContent: {
+        justifyContent: 'center',
+        marginLeft: 10,
+        width: SCREEN_WIDTH - 215
     },
     messageItem: {
         flexDirection: 'row',

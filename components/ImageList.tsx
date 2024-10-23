@@ -57,7 +57,7 @@ const ImageList: React.FC<ImageListProps> = ({
                 <Media type={item.type} source={{ uri: item.uri }} backgroundColor={'transparent'} play={true} resizeMode={1} />
             </View>
             <View style={styles.cardFooter}>
-                <Text style={styles.text}>{item.title.length > 20 ? item.title.slice(0, 20) + '...' : item.title}</Text>
+                <Text style={styles.text}>{item.title.length > 13 ? item.title.slice(0, 13) + '...' : item.title}</Text>
                 <View style={styles.info}>
                     <View style={styles.infoItem}>
                         <IconButton size={15} iconSource={ICON_COMMENT} enabled={false} />

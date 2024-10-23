@@ -295,7 +295,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
         try {
             Request.setAuthorizationToken(token);
-            const res = await Request.Post('/post/friend/save', { friend_id: user_id });
+            const res = await Request.Post('/friend/save', { friend_id: user_id });
             if (res.status === 'success') {
                 setFriends(prevItem => {
                     const newItem = new Set(prevItem);
