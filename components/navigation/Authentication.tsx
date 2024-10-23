@@ -195,7 +195,6 @@ export function AuthProvider(props: React.PropsWithChildren) {
             setToken(res.data.token);
             setUser(res.data.user);
             ToastAndroid.show('登录成功！', ToastAndroid.SHORT);
-            routeUser(res.data.user);
         } catch (error) {
             console.error('Error signing in:', error);
             ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
