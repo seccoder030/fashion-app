@@ -25,9 +25,9 @@ const MessageList = () => {
         if (token) {
             try {
                 Request.setAuthorizationToken(token);
-                var resFriends = await Request.Get('/friends/get');
+                var resFriends = await Request.Get('/friend/get_friends');
                 setFriends(resFriends.friends);
-                var resNotify = await Request.Get('/notify');
+                var resNotify = await Request.Get('/notify/get_notifications');
                 resNotify.message.map((item: IPendingFriend) => {
                     setPendingFriends(prevItems => {
                         const newItems = prevItems ? prevItems : [];

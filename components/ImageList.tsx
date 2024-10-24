@@ -28,7 +28,7 @@ const ImageList: React.FC<ImageListProps> = ({
                         var res = await Request.Get(`/post/search?query=${search}`);
                         setMedias(res);
                     } else {
-                        var res = await Request.Get('/post/get');
+                        var res = await Request.Get('/post/get_all_post');
                         setMedias(res.posts);
                     }
                 } catch (error) {

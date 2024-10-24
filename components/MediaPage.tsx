@@ -25,7 +25,7 @@ const MediaPage: React.FC<MediaPageProps> = ({
                 try {
                     console.log('friend', friends)
                     Request.setAuthorizationToken(token);
-                    var res = await Request.Get('/post/get');
+                    var res = await Request.Get('/post/get_all_post');
                     var arr: IPost[] = [];
                     res.posts.map((item: IPost) => {
                         page === 0 ? favorites && favorites.has(item.id) && arr.push(item) :

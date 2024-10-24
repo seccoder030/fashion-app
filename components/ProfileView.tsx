@@ -33,7 +33,7 @@ const ProfileView: React.FC<ProfielViewProps> = ({
             if (token) {
                 try {
                     Request.setAuthorizationToken(token);
-                    const res = await Request.Get(`/profile/posts`);
+                    const res = await Request.Get(`/post/get_my_posts`);
                     if (res.status === 'success') {
                         setMedias([]);
                         if (mode) {

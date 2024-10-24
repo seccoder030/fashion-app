@@ -103,7 +103,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
         try {
             Request.setAuthorizationToken(token);
-            const res = await Request.Get('/user').
+            const res = await Request.Get('/user/get_user').
                 then(res => res).
                 catch(error =>
                     console.log(error)
@@ -112,9 +112,8 @@ export function AuthProvider(props: React.PropsWithChildren) {
                 var arr: IUser = res.user;
                 arr.categories = JSON.parse(res.user.categories);
                 setUser(arr);
-                const resFriends = await Request.Get('/friends/get');
-                console.log('update user', resFriends)
-                const resFavorites = await Request.Get('/profile/posts');
+                const resFriends = await Request.Get('/friend/get_friends');
+                const resFavorites = await Request.Get('/post/get_my_posts');
                 if (resFriends.status === 'success' && resFavorites.status === 'success') {
                     const newFriends = new Set<string>();
                     resFriends.friends.forEach((item: { friend_id: string }) => {
@@ -150,7 +149,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
         try {
             Request.setAuthorizationToken(token);
-            const response = await Request.Post('/category', { categories });
+            const response = await Request.Post('/category/add_category', { categories });
 
             if (response.status == 'success') {
                 const updatedUser = await updateUser();
@@ -188,7 +187,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
     const signIn = async ({ email, password }: ISignInProps) => {
         try {
-            const res = await axios.post<ISignInResponse>(`${process.env.EXPO_PUBLIC_API_URL}/login`, { email, password });
+            const res = await axios.post<ISignInResponse>(`${process.env.EXPO_PUBLIC_API_URL}/auth/login`, { email, password });
             ToastAndroid.show(res.data.msg, ToastAndroid.SHORT);
             console.log(res.data)
             if (res.data.status === 'success') {
@@ -203,7 +202,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
     const signUp = async ({ email, name, username, password }: ISignUpProps) => {
         try {
-            const res = await axios.post<ISignUpResponse>(`${process.env.EXPO_PUBLIC_API_URL}/register`, { email, name, username, password, password_confirmation: password });
+            const res = await axios.post<ISignUpResponse>(`${process.env.EXPO_PUBLIC_API_URL}/auth/register`, { email, name, username, password, password_confirmation: password });
             ToastAndroid.show(res.data.msg, ToastAndroid.SHORT);
             if (res.data.status === 'success') {
                 signIn({ email, password });
@@ -214,9 +213,10 @@ export function AuthProvider(props: React.PropsWithChildren) {
         }
     };
 
-    const signOut = () => {
+    const signOut = async () => {
         setToken(null);
         setUser(null);
+        const res = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/auth/logout`);
         router.replace("/sign-in");
     };
 
@@ -268,7 +268,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
             Request.setAuthorizationToken(token);
             console.log(formData)
-            const response = await Request.Post('/user/update', formData, {
+            const response = await Request.Post('/user/update_user', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
@@ -295,7 +295,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
         try {
             Request.setAuthorizationToken(token);
-            const res = await Request.Post('/friend/save', { friend_id: user_id });
+            const res = await Request.Post('/post/add_friend', { friend_id: user_id });
             console.log(res)
             if (res.status === 'success') {
                 setFriends(prevItem => {
@@ -323,7 +323,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
 
         try {
             Request.setAuthorizationToken(token);
-            const res = await Request.Post('/post/likes/save', { post_id: post_id });
+            const res = await Request.Post('/post/add_like', { post_id: post_id });
             if (res.status === 'success') {
                 setFavorites(prevItem => {
                     const newItem = new Set(prevItem);

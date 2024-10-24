@@ -80,7 +80,7 @@ const Message: React.FC<MessageProps> = ({
             if (token) {
                 try {
                     Request.setAuthorizationToken(token);
-                    var res = await Request.Get(`/messages/get/${userId}`);
+                    var res = await Request.Get(`/messages/get_message/${userId}`);
                     setMessages(res);
                     scrollViewRef.current?.scrollToEnd();
                 } catch (error) {
@@ -129,7 +129,7 @@ const Message: React.FC<MessageProps> = ({
 
                 // Send API request
                 Request.setAuthorizationToken(token);
-                const res = await Request.Post(`/messages`, {
+                const res = await Request.Post(`/messages/send_message`, {
                     receiver_id: userId,
                     message: text
                 });

@@ -26,7 +26,7 @@ const DetailToptabBar: React.FC<DetailToptabBarProps> = ({
     if (token) {
       try {
         Request.setAuthorizationToken(token);
-        const res = await Request.Post(`/profile/posts/delete`, { id: postId });
+        const res = await Request.Post(`/post/delete_my_post`, { id: postId });
         if (res.status === 'success') {
           if (router.canDismiss()) router.dismissAll();
           router.replace('/HomeScreen');

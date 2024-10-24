@@ -19,7 +19,7 @@ export default function CategoryScreen() {
             if (token) {
                 try {
                     Request.setAuthorizationToken(token);
-                    const res = await Request.Get(`/category`);
+                    const res = await Request.Get(`/category/get_categories`);
                     if (res.status) {
                         setCategories(res.data);
                         if (user?.categories) {

@@ -18,7 +18,7 @@ export default function SearchScreen() {
             if (token) {
                 try {
                     Request.setAuthorizationToken(token);
-                    const res = await Request.Get(`/category`);
+                    const res = await Request.Get(`/category/get_categories`);
                     if (res.status) {
                         setCategories(res.data.map((item: { name: string }) => item.name));
                     }

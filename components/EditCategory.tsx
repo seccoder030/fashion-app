@@ -24,7 +24,7 @@ const EditCategory: React.FC<EditCategoryProps> = ({
             if (token) {
                 try {
                     Request.setAuthorizationToken(token);
-                    const res = await Request.Get(`/category`);
+                    const res = await Request.Get(`/category/get_categories`);
                     setCategories(res.data);
                     if (user?.categories) {
                         user.categories.forEach((item: string) => {

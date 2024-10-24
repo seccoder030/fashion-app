@@ -130,7 +130,7 @@ const Detail: React.FC<DetailProps> = ({ postId, userId, type, uri, title, conte
             if (token) {
                 try {
                     Request.setAuthorizationToken(token);
-                    const res = await Request.Get(`/post/comments/get?post_id=${postId}`);
+                    const res = await Request.Get(`/post/get_comments?post_id=${postId}`);
                     if (res.status === 'success') {
                         const commentTree = buildCommentTree(res.comments);
                         setComments(commentTree);
@@ -169,7 +169,7 @@ const Detail: React.FC<DetailProps> = ({ postId, userId, type, uri, title, conte
                     formdata.append('receiver[id]', userId);
                     formdata.append('content', postText);
                 }
-                const res = await Request.Post(`${process.env.EXPO_PUBLIC_API_URL}/post/comments/save`, formdata, {
+                const res = await Request.Post(`${process.env.EXPO_PUBLIC_API_URL}/post/send_comment`, formdata, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     }
