@@ -20,12 +20,14 @@ export interface ISignUpProps {
 
 interface ISignInResponse {
     msg: string;
+    status: string;
     token: string;
     user: IUser;
 }
 
 interface ISignUpResponse {
     msg: string;
+    status: string;
 }
 
 interface ISetUserProps {
@@ -187,9 +189,12 @@ export function AuthProvider(props: React.PropsWithChildren) {
     const signIn = async ({ email, password }: ISignInProps) => {
         try {
             const res = await axios.post<ISignInResponse>(`${process.env.EXPO_PUBLIC_API_URL}/login`, { email, password });
-            setToken(res.data.token);
-            setUser(res.data.user);
-            ToastAndroid.show('登录成功！', ToastAndroid.SHORT);
+            ToastAndroid.show(res.data.msg, ToastAndroid.SHORT);
+            console.log(res.data)
+            if (res.data.status === 'success') {
+                setToken(res.data.token);
+                setUser(res.data.user);
+            }
         } catch (error) {
             console.error('Error signing in:', error);
             ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
@@ -199,8 +204,8 @@ export function AuthProvider(props: React.PropsWithChildren) {
     const signUp = async ({ email, name, username, password }: ISignUpProps) => {
         try {
             const res = await axios.post<ISignUpResponse>(`${process.env.EXPO_PUBLIC_API_URL}/register`, { email, name, username, password, password_confirmation: password });
-            if (res.data.msg === 'Register successfully!') {
-                ToastAndroid.show('注册成功！', ToastAndroid.SHORT);
+            ToastAndroid.show(res.data.msg, ToastAndroid.SHORT);
+            if (res.data.status === 'success') {
                 signIn({ email, password });
             }
         } catch (error) {
