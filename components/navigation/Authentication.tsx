@@ -106,28 +106,24 @@ export function AuthProvider(props: React.PropsWithChildren) {
                 catch(error =>
                     console.log(error)
                 );
-            console.log(res)
             if (res.status === 'success') {
                 var arr: IUser = res.user;
                 arr.categories = JSON.parse(res.user.categories);
                 setUser(arr);
                 const resFriends = await Request.Get('/friends/get');
+                console.log('update user', resFriends)
                 const resFavorites = await Request.Get('/profile/posts');
                 if (resFriends.status === 'success' && resFavorites.status === 'success') {
+                    const newFriends = new Set<string>();
                     resFriends.friends.forEach((item: { friend_id: string }) => {
-                        setFriends(prevItem => {
-                            const newItem = new Set(prevItem);
-                            newItem.add(item.friend_id);
-                            return newItem;
-                        });
+                        newFriends.add(item.friend_id);
                     });
+                    setFriends(newFriends);
+                    const newFavorites = new Set<string>();
                     resFavorites.favorites.forEach((item: { post_id: string }) => {
-                        setFavorites(prevItem => {
-                            const newItem = new Set(prevItem);
-                            newItem.add(item.post_id);
-                            return newItem;
-                        });
+                        newFavorites.add(item.post_id);
                     });
+                    setFavorites(newFavorites);
                 }
                 return res.user;
             }
@@ -136,7 +132,6 @@ export function AuthProvider(props: React.PropsWithChildren) {
             setUser(null);
             console.error('Error getting user:', error);
             ToastAndroid.show('获取用户信息失败', ToastAndroid.SHORT);
-            throw error;
         }
     }, [token]);
 
@@ -234,7 +229,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
                 const fileExtension = data.avatar.split('.').pop();
                 const fileName = `file.${fileExtension}`;
 
-                formData.append('files', {
+                formData.append('avatar', {
                     uri: data.avatar,
                     name: fileName,
                     type: `image/${fileExtension}`
@@ -296,6 +291,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
         try {
             Request.setAuthorizationToken(token);
             const res = await Request.Post('/friend/save', { friend_id: user_id });
+            console.log(res)
             if (res.status === 'success') {
                 setFriends(prevItem => {
                     const newItem = new Set(prevItem);

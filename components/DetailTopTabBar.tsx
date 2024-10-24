@@ -33,7 +33,7 @@ const DetailToptabBar: React.FC<DetailToptabBarProps> = ({
         }
         ToastAndroid.show(res.msg, ToastAndroid.SHORT);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
       }
     }

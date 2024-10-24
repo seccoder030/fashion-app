@@ -23,6 +23,7 @@ const MediaPage: React.FC<MediaPageProps> = ({
         const fetchData = async () => {
             if (token) {
                 try {
+                    console.log('friend', friends)
                     Request.setAuthorizationToken(token);
                     var res = await Request.Get('/post/get');
                     var arr: IPost[] = [];
@@ -33,7 +34,7 @@ const MediaPage: React.FC<MediaPageProps> = ({
                     })
                     setMedias(arr);
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                     ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
                 }
             }

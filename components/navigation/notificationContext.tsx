@@ -56,7 +56,6 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
             const data = response.notification.request.content.data;
             if (data.userId && data.name) {
-                console.log('hhh', data)
                 router.push({
                     pathname: '/MessageScreen',
                     params: {

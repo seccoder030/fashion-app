@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Channel } from 'pusher-js';
 import { pusherClient } from '@/constants/pusher';
+import { useAuth } from '@/components/navigation/Authentication';
 
 interface UsePusherOptions {
     channelName: string;
@@ -9,6 +10,7 @@ interface UsePusherOptions {
 }
 
 export const usePusher = ({ channelName, eventName, onEvent }: UsePusherOptions) => {
+    const { user } = useAuth();
     const [channel, setChannel] = useState<Channel | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -27,7 +29,9 @@ export const usePusher = ({ channelName, eventName, onEvent }: UsePusherOptions)
                 newChannel.bind(eventName, (data: any) => {
                     console.log('Received event:', eventName, data);
                     if (mounted) {
-                        onEvent(data);
+                        if (data.message.sender_id == user?.id || data.message.receiver_id == user?.id) {
+                            onEvent(data);
+                        }
                     }
                 });
 

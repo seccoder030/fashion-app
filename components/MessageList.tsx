@@ -10,45 +10,53 @@ import IconButton from './IconButton';
 import { usePusher } from '@/hooks/usePusher';
 
 const MessageList = () => {
-    const { token } = useAuth();
+    const { token, user, updateUser } = useAuth();
     const [friends, setFriends] = useState<IFriend[] | null>(null);
     const [pendingFriends, setPendingFriends] = useState<IPendingFriend[] | null>(null);
 
-    useEffect(() => {
-        async function fetchData() {
-            if (token) {
-                try {
-                    Request.setAuthorizationToken(token);
-                    var resFriends = await Request.Get('/friends/get');
-                    setFriends(resFriends.friends);
-                    var resNotify = await Request.Get('/notify');
-                    setPendingFriends(resNotify.message);
-                } catch (error) {
-                    console.log(error);
-                    ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
-                }
+    function filterNotify(item: IPendingFriend | null) {
+        if (!item) return null;
+        if (item.receiver_id == user?.id && item.event_type == "add_friend") return item;
+        if (item.sender_id == user?.id && item.event_type == "decline_friend") return item;
+        return null;
+    }
+
+    async function refresh() {
+        if (token) {
+            try {
+                Request.setAuthorizationToken(token);
+                var resFriends = await Request.Get('/friends/get');
+                setFriends(resFriends.friends);
+                var resNotify = await Request.Get('/notify');
+                resNotify.message.map((item: IPendingFriend) => {
+                    setPendingFriends(prevItems => {
+                        const newItems = prevItems ? prevItems : [];
+                        const filter = filterNotify(item);
+                        filter && newItems.push(filter);
+                        return newItems;
+                    });
+                })
+                if (!pendingFriends) setPendingFriends([]);
+            } catch (error) {
+                console.error(error);
+                ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
             }
         }
-        fetchData();
+    }
+
+    useEffect(() => {
+        refresh();
     }, [])
 
     // Modified handleNewMessage to handle ID replacement
     const handleNewMessage = async (data: any) => {
-        if (data.message.event_type === "new_notification") {
-            const pendingMessages = data.message as IPendingFriend;
-
-            if (pendingFriends) setPendingFriends([...pendingFriends, pendingMessages]);
-            else setPendingFriends([pendingMessages]);
-        } else if (data.message.event_type === "declined_notification") {
-            const pendingMessages = data.message as IPendingFriend;
-
-            setPendingFriends(prevItems => {
-                if (!prevItems) return [];
-                const index = prevItems.findIndex(pendingItem => pendingItem.notify_id === pendingMessages.notify_id);
-                const newItems = [...prevItems];
-                newItems.splice(index, 1);
-                return newItems;
-            });
+        const pendingMessages = data.message as IPendingFriend;
+        const filter = filterNotify(pendingMessages);
+        if ((pendingMessages.sender_id != user?.id || pendingMessages.receiver_id != user?.id) && pendingMessages.event_type === "accept_friend") {
+            refresh();
+        } else if (filter) {
+            if (pendingFriends) setPendingFriends([...pendingFriends, filter]);
+            else setPendingFriends([filter]);
         }
     };
 
@@ -80,9 +88,16 @@ const MessageList = () => {
                     sender_id: item.sender_id,
                     receiver_id: item.receiver_id
                 });
-                console.log(res)
+                setPendingFriends(prevItems => {
+                    if (!prevItems) return [];
+                    const index = prevItems.findIndex(pendingItem => pendingItem.notify_id === item.notify_id);
+                    const newItems = [...prevItems];
+                    newItems.splice(index, 1);
+                    return newItems;
+                });
+                await updateUser();
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
             }
         }
@@ -92,7 +107,7 @@ const MessageList = () => {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                 {pendingFriends.map((item, index) => (
-                    <View style={styles.border}>
+                    <View key={index} style={styles.border}>
                         <View style={styles.message}>
                             <Image
                                 source={item.sender_avatar ? { uri: item.sender_avatar } : ICON_AVATAR}
@@ -115,7 +130,7 @@ const MessageList = () => {
                                     <Text style={styles.messageDate}>{item.updated_at && new Date(item.updated_at).toDateString()}</Text>
                                 </View>
                             </View>
-                            {item.event_type !== 'new_notification' ?
+                            {item.event_type === 'add_friend' ?
                                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                                     <View style={{ marginRight: 10 }}>
                                         <IconButton onPress={() => handleFriend(item, 'accept')} size={35} iconSource={ICON_CONFIRM} />

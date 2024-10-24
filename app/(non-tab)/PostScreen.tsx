@@ -22,7 +22,7 @@ const PostScreen = () => {
     const { token, user } = useAuth();
     const [title, setTitle] = useState<string>('');
     const [content, setContent] = useState<string>('');
-    const [link, setLink] = useState<string>('');
+    // const [link, setLink] = useState<string>('http://www.xiaoshow.com:8000/');
     const [categories, setCategories] = useState<ICategory[] | null>(null);
     const [checkedCategories, setCheckedCategories] = useState<Set<string>>(new Set());
 
@@ -85,7 +85,7 @@ const PostScreen = () => {
                     formData.append('title', title);
                     formData.append('content', content);
                     formData.append('user_id', user.id);
-                    formData.append('profile_link', link);
+                    // formData.append('profile_link', link);
                     var data = Array();
                     checkedCategories.forEach(item => {
                         data.push(item);
@@ -106,12 +106,12 @@ const PostScreen = () => {
                             router.replace('/HomeScreen');
                         }
                     } catch (error) {
-                        console.error('Error fetching categories:', error);
+                        console.error('Error upload categories:', error);
                     }
                 }
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             ToastAndroid.show('认证错误!', ToastAndroid.SHORT);
         }
     }
@@ -183,7 +183,7 @@ const PostScreen = () => {
                             </View>
                         </View>
                     </View>
-                    <View style={styles.post}>
+                    {/* <View style={styles.post}>
                         <View style={styles.postItem}>
                             <Text style={styles.postTitle}>个人资料链接:</Text>
                             <View style={styles.postTextContainer}>
@@ -197,7 +197,7 @@ const PostScreen = () => {
                                 />
                             </View>
                         </View>
-                    </View>
+                    </View> */}
                     <View style={styles.post}>
                         <View style={styles.postItem}>
                             <Text style={styles.postTitle}>内                容:</Text>
@@ -205,7 +205,7 @@ const PostScreen = () => {
                     </View>
                     <CategoryView categories={categories} checkedCategories={checkedCategories} setCheckedCategories={setCheckedCategories} height={150} />
                     <View style={styles.postButton}>
-                        <TextButton onPress={handlePost} text='帖                子' backgroundColor={'rgba(255, 0, 153, 1)'} borderRadius={10} paddingHorizontal={25} paddingVertical={5} fontSize={15} />
+                        <TextButton onPress={handlePost} text='帖            子' backgroundColor={'rgba(255, 0, 153, 1)'} borderRadius={10} paddingHorizontal={25} paddingVertical={5} fontSize={15} />
                     </View>
                 </View>
             </View>

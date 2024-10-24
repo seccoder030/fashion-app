@@ -10,32 +10,32 @@ export default function PostLayout() {
   const { user } = useAuth();
   const { showNotification } = useNotifications();
 
-  // Modified handleNewMessage to handle ID replacement
-  const handleNewMessage = async (data: any) => {
-    const serverMessage = data.message.message as IMessage;
+  // // Modified handleNewMessage to handle ID replacement
+  // const handleNewMessage = async (data: any) => {
+  //   const serverMessage = data.message.message as IMessage;
 
-    if (serverMessage.receiver_id == user?.id) {
-      try {
-        await showNotification(
-          data.sender?.name || "New Message",
-          serverMessage.message,
-          {
-            userId: serverMessage.sender_id,
-            name: data.sender?.name || "User",
-            avatar: data.sender?.avatar
-          }
-        );
-      } catch (error) {
-        console.error('Failed to show notification:', error);
-      }
-    }
-  };
+  //   if (serverMessage.receiver_id == user?.id) {
+  //     try {
+  //       await showNotification(
+  //         data.sender?.name || "New Message",
+  //         serverMessage.message,
+  //         {
+  //           userId: serverMessage.sender_id,
+  //           name: data.sender?.name || "User",
+  //           avatar: data.sender?.avatar
+  //         }
+  //       );
+  //     } catch (error) {
+  //       console.error('Failed to show notification:', error);
+  //     }
+  //   }
+  // };
 
-  const { isConnected, error: pusherError } = usePusher({
-    channelName: 'broad_cast_message',
-    eventName: 'broadcast.message',
-    onEvent: handleNewMessage
-  });
+  // const { isConnected, error: pusherError } = usePusher({
+  //   channelName: 'broad_cast_message',
+  //   eventName: 'broadcast.message',
+  //   onEvent: handleNewMessage
+  // });
 
   return (
     <SafeAreaView style={styles.container}>

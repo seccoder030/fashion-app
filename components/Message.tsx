@@ -43,7 +43,7 @@ const Message: React.FC<MessageProps> = ({
 
     // Modified handleNewMessage to handle ID replacement
     const handleNewMessage = async (data: any) => {
-        if (data.message.event_type !== "new_message") return;
+        if (data.message.event_type !== "new_message" && data.message.receiver_id != user?.id) return;
         const serverMessage = data.message.message as IMessage;
 
         setMessages(currentMessages => {
@@ -84,7 +84,7 @@ const Message: React.FC<MessageProps> = ({
                     setMessages(res);
                     scrollViewRef.current?.scrollToEnd();
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                     ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
                 }
             }
@@ -146,7 +146,7 @@ const Message: React.FC<MessageProps> = ({
                 setMessages(current =>
                     current ? current.filter(msg => msg.id !== tempId) : null
                 );
-                console.log(error);
+                console.error(error);
                 ToastAndroid.show('消息发送失败！', ToastAndroid.SHORT);
             }
         }

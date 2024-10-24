@@ -152,7 +152,7 @@ export default function CameraScreen() {
                 setMediaUri(undefined);
                 router.push({ pathname: '/PostScreen', params: { type: mediaType, uri: mediaUri } });
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         }
     }
@@ -163,7 +163,7 @@ export default function CameraScreen() {
                 const asset = await MediaLibrary.createAssetAsync(mediaUri);
                 ToastAndroid.show(`保存成功。 (${asset.filename})`, ToastAndroid.SHORT);
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         }
     };

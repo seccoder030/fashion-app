@@ -136,7 +136,7 @@ const Detail: React.FC<DetailProps> = ({ postId, userId, type, uri, title, conte
                         setComments(commentTree);
                     }
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                     ToastAndroid.show('API 错误！', ToastAndroid.SHORT);
                 }
 
@@ -192,7 +192,7 @@ const Detail: React.FC<DetailProps> = ({ postId, userId, type, uri, title, conte
                 }
                 ToastAndroid.show(res.msg, ToastAndroid.SHORT);
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 ToastAndroid.show('您的请求失败', ToastAndroid.SHORT);
             }
         }
